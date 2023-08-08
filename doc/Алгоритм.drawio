@@ -1,0 +1,187 @@
+<mxfile host="app.diagrams.net" modified="2023-05-30T05:12:16.479Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0" etag="dW6b4OUDRCi5oiLzn7cR" version="21.3.2" type="device">
+  <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
+    <mxGraphModel dx="1434" dy="782" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="tjFEM2cHnRBcRiZmeFz5-14" value="&lt;div&gt;Распределение деталей&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="280" y="40" width="1120" height="1120" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-0" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="100" />
+              <mxPoint x="620" y="100" />
+            </Array>
+            <mxPoint x="620" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="qumIuw6ZnyhVMXJrL97r-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-0" target="kgqWGBkhjjbevRPmidH0-29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-0" value="Формируем таймлайн (список тактирования)  - список, который будет содержать информацию о том, в какое время &lt;br/&gt;проходить по списку операций и опрашивать оборудование (Добавляем те &lt;br/&gt;такты времени, когда оборудование освобождается, либо приходит время &lt;br/&gt;раннего начала какого-либо заказа), добавляем на него времена раннего начала каждого заказа" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="420" y="80" width="400" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-6" target="kgqWGBkhjjbevRPmidH0-8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-6" value="Проходим по списку операций и опрашиваем оборудование, может ли оно выполнять операции" style="rounded=1;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="420" y="540" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-16" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-7" target="kgqWGBkhjjbevRPmidH0-12" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="830" />
+              <mxPoint x="460" y="830" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-37" value="Да" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-7" target="kgqWGBkhjjbevRPmidH0-11" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="830" />
+              <mxPoint x="780" y="830" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-7" value="Операция может быть выполнена на каком либо оборудовании в текущий момент?" style="rhombus;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="460" y="700" width="320" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-8" target="kgqWGBkhjjbevRPmidH0-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-8" value="Выбираем операцию из списка (жадным образом)" style="rounded=1;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="500" y="620" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" target="kgqWGBkhjjbevRPmidH0-18" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="780" y="900" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="781" y="900" />
+              <mxPoint x="781" y="921" />
+              <mxPoint x="620" y="921" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-11" value="Назначаем операцию на оборудование, добавляем в список тактирования время, когда операция завершится" style="rounded=1;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="640" y="850" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-12" target="kgqWGBkhjjbevRPmidH0-18" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="920" />
+              <mxPoint x="620" y="920" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-12" value="Оставляем операцию в списке" style="rounded=1;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="340" y="850" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-21" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-18" target="kgqWGBkhjjbevRPmidH0-8" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="980" />
+              <mxPoint x="300" y="640" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-41" value="Да" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-18" target="kgqWGBkhjjbevRPmidH0-29" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1040" y="980" />
+              <mxPoint x="1040" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-18" value="Все операции опрошены?" style="rhombus;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="460" y="930" width="320" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-32" value="Оборудование освободилось" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-29" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="440" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="620" y="420" />
+              <mxPoint x="321" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-34" value="Наступило время раннего начала нового заказа" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-29" target="kgqWGBkhjjbevRPmidH0-33" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-29" value="&lt;div&gt;Переходим к следующему такту времени&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="420" y="360" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-31" target="kgqWGBkhjjbevRPmidH0-42" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-31" value="Помечаем оборудование как свободное, отмечаем выполненную операцию, добавляем следующую за ней операцию в список, если она есть" style="rounded=1;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="220" y="440" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-33" target="kgqWGBkhjjbevRPmidH0-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-33" value="Добавляем операции данного заказа в список операций, которые можем начать выполнять (Операции без предшественников)" style="rounded=1;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="820" y="440" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-45" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-42" target="kgqWGBkhjjbevRPmidH0-6" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="120" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-47" value="Да" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-42" target="kgqWGBkhjjbevRPmidH0-46" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-42" value="Операции закончились" style="rhombus;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="40" y="440" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-48" value="Нет" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-46" target="kgqWGBkhjjbevRPmidH0-29" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-46" value="Заказы закончились?" style="rhombus;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="40" y="320" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-51" value="Алгоритм завершает работу" style="rounded=1;whiteSpace=wrap;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" vertex="1">
+          <mxGeometry x="40" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="kgqWGBkhjjbevRPmidH0-52" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="tjFEM2cHnRBcRiZmeFz5-14" source="kgqWGBkhjjbevRPmidH0-46" target="kgqWGBkhjjbevRPmidH0-51" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tjFEM2cHnRBcRiZmeFz5-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="WIyWlLk6GJQsqaUBKTNV-3" target="tjFEM2cHnRBcRiZmeFz5-3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-3" value="Считать входные данные и записать в структуру данных" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="40" y="80" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tjFEM2cHnRBcRiZmeFz5-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="tjFEM2cHnRBcRiZmeFz5-3" target="tjFEM2cHnRBcRiZmeFz5-5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tjFEM2cHnRBcRiZmeFz5-3" value="&lt;div&gt;Для каждой детали из заказа случайно выбрать альтернативность&lt;/div&gt;" style="whiteSpace=wrap;html=1;rounded=1;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="40" y="160" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="tjFEM2cHnRBcRiZmeFz5-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="tjFEM2cHnRBcRiZmeFz5-5" target="tjFEM2cHnRBcRiZmeFz5-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tjFEM2cHnRBcRiZmeFz5-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;shape=flexArrow;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="tjFEM2cHnRBcRiZmeFz5-5" target="tjFEM2cHnRBcRiZmeFz5-14" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="260" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="290" y="260" />
+              <mxPoint x="290" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tjFEM2cHnRBcRiZmeFz5-5" value="&lt;div&gt;Распределить детали по расписанию&lt;/div&gt;" style="whiteSpace=wrap;html=1;rounded=1;glass=0;strokeWidth=1;shadow=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="40" y="240" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tjFEM2cHnRBcRiZmeFz5-7" value="&lt;div&gt;Записать результаты в файл&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="40" y="320" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tjFEM2cHnRBcRiZmeFz5-13" value="&lt;div&gt;Основной процесс&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="40" y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
