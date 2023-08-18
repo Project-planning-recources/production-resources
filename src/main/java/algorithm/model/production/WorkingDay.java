@@ -1,6 +1,7 @@
-package model.production;
+package algorithm.model.production;
 
 import parse.adapter.WorkingDayAdapter;
+import parse.input.production.InputWorkingDay;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,8 +9,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalTime;
 
-@XmlJavaTypeAdapter(WorkingDayAdapter.class)
-@XmlAccessorType(XmlAccessType.FIELD)
+/**
+ * <b>Класс для Алгоритма</b>
+ * <b>День недели</b>
+ */
 public class WorkingDay implements Serializable {
 
     /**
@@ -36,6 +39,13 @@ public class WorkingDay implements Serializable {
 
     public WorkingDay() {
 
+    }
+
+    public WorkingDay(InputWorkingDay inputWorkingDay) {
+        this.dayNumber = inputWorkingDay.getDayNumber();
+        this.startWorkingTime = inputWorkingDay.getStartWorkingTime();
+        this.endWorkingTime = inputWorkingDay.getEndWorkingTime();
+        this.isWeekday = inputWorkingDay.getWeekday();
     }
 
     public WorkingDay(Short dayNumber, LocalTime startWorkingTime, LocalTime endWorkingTime, Boolean isWeekday) {

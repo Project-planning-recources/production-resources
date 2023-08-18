@@ -1,11 +1,6 @@
 package algorithm;
 
-import model.order.Order;
-import model.production.Production;
-import model.result.Result;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import parse.output.result.OutputResult;
 
 /**
  * <b>Основной интерфейс для решателя</b>
@@ -19,6 +14,6 @@ public interface Algorithm {
      *
      * @return - информация о распределении деталей по производству
      */
-    Result start() throws Exception;
+    OutputResult start() throws Exception;
 
 }

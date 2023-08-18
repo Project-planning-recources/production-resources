@@ -1,6 +1,6 @@
 package algorithm.operationchooser;
 
-import model.result.OperationResult;
+import algorithm.model.result.OperationResult;
 
 import java.util.List;
 

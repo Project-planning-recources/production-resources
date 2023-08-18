@@ -1,27 +1,34 @@
-package model.production;
+package algorithm.model.production;
+
+import parse.input.production.InputSchedule;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <b>Класс для Алгоритма</b>
  * <b>Расписание производства</b>
  * <p>В будущем можно будет добавить выходные, время отдыха и т.д.</p>
- *
  */
-@XmlType(name = "CalendarInformation", propOrder = {"week"})
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Schedule implements Serializable {
 
     /**
      * Список дней недели
      */
-    @XmlElementWrapper(name="Timetable")
-    @XmlElement(name = "Day")
     private List<WorkingDay> week;
 
     public Schedule() {
 
+    }
+
+    public Schedule(InputSchedule inputSchedule) {
+        ArrayList<WorkingDay> week = new ArrayList<>();
+        inputSchedule.getWeek().forEach(workingDay -> {
+            week.add(new WorkingDay(workingDay));
+        });
+        this.week = week;
     }
 
     public Schedule(List<WorkingDay> week) {

@@ -1,32 +1,30 @@
-package model.production;
+package algorithm.model.production;
 
-import model.order.Operation;
-import model.result.OperationResult;
+import algorithm.model.order.Operation;
+import algorithm.model.result.OperationResult;
+import parse.input.production.InputProduction;
+import parse.input.production.InputSchedule;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 /**
+ * <b>Класс для Алгоритма</b>
  * <b>Данные о производстве</b>
  */
-@XmlRootElement(name = "SystemInformation")
-@XmlType(name = "SystemInformation")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Production implements Serializable {
 
     /**
      * Расписание работы производства
      */
-    @XmlElement(name = "CalendarInformation")
     private Schedule schedule;
 
     /**
      * Группы оборудования, которые есть на производстве
      */
-    @XmlElementWrapper(name="EquipmentInformation")
-    @XmlElement(name="EquipmentGroup")
     private List<EquipmentGroup> equipmentGroups;
 
     public Production() {
@@ -34,6 +32,16 @@ public class Production implements Serializable {
 
     public Production(Schedule schedule, List<EquipmentGroup> equipmentGroups) {
         this.schedule = schedule;
+        this.equipmentGroups = equipmentGroups;
+    }
+
+    public Production(InputProduction inputProduction) {
+        this.schedule = new Schedule(inputProduction.getSchedule());
+
+        ArrayList<EquipmentGroup> equipmentGroups = new ArrayList<>();
+        inputProduction.getEquipmentGroups().forEach(inputEquipmentGroup -> {
+            equipmentGroups.add(new EquipmentGroup(inputEquipmentGroup));
+        });
         this.equipmentGroups = equipmentGroups;
     }
 

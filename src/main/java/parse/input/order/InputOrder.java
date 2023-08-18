@@ -1,4 +1,4 @@
-package model.order;
+package parse.input.order;
 
 import parse.adapter.DateAdapter;
 
@@ -10,10 +10,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
+ * <b>Класс для IO</b>
  * <b>Заказ</b>
  */
 @XmlType(name = "Order")
-public class Order {
+public class InputOrder {
 
     /**
      * ID заказа
@@ -39,17 +40,17 @@ public class Order {
      * Список изделий, которые надо изготовить
      */
     @XmlElement(name = "Detail")
-    private ArrayList<Product> products;
+    private ArrayList<InputProduct> inputProducts;
 
-    public Order() {
+    public InputOrder() {
 
     }
 
-    public Order(long id, LocalDateTime startTime, LocalDateTime deadline, ArrayList<Product> products) {
+    public InputOrder(long id, LocalDateTime startTime, LocalDateTime deadline, ArrayList<InputProduct> inputProducts) {
         this.id = id;
         this.startTime = startTime;
         this.deadline = deadline;
-        this.products = products;
+        this.inputProducts = inputProducts;
     }
 
     public long getId() {
@@ -64,14 +65,14 @@ public class Order {
         return deadline;
     }
 
-    public ArrayList<Product> getProducts() {
-        return products;
+    public ArrayList<InputProduct> getProducts() {
+        return inputProducts;
     }
 
-    public Product getProductByProductId(long productId) {
-        for(Product product : products) {
-            if(product.getId() == productId) {
-                return product;
+    public InputProduct getProductByProductId(long productId) {
+        for(InputProduct inputProduct : inputProducts) {
+            if(inputProduct.getId() == productId) {
+                return inputProduct;
             }
         }
         return null;

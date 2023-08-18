@@ -1,13 +1,14 @@
-package model.order;
+package parse.input.order;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 /**
+ * <b>Класс для IO</b>
  * <b>Данные об операции</b>
  */
 @XmlType(name = "Operation")
-public class Operation {
+public class InputOperation {
 
     /**
      * ID операции
@@ -45,11 +46,11 @@ public class Operation {
     @XmlAttribute(name = "next_operation_id")
     private long nextOperationId;
 
-    public Operation() {
+    public InputOperation() {
 
     }
 
-    public Operation(long id, String name, int duration, long requiredEquipment, long prevOperationId, long nextOperationId) {
+    public InputOperation(long id, String name, int duration, long requiredEquipment, long prevOperationId, long nextOperationId) {
         this.id = id;
         this.name = name;
         this.duration = duration;

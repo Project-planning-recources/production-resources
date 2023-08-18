@@ -1,7 +1,7 @@
 package algorithm.alternativeness;
 
-import model.order.Product;
-import model.order.TechProcess;
+import algorithm.model.order.Product;
+import algorithm.model.order.TechProcess;
 import util.Random;
 
 import java.util.ArrayList;

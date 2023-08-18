@@ -1,6 +1,7 @@
 package parse.output;
 
-import model.result.Result;
+import algorithm.model.result.Result;
+import parse.output.result.OutputResult;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -10,12 +11,12 @@ import java.io.File;
 public class XMLWriter implements Writer{
 
     @Override
-    public void writeResultFile(String resultFileName, Result result) {
+    public void writeResultFile(String resultFileName, OutputResult result) {
         if(resultFileName == null)
             return;
 
         try {
-            JAXBContext context = JAXBContext.newInstance(Result.class);
+            JAXBContext context = JAXBContext.newInstance(OutputResult.class);
             Marshaller mar = context.createMarshaller();
             mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             mar.marshal(result, new File(resultFileName));

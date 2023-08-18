@@ -2,18 +2,19 @@ package algorithm;
 
 import algorithm.alternativeness.AlternativeElector;
 import algorithm.operationchooser.OperationChooser;
-import model.order.Operation;
-import model.order.Order;
-import model.production.Equipment;
-import model.production.Production;
-import model.production.WorkingDay;
-import model.result.OperationResult;
-import model.result.OrderResult;
-import model.result.ProductResult;
-import model.result.Result;
+import algorithm.model.order.Operation;
+import algorithm.model.order.Order;
+import algorithm.model.production.Equipment;
+import algorithm.model.production.Production;
+import algorithm.model.production.WorkingDay;
+import algorithm.model.result.OperationResult;
+import algorithm.model.result.OrderResult;
+import algorithm.model.result.ProductResult;
+import algorithm.model.result.Result;
+import parse.input.order.InputOrder;
+import parse.input.production.InputProduction;
+import parse.output.result.OutputResult;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -57,9 +58,13 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected LinkedList<LocalDateTime> timeline;
 
-    public AbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime,
+    public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
                              String operationChooser, String alternativeElector) throws Exception {
-        this.production = production;
+        this.production = new Production(inputProduction);
+        ArrayList<Order> orders = new ArrayList<>();
+        inputOrders.forEach(inputOrder -> {
+            orders.add(new Order(inputOrder));
+        });
         this.orders = orders;
 
         // todo: Использовать время начала
@@ -76,7 +81,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
     }
 
     @Override
-    public Result start() throws Exception {
+    public OutputResult start() throws Exception {
         while(!this.timeline.isEmpty()) {
             LocalDateTime timeTick = this.timeline.pop();
             tickOfTime(timeTick);
@@ -85,7 +90,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
         setTimeForOrdersAndResult();
 
-        return this.result;
+        return new OutputResult(this.result);
     }
 
     /**

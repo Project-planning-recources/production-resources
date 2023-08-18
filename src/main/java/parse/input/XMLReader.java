@@ -1,9 +1,9 @@
 package parse.input;
 
-import model.order.OrderInformation;
-import model.production.Production;
-import model.production.WorkingDay;
-import model.result.Result;
+import parse.input.order.InputOrderInformation;
+import parse.input.production.InputProduction;
+import parse.input.production.InputWorkingDay;
+import parse.output.result.OutputResult;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -25,25 +25,25 @@ public class XMLReader implements Reader {
 
 
     @Override
-    public Production readProductionFile(String productionFileName) {
-        Production production = (Production) readXmlFile(productionFileName, Production.class);
+    public InputProduction readProductionFile(String productionFileName) {
+        InputProduction inputProduction = (InputProduction) readXmlFile(productionFileName, InputProduction.class);
         for(short dayNumber = 1; dayNumber < 8; dayNumber++) {
-            if(!production.getSchedule().checkWorkDayInScheduleByDayNumber(dayNumber)) {
-                production.getSchedule().getWeek().add(new WorkingDay(dayNumber, LocalTime.MIN, LocalTime.MIN, false));
+            if(!inputProduction.getSchedule().checkWorkDayInScheduleByDayNumber(dayNumber)) {
+                inputProduction.getSchedule().getWeek().add(new InputWorkingDay(dayNumber, LocalTime.MIN, LocalTime.MIN, false));
             }
         }
-        return production;
+        return inputProduction;
     }
 
 
     @Override
-    public OrderInformation readOrderFile(String orderFileName) {
-        return (OrderInformation) readXmlFile(orderFileName, OrderInformation.class);
+    public InputOrderInformation readOrderFile(String orderFileName) {
+        return (InputOrderInformation) readXmlFile(orderFileName, InputOrderInformation.class);
     }
 
     @Override
-    public Result readResultFile(String resultFileName) {
-        return (Result) readXmlFile(resultFileName, Result.class);
+    public OutputResult readResultFile(String resultFileName) {
+        return (OutputResult) readXmlFile(resultFileName, OutputResult.class);
     }
 
     private Object readXmlFile(String fileName, Class comingClass) {

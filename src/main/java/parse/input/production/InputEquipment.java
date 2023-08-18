@@ -1,14 +1,15 @@
-package model.production;
+package parse.input.production;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 
 /**
+ * <b>Класс для IO</b>
  * <b>Данные о конкретной единице оборудования</b>
  */
 @XmlType(name = "Equipment")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Equipment implements Serializable {
+public class InputEquipment implements Serializable {
 
     /**
      * ID единицы оборудования
@@ -22,20 +23,14 @@ public class Equipment implements Serializable {
     @XmlAttribute(name = "name")
     private String name;
 
-    /**
-     * Используется ли данное оборудование в текущий момент (пока не уверен, нужно ли это поле)
-     */
-    @XmlTransient
-    private boolean isUsing;
 
-    public Equipment() {
+    public InputEquipment() {
 
     }
 
-    public Equipment(long id, String name, boolean isUsing) {
+    public InputEquipment(long id, String name, boolean isUsing) {
         this.id = id;
         this.name = name;
-        this.isUsing = isUsing;
     }
 
     public long getId() {
@@ -46,12 +41,5 @@ public class Equipment implements Serializable {
         return name;
     }
 
-    public boolean isUsing() {
-        return isUsing;
-    }
-
-    public void setUsing(boolean using) {
-        isUsing = using;
-    }
 
 }

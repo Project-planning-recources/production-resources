@@ -1,4 +1,4 @@
-package model.order;
+package parse.input.order;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -7,10 +7,11 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 /**
+ * <b>Класс для IO</b>
  * <b>Данные о техпроцессе</b>
  */
 @XmlType(name = "TechProcess")
-public class TechProcess {
+public class InputTechProcess {
 
     /**
      * ID техпроцесса
@@ -22,30 +23,30 @@ public class TechProcess {
      * Последовательный список операций, которые включены в техпроцесс
      */
     @XmlElement(name = "Operation")
-    private LinkedList<Operation> operations;
+    private LinkedList<InputOperation> inputOperations;
 
-    public TechProcess() {
+    public InputTechProcess() {
 
     }
 
-    public TechProcess(long id, LinkedList<Operation> operations) {
+    public InputTechProcess(long id, LinkedList<InputOperation> inputOperations) {
         this.id = id;
-        this.operations = operations;
+        this.inputOperations = inputOperations;
     }
 
     public long getId() {
         return id;
     }
 
-    public LinkedList<Operation> getOperations() {
-        return operations;
+    public LinkedList<InputOperation> getOperations() {
+        return inputOperations;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TechProcess that = (TechProcess) o;
+        InputTechProcess that = (InputTechProcess) o;
         return id == that.id;
     }
 
@@ -54,10 +55,10 @@ public class TechProcess {
         return Objects.hash(id);
     }
 
-    public Operation getOperationByOperationId(long operationId) {
-        for(Operation operation : operations) {
-            if(operation.getId() == operationId) {
-                return operation;
+    public InputOperation getOperationByOperationId(long operationId) {
+        for(InputOperation inputOperation : inputOperations) {
+            if(inputOperation.getId() == operationId) {
+                return inputOperation;
             }
         }
         return null;

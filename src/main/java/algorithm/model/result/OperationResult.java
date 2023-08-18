@@ -1,4 +1,4 @@
-package model.result;
+package algorithm.model.result;
 
 import parse.adapter.DateAdapter;
 
@@ -9,59 +9,48 @@ import java.util.Objects;
 
 
 /**
+ * <b>Класс для Алгоритма</b>
  * <b>Результат работы для операции конкретной детали</b>
  */
-@XmlType(name = "Operation")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class OperationResult {
 
     /**
      * ID операции
      */
-    @XmlAttribute(name = "operation_id")
     private long operationId;
 
     /**
      * ID предыдущей операции
      * 0, если предыдущей нет
      */
-    @XmlAttribute(name = "prev_operation_id")
     private long prevOperationId;
 
     /**
      * ID следующей операции
      * 0, если следующей нет
      */
-    @XmlAttribute(name = "next_operation_id")
     private long nextOperationId;
 
     /**
      * ID выбранного для операции конкретного оборудования
      */
-    @XmlAttribute(name = "equipment_id")
     private long equipmentId;
 
     /**
      * Время и дата начала выполнения операции
      */
-    @XmlAttribute(name = "operation_start_date_time")
-    @XmlJavaTypeAdapter(DateAdapter.class)
     private LocalDateTime startTime;
 
     /**
      * Время и дата окончания выполнения операции
      */
-    @XmlAttribute(name = "operation_end_date_time")
-    @XmlJavaTypeAdapter(DateAdapter.class)
     private LocalDateTime endTime;
 
     /**
      * Деталь, для которой выполнялась операция
      */
-    @XmlTransient
     private ProductResult productResult;
 
-    @XmlTransient
     private OperationResult nextOperation;
 
     public OperationResult() {

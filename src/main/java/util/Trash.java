@@ -3,9 +3,9 @@ package util;
 
 import algorithm.Algorithm;
 import algorithm.AlgorithmFactory;
-import model.order.OrderInformation;
-import model.production.Production;
-import model.result.Result;
+import parse.input.order.InputOrderInformation;
+import parse.input.production.InputProduction;
+import parse.output.result.OutputResult;
 import parse.input.XMLReader;
 import parse.output.XMLWriter;
 import testing.ComparisonTester;
@@ -24,21 +24,21 @@ public class Trash {
         XMLReader reader = new XMLReader();
         XMLWriter xmlWriter = new XMLWriter();
 
-        Production production = reader.readProductionFile("doc/system.xml");
-        OrderInformation orders = reader.readOrderFile("doc/tech.xml");
+        InputProduction inputProduction = reader.readProductionFile("doc/system.xml");
+        InputOrderInformation orders = reader.readOrderFile("doc/tech.xml");
 
-        Algorithm algorithm1 = AlgorithmFactory.getNewBaseAlgorithm(production, orders.getOrders(), LocalDateTime.of(2017, 1, 1, 8, 0, 0));
-        Result result1 = algorithm1.start();
-        xmlWriter.writeResultFile("test1.xml", result1);
+        Algorithm algorithm1 = AlgorithmFactory.getNewBaseAlgorithm(inputProduction, orders.getOrders(), LocalDateTime.of(2017, 1, 1, 8, 0, 0));
+        OutputResult outputResult1 = algorithm1.start();
+        xmlWriter.writeResultFile("test1.xml", outputResult1);
 
-        Algorithm algorithm2 = AlgorithmFactory.getNewBaseAlgorithm(production, orders.getOrders(), LocalDateTime.of(2017, 1, 1, 8, 0, 0));
-        Result result2 = algorithm2.start();
-        xmlWriter.writeResultFile("test2.xml", result2);
+        Algorithm algorithm2 = AlgorithmFactory.getNewBaseAlgorithm(inputProduction, orders.getOrders(), LocalDateTime.of(2017, 1, 1, 8, 0, 0));
+        OutputResult outputResult2 = algorithm2.start();
+        xmlWriter.writeResultFile("test2.xml", outputResult2);
 
-        System.out.println(PossibilityTester.test(production, orders));
-        System.out.println(RealityTester.test(production, orders, result1));
-        System.out.println(RealityTester.test(production, orders, result2));
-        ComparisonTester.test(orders, result1, result2);
+        System.out.println(PossibilityTester.test(inputProduction, orders));
+        System.out.println(RealityTester.test(inputProduction, orders, outputResult1));
+        System.out.println(RealityTester.test(inputProduction, orders, outputResult2));
+        ComparisonTester.test(orders, outputResult1, outputResult2);
 
 
 

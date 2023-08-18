@@ -1,6 +1,6 @@
 package parse.adapter;
 
-import model.production.WorkingDay;
+import parse.input.production.InputWorkingDay;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,7 +12,7 @@ import java.time.LocalTime;
 /**
  * Класс, помогающий адаптировать данные о рабочих днях из входного xml-файла
  */
-public class WorkingDayAdapter extends XmlAdapter<WorkingDayAdapter.AdaptedWorkingDay, WorkingDay> {
+public class WorkingDayAdapter extends XmlAdapter<WorkingDayAdapter.AdaptedWorkingDay, InputWorkingDay> {
 
     private static final String DELIMITER = "-";
 
@@ -22,12 +22,12 @@ public class WorkingDayAdapter extends XmlAdapter<WorkingDayAdapter.AdaptedWorki
      * @return WorkingDay
      */
     @Override
-    public WorkingDay unmarshal(AdaptedWorkingDay adaptedWorkingDay) {
+    public InputWorkingDay unmarshal(AdaptedWorkingDay adaptedWorkingDay) {
         if(adaptedWorkingDay == null) {
             return null;
         }
 
-        WorkingDay workingDay = new WorkingDay();
+        InputWorkingDay workingDay = new InputWorkingDay();
 
         if(adaptedWorkingDay.dayNumber != null) {
             workingDay.setDayNumber(Short.valueOf(adaptedWorkingDay.dayNumber));
@@ -44,7 +44,7 @@ public class WorkingDayAdapter extends XmlAdapter<WorkingDayAdapter.AdaptedWorki
     }
 
     @Override
-    public AdaptedWorkingDay marshal(WorkingDay workingDay) {
+    public AdaptedWorkingDay marshal(InputWorkingDay workingDay) {
         return null;
     }
 
