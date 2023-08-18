@@ -1,9 +1,7 @@
 package algorithm;
 
-import algorithm.alternativeness.AlternativeElector;
-import algorithm.operationchooser.OperationChooser;
-import model.order.Order;
-import model.production.Production;
+import parse.input.order.InputOrder;
+import parse.input.production.InputProduction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,12 +13,12 @@ import java.util.ArrayList;
 public class AlgorithmFactory {
     private AlgorithmFactory() {}
 
-    public static Algorithm getNewBaseAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime) throws Exception {
-        return new BaseAlgorithm(production, orders, startTime);
+    public static Algorithm getNewBaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) throws Exception {
+        return new BaseAlgorithm(inputProduction, inputOrders, startTime);
     }
 
-    public static Algorithm getNewOwnAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime,
+    public static Algorithm getNewOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
                                                String operationChooser, String alternativeElector) throws Exception {
-        return new OwnAlgorithm(production, orders, startTime, operationChooser, alternativeElector);
+        return new OwnAlgorithm(inputProduction, inputOrders, startTime, operationChooser, alternativeElector);
     }
 }

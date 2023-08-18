@@ -1,13 +1,8 @@
 package testing;
 
-import model.order.*;
-import model.production.EquipmentGroup;
-import model.production.Production;
-import model.result.Result;
-//import result.Result.LocalDateTime;
+import parse.input.order.*;
+import parse.input.production.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 /**
  * <b>Тестер на физическую возможность выполнить данный заказ на данном производстве</b>
@@ -23,12 +18,12 @@ public class PossibilityTester {
      * @param orders     - информация о заказах
      * @return Boolean - возможен ли заказ на данном производстве
      */
-    public static Boolean test(Production production, OrderInformation orders) {
+    public static Boolean test(InputProduction production, InputOrderInformation orders) {
         boolean flag = true;
-        for (Order or : orders.getOrders()) {
-            for (Product p : or.getProducts()) {
-                for (TechProcess tp : p.getTechProcesses()) {
-                    for (Operation o : tp.getOperations()) {
+        for (InputOrder or : orders.getOrders()) {
+            for (InputProduct p : or.getProducts()) {
+                for (InputTechProcess tp : p.getTechProcesses()) {
+                    for (InputOperation o : tp.getOperations()) {
                         if (!production.isPossibleToMake(o)) {
                             System.out.println("Операция " + o.getId() + " не может быть выполнена");
                             flag = false;

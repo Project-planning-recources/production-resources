@@ -1,6 +1,6 @@
 package algorithm.alternativeness;
 
-import model.order.Product;
+import algorithm.model.order.Product;
 
 /**
  * <b></b>Интерфейс для объекта, который выбирает для деталей техпроцесс

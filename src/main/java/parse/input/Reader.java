@@ -1,8 +1,8 @@
 package parse.input;
 
-import model.order.OrderInformation;
-import model.production.Production;
-import model.result.Result;
+import parse.input.order.InputOrderInformation;
+import parse.input.production.InputProduction;
+import parse.output.result.OutputResult;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -20,19 +20,19 @@ public interface Reader {
      * @param productionFileName - имя файла
      * @return  класс с данными о производстве
      */
-    Production readProductionFile(String productionFileName) throws IOException, JAXBException;
+    InputProduction readProductionFile(String productionFileName) throws IOException, JAXBException;
 
     /**
      * Функция для чтения файла с данными о заказах
      * @param orderFileName - имя файла
      * @return  класс с данными о заказах
      */
-    OrderInformation readOrderFile(String orderFileName) throws IOException, JAXBException;
+    InputOrderInformation readOrderFile(String orderFileName) throws IOException, JAXBException;
 
     /**
      * Функция для чтения файла с результатами работы алгоритма
      * @param resultFileName - имя файла
      * @return  класс с данными о результате работы алгоритма
      */
-    Result readResultFile(String resultFileName);
+    OutputResult readResultFile(String resultFileName);
 }

@@ -1,6 +1,7 @@
-package model.result;
+package parse.output.result;
 
-import model.order.Order;
+import algorithm.model.order.Order;
+import algorithm.model.result.OrderResult;
 import parse.adapter.DateAdapter;
 
 import javax.xml.bind.annotation.*;
@@ -9,11 +10,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
+ * <b>Класс для IO</b>
  * <b>Результат работы алгоритма для конкретного заказа</b>
  */
 @XmlType(name = "Order")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class OrderResult {
+public class OutputOrderResult {
 
     /**
      * ID заказа
@@ -39,29 +41,30 @@ public class OrderResult {
      * Результаты работы по каждой детали
      */
     @XmlElement(name = "Product")
-    private ArrayList<ProductResult> productResults;
+    private ArrayList<OutputProductResult> outputProductResults;
 
-    /**
-     * Результат, к которому относится заказ
-     */
-    @XmlTransient
-    private Result result;
-
-    /**
-     * Входные данные для заказа
-     */
-    @XmlTransient
-    private Order order;
-
-    public OrderResult() {
+    public OutputOrderResult() {
 
     }
 
-    public OrderResult(long orderId, LocalDateTime startTime, LocalDateTime endTime, ArrayList<ProductResult> productResults) {
+
+    public OutputOrderResult(OrderResult orderResult) {
+        this.orderId = orderResult.getOrderId();
+        this.startTime = orderResult.getStartTime();
+        this.endTime = orderResult.getEndTime();
+
+        ArrayList<OutputProductResult> outputProductResults = new ArrayList<>();
+        orderResult.getProductResults().forEach(productResult -> {
+            outputProductResults.add(new OutputProductResult(productResult));
+        });
+        this.outputProductResults = outputProductResults;
+    }
+
+    public OutputOrderResult(long orderId, LocalDateTime startTime, LocalDateTime endTime, ArrayList<OutputProductResult> outputProductResults) {
         this.orderId = orderId;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.productResults = productResults;
+        this.outputProductResults = outputProductResults;
     }
 
     public long getOrderId() {
@@ -84,20 +87,8 @@ public class OrderResult {
         this.endTime = endTime;
     }
 
-    public ArrayList<ProductResult> getProductResults() {
-        return productResults;
-    }
-
-    public Result getResult() {
-        return result;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setResult(Result result) {
-        this.result = result;
+    public ArrayList<OutputProductResult> getProductResults() {
+        return outputProductResults;
     }
 
     @Override
@@ -106,7 +97,7 @@ public class OrderResult {
                 "orderId=" + orderId +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
-                ", productResults=" + productResults +
+                ", productResults=" + outputProductResults +
                 '}';
     }
 }

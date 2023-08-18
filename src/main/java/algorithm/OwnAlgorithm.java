@@ -1,11 +1,9 @@
 package algorithm;
 
-import algorithm.alternativeness.AlternativeElector;
-import algorithm.operationchooser.OperationChooser;
-import model.order.Order;
-import model.production.Production;
-import model.result.OperationResult;
-import model.result.Result;
+import algorithm.model.order.Order;
+import algorithm.model.production.Production;
+import parse.input.order.InputOrder;
+import parse.input.production.InputProduction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,8 +13,8 @@ import java.util.ArrayList;
  */
 public class OwnAlgorithm extends AbstractAlgorithm {
 
-    OwnAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime, String operationChooser, String alternativeElector) throws Exception {
-        super(production, orders, startTime, operationChooser, alternativeElector);
+    OwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String operationChooser, String alternativeElector) throws Exception {
+        super(inputProduction, inputOrders, startTime, operationChooser, alternativeElector);
     }
 
 }

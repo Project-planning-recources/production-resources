@@ -1,10 +1,10 @@
 import algorithm.Algorithm;
 import algorithm.AlgorithmFactory;
-import model.result.Result;
-import model.production.Production;
-import model.order.*;
+import parse.input.production.*;
+import parse.input.order.*;
 import parse.input.XMLReader;
 import parse.output.XMLWriter;
+import parse.output.result.OutputResult;
 import testing.ComparisonTester;
 import testing.PossibilityTester;
 import testing.RealityTester;
@@ -39,8 +39,8 @@ public class ProductionResources {
      */
     public static void main(String[] argv) throws Exception {
         if (argv.length > 0 && "alg".equalsIgnoreCase(argv[0]) && checkForAlg(argv)) {
-            Production production = READER.readProductionFile(argv[2]);
-            OrderInformation orders = READER.readOrderFile(argv[3]);
+            InputProduction production = READER.readProductionFile(argv[2]);
+            InputOrderInformation orders = READER.readOrderFile(argv[3]);
             if (!PossibilityTester.test(production, orders)) {
                 System.out.println("Заказы нельзя выполнить на данном производстве.");
             } else {
@@ -53,10 +53,10 @@ public class ProductionResources {
                 }
             }
         } else if (argv.length > 0 && "test".equalsIgnoreCase(argv[0]) && checkForTest(argv)) {
-            Production production = null;
-            OrderInformation orders = null;
-            Result result1 = null;
-            Result result2 = null;
+            InputProduction production = null;
+            InputOrderInformation orders = null;
+            OutputResult result1 = null;
+            OutputResult result2 = null;
             if ("poss".equalsIgnoreCase(argv[1])) {
                 production = READER.readProductionFile(argv[2]);
                 orders = READER.readOrderFile(argv[3]);

@@ -1,15 +1,16 @@
-package model.production;
+package parse.input.production;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.List;
 
 /**
+ * <b>Класс для IO</b>
  * <b>Данные о группе оборудования</b>
  */
 @XmlType(name = "EquipmentGroup")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EquipmentGroup implements Serializable {
+public class InputEquipmentGroup implements Serializable {
 
     /**
      * ID группы оборудования (он же id типа оборудования)
@@ -27,16 +28,16 @@ public class EquipmentGroup implements Serializable {
      * Список с оборудованием группы (в одной группе одинаковое оборудование)
      */
     @XmlElement(name = "Equipment")
-    private List<Equipment> equipment;
+    private List<InputEquipment> inputEquipments;
 
-    public EquipmentGroup() {
+    public InputEquipmentGroup() {
 
     }
 
-    public EquipmentGroup(long id, String name, List<Equipment> equipment) {
+    public InputEquipmentGroup(long id, String name, List<InputEquipment> inputEquipments) {
         this.id = id;
         this.name = name;
-        this.equipment = equipment;
+        this.inputEquipments = inputEquipments;
     }
 
     public long getId() {
@@ -47,28 +48,9 @@ public class EquipmentGroup implements Serializable {
         return name;
     }
 
-    public List<Equipment> getEquipment() {
-        return equipment;
+    public List<InputEquipment> getEquipment() {
+        return inputEquipments;
     }
 
-    public Integer getFreeCount() {
-        int counter = 0;
-        for (Equipment e :
-                equipment) {
-            if (!e.isUsing()) {
-                counter++;
-            }
-        }
-        return counter;
-    }
 
-    public boolean thereAreFree() {
-        for (Equipment e :
-                equipment) {
-            if (!e.isUsing()) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

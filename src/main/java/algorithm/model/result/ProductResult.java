@@ -1,4 +1,4 @@
-package model.result;
+package algorithm.model.result;
 
 import parse.adapter.DateAdapter;
 
@@ -9,42 +9,34 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 /**
+ * <b>Класс для Алгоритма</b>
  * <b>Результат работы алгоритма для конкретной детали</b>
  */
-@XmlType(name = "Product")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class ProductResult {
 
     /**
      * ID конкретной детали (например, если просят изготовить 100 шестерёнок, у каждой будет один productionId, но разные id)
      */
-    @XmlAttribute(name = "id")
     private long id;
 
     /**
      * общий ID детали(совпадает с id в классе Product)
      */
-    @XmlAttribute(name = "product_id")
     private long productId;
 
     /**
      * ID выбранного для детали техпроцесса
      */
-    @XmlAttribute(name = "tech_process_id")
     private long techProcessId;
 
     /**
      * Время и дата начала выполнения детали
      */
-    @XmlAttribute(name = "product_start_date_time")
-    @XmlJavaTypeAdapter(DateAdapter.class)
     private LocalDateTime startTime;
 
     /**
      * Время и дата окончания выполнения детали
      */
-    @XmlAttribute(name = "product_end_date_time")
-    @XmlJavaTypeAdapter(DateAdapter.class)
     private LocalDateTime endTime;
 
     public void setEndTime(LocalDateTime endTime) {
@@ -54,19 +46,16 @@ public class ProductResult {
     /**
      * Список выполненных операций для создания детали
      */
-    @XmlElement(name = "Operation")
     private LinkedList<OperationResult> performedOperations;
 
     /**
      * Заказ, частью которого является деталь
      */
-    @XmlTransient
     private OrderResult orderResult;
 
     /**
      * Готовность детали
      */
-    @XmlTransient
     private boolean isDone;
 
     public ProductResult() {

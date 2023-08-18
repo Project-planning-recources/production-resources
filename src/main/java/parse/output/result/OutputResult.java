@@ -1,5 +1,6 @@
-package model.result;
+package parse.output.result;
 
+import algorithm.model.result.Result;
 import parse.adapter.DateAdapter;
 
 import javax.xml.bind.annotation.*;
@@ -8,13 +9,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
+ * <b>Класс для IO</b>
  * <b>Результат работы алгоритма</b>
  * <p>Содержит информацию о времени работы и распределении всех заказанных деталей по производству</p>
  */
 @XmlRootElement(name = "Result")
 @XmlType(name = "Result")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Result {
+public class OutputResult {
 
     /**
      * Время и дата начала всей работы
@@ -34,16 +36,27 @@ public class Result {
      * Результаты работы по каждому заказу
      */
     @XmlElement(name = "Order")
-    private ArrayList<OrderResult> orderResults;
+    private ArrayList<OutputOrderResult> outputOrderResults;
 
-    public Result() {
+    public OutputResult() {
 
     }
 
-    public Result(LocalDateTime allStartTime, LocalDateTime allEndTime, ArrayList<OrderResult> orderResults) {
+    public OutputResult(Result result) {
+        this.allStartTime = result.getAllStartTime();
+        this.allEndTime = result.getAllEndTime();
+
+        ArrayList<OutputOrderResult> outputOrderResults = new ArrayList<>();
+        result.getOrderResults().forEach(orderResult -> {
+            outputOrderResults.add(new OutputOrderResult(orderResult));
+        });
+        this.outputOrderResults = outputOrderResults;
+    }
+
+    public OutputResult(LocalDateTime allStartTime, LocalDateTime allEndTime, ArrayList<OutputOrderResult> outputOrderResults) {
         this.allStartTime = allStartTime;
         this.allEndTime = allEndTime;
-        this.orderResults = orderResults;
+        this.outputOrderResults = outputOrderResults;
     }
 
     public LocalDateTime getAllStartTime() {
@@ -62,8 +75,8 @@ public class Result {
         this.allEndTime = allEndTime;
     }
 
-    public ArrayList<OrderResult> getOrderResults() {
-        return orderResults;
+    public ArrayList<OutputOrderResult> getOrderResults() {
+        return outputOrderResults;
     }
 
     @Override
@@ -71,7 +84,7 @@ public class Result {
         return "Result{" +
                 "allStartTime=" + allStartTime +
                 ", allEndTime=" + allEndTime +
-                ", orderResults=" + orderResults +
+                ", orderResults=" + outputOrderResults +
                 '}';
     }
 }

@@ -1,15 +1,8 @@
 package testing;
 
-import model.order.Operation;
-import model.order.OrderInformation;
-import model.order.TechProcess;
-import model.production.Production;
-import model.production.Schedule;
-import model.production.WorkingDay;
-import model.result.OperationResult;
-import model.result.OrderResult;
-import model.result.ProductResult;
-import model.result.Result;
+import parse.input.production.*;
+import parse.input.order.*;
+import parse.output.result.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -32,21 +25,21 @@ public class RealityTester {
      * @param result     - результаты запуска алгоритма
      * @return Подумать о том, в каком виде получать результаты работы функции и стоит ли их вообще возвращать(можно просто выводить результаты в консоль)
      */
-    public static boolean test(Production production, OrderInformation orders, Result result) {
+    public static boolean test(InputProduction production, InputOrderInformation orders, OutputResult result) {
         boolean flag = true;
-        LinkedList<OperationResult> operationResults = new LinkedList<>();
-        for (OrderResult order : result.getOrderResults()) {
-            for (ProductResult product : order.getProductResults()) {
+        LinkedList<OutputOperationResult> operationResults = new LinkedList<>();
+        for (OutputOrderResult order : result.getOrderResults()) {
+            for (OutputProductResult product : order.getProductResults()) {
                 operationResults.addAll(product.getPerformedOperations());
                 long techProcessId = product.getTechProcessId();
-                TechProcess techProcess = orders.getOrderByOrderId(order.getOrderId())
+                InputTechProcess techProcess = orders.getOrderByOrderId(order.getOrderId())
                         .getProductByProductId(product.getProductId()).getTechProcessByTechProcessId(techProcessId);
                 int completedOperations = 0;
-                for (OperationResult operation : product.getPerformedOperations()) {
+                for (OutputOperationResult operation : product.getPerformedOperations()) {
                     if(operationCompletingCheck(operation)) {
                         completedOperations++;
                     }
-                    Operation operationFromInputData = techProcess.getOperationByOperationId(operation.getOperationId());
+                    InputOperation operationFromInputData = techProcess.getOperationByOperationId(operation.getOperationId());
                     if (!durationCheck(operation, production.getSchedule(), operationFromInputData)) {
                         System.out.println("Операция " + operation.getOperationId() + " занимает оборудование дольше заявленного");
                         flag = false;
@@ -85,7 +78,7 @@ public class RealityTester {
         return flag;
     }
 
-    private static boolean operationCompletingCheck(OperationResult operation) {
+    private static boolean operationCompletingCheck(OutputOperationResult operation) {
         if(operation.getStartTime() == null || operation.getEndTime() == null) {
             return false;
         }
@@ -93,7 +86,7 @@ public class RealityTester {
         return true;
     }
 
-    private static boolean durationCheck(OperationResult operation, Schedule schedule, Operation operationFromInputData) {
+    private static boolean durationCheck(OutputOperationResult operation, InputSchedule schedule, InputOperation operationFromInputData) {
         LocalDateTime startDttm = operation.getStartTime();
         LocalDateTime endDttm = operation.getEndTime();
         if (startDttm == null || endDttm == null) {
@@ -106,7 +99,7 @@ public class RealityTester {
                 duration += Duration.between(startDttm, endDttm).get(ChronoUnit.SECONDS);
                 break;
             } else {
-                WorkingDay workingDay = schedule.getWorkDayByDayNumber((short)startDttm.getDayOfWeek().getValue());
+                InputWorkingDay workingDay = schedule.getWorkDayByDayNumber((short)startDttm.getDayOfWeek().getValue());
                 if(!workingDay.getWeekday()) {
                     startDttm = makeNextDay(startDttm, schedule);
                     continue;
@@ -119,8 +112,8 @@ public class RealityTester {
         return duration == operationFromInputData.getDuration();
     }
 
-    private static boolean sequenceOperationsCheck(ProductResult product, OperationResult operation, Operation operationFromInputData) {
-        LinkedList<OperationResult> operations = product.getPerformedOperations();
+    private static boolean sequenceOperationsCheck(OutputProductResult product, OutputOperationResult operation, InputOperation operationFromInputData) {
+        LinkedList<OutputOperationResult> operations = product.getPerformedOperations();
         int indexOfOperation = operations.indexOf(operation);
         if (indexOfOperation == 0 && operation.getPrevOperationId() != 0) {
             return false;
@@ -133,7 +126,7 @@ public class RealityTester {
         return true;
     }
 
-    private static boolean operationTimePeriodCheck(OperationResult operation, ProductResult product) {
+    private static boolean operationTimePeriodCheck(OutputOperationResult operation, OutputProductResult product) {
         if(product.getStartTime() == null || product.getEndTime() == null || operation.getStartTime() == null || operation.getEndTime() == null) {
             return false;
         }
@@ -145,7 +138,7 @@ public class RealityTester {
         return true;
     }
 
-    private static boolean productTimePeriodCheck(ProductResult product, OrderResult order) {
+    private static boolean productTimePeriodCheck(OutputProductResult product, OutputOrderResult order) {
         if(order.getStartTime() == null || order.getEndTime() == null || product.getStartTime() == null || product.getEndTime() == null) {
             return false;
         }
@@ -157,7 +150,7 @@ public class RealityTester {
         return true;
     }
 
-    private static boolean orderTimePeriodCheck(OrderResult order, Result result) {
+    private static boolean orderTimePeriodCheck(OutputOrderResult order, OutputResult result) {
         if(order.getStartTime() == null || order.getEndTime() == null || result.getAllStartTime() == null || result.getAllEndTime() == null) {
             return false;
         }
@@ -170,14 +163,14 @@ public class RealityTester {
     }
 
     //todo: оптимизировать
-    private static boolean usingSameEquipmentCheck(LinkedList<OperationResult> operationResults) {
+    private static boolean usingSameEquipmentCheck(LinkedList<OutputOperationResult> operationResults) {
         for(int i = 0; i < operationResults.size() - 1; i++) {
-            OperationResult operationLeft = operationResults.get(i);
+            OutputOperationResult operationLeft = operationResults.get(i);
             if(operationLeft.getStartTime() == null || operationLeft.getEndTime() == null) {
                 return false;
             }
             for (int j = i + 1; j < operationResults.size() - 1; j++) {
-                OperationResult operationRight = operationResults.get(j);
+                OutputOperationResult operationRight = operationResults.get(j);
                 if (operationLeft.getEquipmentId() != operationRight.getEquipmentId()) {
                     continue;
                 }
@@ -192,9 +185,9 @@ public class RealityTester {
         return true;
     }
 
-    private static LocalDateTime makeNextDay(LocalDateTime dttm, Schedule schedule) {
+    private static LocalDateTime makeNextDay(LocalDateTime dttm, InputSchedule schedule) {
         dttm = dttm.plusDays(1);
-        WorkingDay workingDay = schedule.getWorkDayByDayNumber((short)dttm.getDayOfWeek().getValue());
+        InputWorkingDay workingDay = schedule.getWorkDayByDayNumber((short)dttm.getDayOfWeek().getValue());
         return LocalDateTime.of(dttm.toLocalDate(), workingDay.getStartWorkingTime());
     }
 }
