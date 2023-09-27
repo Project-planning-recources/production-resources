@@ -1,6 +1,8 @@
 package parse.output;
 
 import algorithm.model.result.Result;
+import parse.input.order.InputOrderInformation;
+import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
 
 import javax.xml.bind.JAXBContext;
@@ -24,5 +26,15 @@ public class XMLWriter implements Writer{
             e.printStackTrace();
             throw new RuntimeException("JAXBException: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void writeProductionFile(String productionFileName, InputProduction inputProduction) {
+
+    }
+
+    @Override
+    public void writeOrderInformationFile(String orderInformationFileName, InputOrderInformation inputOrderInformation) {
+
     }
 }
