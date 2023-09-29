@@ -1,6 +1,9 @@
 package generator;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
+import java.util.Date;
 
 public class GeneratorParameters {
 
@@ -47,12 +50,14 @@ public class GeneratorParameters {
     /**
      * Минимальное время начала заказа
      */
-    public LocalDateTime minOrderStartTime;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
+    public Date minOrderStartTime;
 
     /**
      * Максимальное время начала заказа
      */
-    public LocalDateTime maxOrderStartTime;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
+    public Date maxOrderStartTime;
 
     /**
      * Минимальная длительность заказа в днях
@@ -117,6 +122,33 @@ public class GeneratorParameters {
      */
     public int maxOperationDuration;
 
+    @Override
+    public String toString() {
+        return "GeneratorParameters{" +
+                "daysForSchedule=" + daysForSchedule +
+                ", startWorkingTime=" + startWorkingTime +
+                ", endWorkingTime=" + endWorkingTime +
+                ", ordersCount=" + ordersCount +
+                ", minEquipmentGroupCount=" + minEquipmentGroupCount +
+                ", maxEquipmentGroupCount=" + maxEquipmentGroupCount +
+                ", minEquipmentCount=" + minEquipmentCount +
+                ", maxEquipmentCount=" + maxEquipmentCount +
+                ", minOrderStartTime=" + minOrderStartTime +
+                ", maxOrderStartTime=" + maxOrderStartTime +
+                ", minDurationTimeInDays=" + minDurationTimeInDays +
+                ", maxDurationTimeInDays=" + maxDurationTimeInDays +
+                ", minDetailsTypeCount=" + minDetailsTypeCount +
+                ", maxDetailsTypeCount=" + maxDetailsTypeCount +
+                ", minDetailsCount=" + minDetailsCount +
+                ", maxDetailsCount=" + maxDetailsCount +
+                ", minTechProcessCount=" + minTechProcessCount +
+                ", maxTechProcessCount=" + maxTechProcessCount +
+                ", minOperationsCount=" + minOperationsCount +
+                ", maxOperationsCount=" + maxOperationsCount +
+                ", minOperationDuration=" + minOperationDuration +
+                ", maxOperationDuration=" + maxOperationDuration +
+                '}';
+    }
 }
 
 

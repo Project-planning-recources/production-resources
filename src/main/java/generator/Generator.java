@@ -6,6 +6,7 @@ import parse.input.production.InputProduction;
 import util.Random.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 
 public class Generator {
@@ -33,7 +34,7 @@ public class Generator {
                 generatorParameters.startWorkingTime, generatorParameters.endWorkingTime, generatorParameters.minEquipmentGroupCount, generatorParameters.maxEquipmentGroupCount,
                 generatorParameters.minEquipmentCount, generatorParameters.maxEquipmentCount);
 
-        InputOrderInformation inputOrderInformation = Generator.generateInputOrderInformation(inputProduction, generatorParameters.ordersCount, generatorParameters.minOrderStartTime, generatorParameters.maxOrderStartTime,
+        InputOrderInformation inputOrderInformation = Generator.generateInputOrderInformation(inputProduction, generatorParameters.ordersCount, LocalDateTime.ofEpochSecond(generatorParameters.minOrderStartTime.getTime()/1000, 0, ZoneOffset.ofHours(0)), LocalDateTime.ofEpochSecond(generatorParameters.maxOrderStartTime.getTime()/1000, 0, ZoneOffset.ofHours(0)),
                 generatorParameters.minDurationTimeInDays, generatorParameters.maxDurationTimeInDays, generatorParameters.minDetailsTypeCount, generatorParameters.maxDetailsTypeCount, generatorParameters.minDetailsCount, generatorParameters.maxDetailsCount,
                 generatorParameters.minTechProcessCount, generatorParameters.maxTechProcessCount, generatorParameters.minOperationsCount, generatorParameters.maxOperationsCount, generatorParameters.minOperationDuration, generatorParameters.maxOperationDuration);
 
@@ -66,6 +67,7 @@ public class Generator {
                                                                        int maxOperationsCount,
                                                                        int minOperationDuration,
                                                                        int maxOperationDuration) {
+
         return null;
     }
 
