@@ -69,4 +69,11 @@ public class InputProduction implements Serializable {
         this.inputEquipmentGroups = inputEquipmentGroups;
     }
 
+    @Override
+    public String toString() {
+        return "InputProduction{" +
+                "inputSchedule=" + inputSchedule +
+                ", inputEquipmentGroups=" + inputEquipmentGroups +
+                '}';
+    }
 }

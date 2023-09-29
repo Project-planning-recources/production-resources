@@ -20,4 +20,12 @@ public class GeneratedData {
     public InputProduction getInputProduction() {
         return inputProduction;
     }
+
+    @Override
+    public String toString() {
+        return "GeneratedData{" +
+                "inputOrderInformation=" + inputOrderInformation +
+                ", inputProduction=" + inputProduction +
+                '}';
+    }
 }
