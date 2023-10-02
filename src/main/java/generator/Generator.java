@@ -41,6 +41,17 @@ public class Generator {
         return new GeneratedData(inputProduction, inputOrderInformation);
     }
 
+    /**
+     * Генерация инфы о производстве
+     * @param daysForSchedule
+     * @param startWorkingTime
+     * @param endWorkingTime
+     * @param minEquipmentGroupCount
+     * @param maxEquipmentGroupCount
+     * @param minEquipmentCount
+     * @param maxEquipmentCount
+     * @return
+     */
     private static InputProduction generateInputProduction(int daysForSchedule,
                                                            int startWorkingTime,
                                                            int endWorkingTime,
@@ -48,9 +59,31 @@ public class Generator {
                                                            int maxEquipmentGroupCount,
                                                            int minEquipmentCount,
                                                            int maxEquipmentCount) {
+
+
         return null;
     }
 
+    /**
+     * Генерация инфы по заказам
+     * @param inputProduction
+     * @param ordersCount
+     * @param minOrderStartTime
+     * @param maxOrderStartTime
+     * @param minDurationTimeInDays
+     * @param maxDurationTimeInDays
+     * @param minDetailsTypeCount
+     * @param maxDetailsTypeCount
+     * @param minDetailsCount
+     * @param maxDetailsCount
+     * @param minTechProcessCount
+     * @param maxTechProcessCount
+     * @param minOperationsCount
+     * @param maxOperationsCount
+     * @param minOperationDuration
+     * @param maxOperationDuration
+     * @return
+     */
     private static InputOrderInformation generateInputOrderInformation(InputProduction inputProduction,
                                                                        int ordersCount,
                                                                        LocalDateTime minOrderStartTime,
