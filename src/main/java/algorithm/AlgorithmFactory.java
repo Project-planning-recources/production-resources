@@ -17,8 +17,7 @@ public class AlgorithmFactory {
         return new BaseAlgorithm(inputProduction, inputOrders, startTime);
     }
 
-    public static Algorithm getNewOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
-                                               String operationChooser, String alternativeElector) throws Exception {
-        return new OwnAlgorithm(inputProduction, inputOrders, startTime, operationChooser, alternativeElector);
+    public static Algorithm getNewOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) throws Exception {
+        return new AlternativenessOwnAlgorithm(inputProduction, inputOrders, startTime);
     }
 }

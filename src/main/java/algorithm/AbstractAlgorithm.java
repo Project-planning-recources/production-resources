@@ -1,6 +1,7 @@
 package algorithm;
 
 import algorithm.alternativeness.AlternativeElector;
+import algorithm.model.order.Product;
 import algorithm.operationchooser.OperationChooser;
 import algorithm.model.order.Operation;
 import algorithm.model.order.Order;
@@ -392,6 +393,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     private long concreteProductId = 1;
 
+    protected int chooseAlternativeness(long concreteProductId, Product product) {
+        return this.alternativeElector.chooseTechProcess(product);
+    }
+
     /**
      * Добавляем операции заказа, у которого наступило время раннего начала, в список операций
      * Добавляем в объект результата объекты результатов заказа, деталей и операций
@@ -408,7 +413,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 /**
                  * Выбираем техпроцесс
                  */
-                int techProcessId = this.alternativeElector.chooseTechProcess(product);
+                int techProcessId = chooseAlternativeness(this.concreteProductId, product);
                 LinkedList<Operation> operations = product.getTechProcesses().get(techProcessId).getOperations();
 
                 LinkedList<OperationResult> operationResults = new LinkedList<>();
