@@ -71,8 +71,8 @@ public class ProductionResources {
                     if (PossibilityTester.test(generatedData.get(i).getInputProduction(), generatedData.get(i).getInputOrderInformation())) {
                         System.out.println("На шаге " + i + " сгенерированы неверные данные.");
                     } else {
-                        WRITER.writeProductionFile(argv[1] + i, generatedData.get(i).getInputProduction());
-                        WRITER.writeOrderInformationFile(argv[1] + i, generatedData.get(i).getInputOrderInformation());
+                        WRITER.writeProductionFile(argv[1] + "prod" + i, generatedData.get(i).getInputProduction());
+                        WRITER.writeOrderInformationFile(argv[1] + "order" + i, generatedData.get(i).getInputOrderInformation());
                     }
                 } else {
                     System.out.println("На шаге " + i + " сгенерированные данные не соответствуют параметрам генератора.");
