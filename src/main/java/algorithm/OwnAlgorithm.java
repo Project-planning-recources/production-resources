@@ -19,7 +19,7 @@ public class OwnAlgorithm extends AbstractAlgorithm {
 
     @Override
     protected int chooseAlternativeness(long concreteProductId, Product product) {
-        return this.alternativeness.get((int) concreteProductId);
+        return this.alternativeness.get((int) concreteProductId - 1) - 1;
     }
 
     OwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String operationChooser, ArrayList<Integer> alternativeness) throws Exception {

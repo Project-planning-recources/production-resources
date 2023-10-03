@@ -11,11 +11,16 @@ public class AlternativeElectorFactory {
     private AlternativeElectorFactory() {}
 
     public static AlternativeElector getAlternativeElector(String elector, AbstractAlgorithm abstractAlgorithm) throws Exception {
-        switch(elector) {
-            case("Random"):
-                return new RandomAlternativeElector();
-            default:
-                throw new Exception("Unsupported elector");
+
+        if(elector != null) {
+            switch(elector) {
+                case("Random"):
+                    return new RandomAlternativeElector();
+                default:
+                    throw new Exception("Unsupported elector");
+            }
+        } else {
+            return null;
         }
     }
 }
