@@ -41,7 +41,7 @@ public class Trash {
 //        System.out.println(RealityTester.test(inputProduction, orders, outputResult2));
 //        ComparisonTester.test(orders, outputResult1, outputResult2);
 
-        AlternativenessOwnAlgorithm algorithm = new AlternativenessOwnAlgorithm(inputProduction, orders.getOrders(), LocalDateTime.of(2017, 1, 1, 8, 0, 0));
+        AlternativenessOwnAlgorithm algorithm = new AlternativenessOwnAlgorithm(inputProduction, orders.getOrders(), LocalDateTime.of(2017, 1, 1, 8, 0, 0), 4);
         algorithm.start();
 
 

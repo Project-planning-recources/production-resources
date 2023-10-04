@@ -60,7 +60,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
     protected LinkedList<LocalDateTime> timeline;
 
     public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
-                             String operationChooser, String alternativeElector) throws Exception {
+                             String operationChooser, String alternativeElector) {
         this.production = new Production(inputProduction);
         ArrayList<Order> orders = new ArrayList<>();
         inputOrders.forEach(inputOrder -> {

@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class OperationChooserFactory {
     private OperationChooserFactory() {}
 
-    public static OperationChooser getOperationChooser(String chooser, AbstractAlgorithm abstractAlgorithm) throws Exception {
+    public static OperationChooser getOperationChooser(String chooser, AbstractAlgorithm abstractAlgorithm) {
         switch(chooser) {
             case("FirstElement"):
                 return new FirstElementChooser();
@@ -20,7 +20,7 @@ public class OperationChooserFactory {
             case("Greedy"):
                 return new GreedyOperationChooser(abstractAlgorithm.allOperations);
             default:
-                throw new Exception("Unsupported chooser");
+                throw new RuntimeException("Unsupported chooser");
         }
     }
 }

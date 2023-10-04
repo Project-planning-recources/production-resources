@@ -17,7 +17,7 @@ public class AlgorithmFactory {
         return new BaseAlgorithm(inputProduction, inputOrders, startTime);
     }
 
-    public static Algorithm getNewOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) throws Exception {
-        return new AlternativenessOwnAlgorithm(inputProduction, inputOrders, startTime);
+    public static Algorithm getNewOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int threadsNum) throws Exception {
+        return new AlternativenessOwnAlgorithm(inputProduction, inputOrders, startTime, threadsNum);
     }
 }

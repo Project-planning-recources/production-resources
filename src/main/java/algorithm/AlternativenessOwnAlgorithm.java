@@ -1,6 +1,8 @@
 package algorithm;
 
 import algorithm.operationchooser.FirstElementChooser;
+import algorithm.parallel.ParallelMain;
+import algorithm.parallel.ParallelSolver;
 import parse.input.order.InputOrder;
 import parse.input.order.InputOrderInformation;
 import parse.input.production.InputProduction;
@@ -18,37 +20,28 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
     private ArrayList<InputOrder> inputOrders;
     private LocalDateTime startTime;
 
+    private int threadsNum;
 
-    public AlternativenessOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) {
+
+    public AlternativenessOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int threadsNum) {
         this.inputProduction = inputProduction;
         this.inputOrders = inputOrders;
         this.startTime = startTime;
+        this.threadsNum = threadsNum;
     }
 
     @Override
     public OutputResult start() throws Exception {
-        BaseAlgorithm firstStart = new BaseAlgorithm(inputProduction, inputOrders, startTime);
 
-        OutputResult firstStartResult = firstStart.start();
+        ArrayList<ParallelSolver> solvers = new ArrayList<>();
+        solvers.add(new ParallelSolver(this.inputProduction, this.inputOrders, this.startTime));
+        solvers.add(new ParallelSolver(this.inputProduction, this.inputOrders, this.startTime));
+        solvers.add(new ParallelSolver(this.inputProduction, this.inputOrders, this.startTime));
+        solvers.add(new ParallelSolver(this.inputProduction, this.inputOrders, this.startTime));
 
+        ParallelMain parallelMain = new ParallelMain(this.inputProduction, this.inputOrders, this.startTime, solvers);
+        parallelMain.start();
 
-        ArrayList<Integer> alternativeness = new ArrayList<>();
-        firstStartResult.getOrderResults().forEach(outputOrderResult -> {
-            outputOrderResult.getProductResults().forEach(outputProductResult -> {
-                alternativeness.add((int)outputProductResult.getTechProcessId());
-            });
-        });
-        System.out.println(alternativeness);
-
-
-        OwnAlgorithm ownAlgorithm = new OwnAlgorithm(inputProduction, inputOrders, startTime,
-                "FirstElement",
-                alternativeness);
-
-        OutputResult start = ownAlgorithm.start();
-
-
-        ComparisonTester.test(new InputOrderInformation(inputOrders), firstStartResult, start);
 
 
 

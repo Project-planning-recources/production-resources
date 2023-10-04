@@ -22,7 +22,7 @@ public class OwnAlgorithm extends AbstractAlgorithm {
         return this.alternativeness.get((int) concreteProductId - 1) - 1;
     }
 
-    OwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String operationChooser, ArrayList<Integer> alternativeness) throws Exception {
+    public OwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String operationChooser, ArrayList<Integer> alternativeness) {
         super(inputProduction, inputOrders, startTime, operationChooser, null);
         this.alternativeness = alternativeness;
     }
