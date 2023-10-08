@@ -82,4 +82,12 @@ public class InputOperation {
     public long getNextOperationId() {
         return nextOperationId;
     }
+
+    public void setPrevOperationId(long prevOperationId) {
+        this.prevOperationId = prevOperationId;
+    }
+
+    public void setNextOperationId(long nextOperationId) {
+        this.nextOperationId = nextOperationId;
+    }
 }

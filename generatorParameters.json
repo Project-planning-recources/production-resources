@@ -1,47 +1,24 @@
 {
-  //Рабочие дни
   "daysForSchedule": 5,
-
-  //Начало и конец рабочего дня
   "startWorkingTime": 9,
   "endWorkingTime": 17,
-
-  //Количество заказов
   "ordersCount": 1,
-
-  //Минимальное и максимальное количество групп оборудования на производстве (Рандом)
   "minEquipmentGroupCount": 2,
   "maxEquipmentGroupCount": 3,
-
-  //Количество экземпляров оборудования на производстве (Рандом)
   "minEquipmentCount": 1,
   "maxEquipmentCount": 5,
-
-  //Минимальное время начала заказа
   "minOrderStartTime": "2023-9-1 0:0",
   "maxOrderStartTime": "2023-11-1 0:0",
-
-  //Длительность
   "minDurationTimeInDays": 5,
   "maxDurationTimeInDays": 10,
-
-  //Количество типов деталей
   "minDetailsTypeCount": 1,
   "maxDetailsTypeCount": 2,
-
-  //Количество деталей
   "minDetailsCount": 5,
   "maxDetailsCount": 100,
-
-  //Количество техпроцессов
   "minTechProcessCount": 1,
   "maxTechProcessCount": 2,
-
-  //Количество операций
   "minOperationsCount": 1,
   "maxOperationsCount": 10,
-
-  //Длительность операций
   "minOperationDuration": 60,
   "maxOperationDuration": 3600
 }
