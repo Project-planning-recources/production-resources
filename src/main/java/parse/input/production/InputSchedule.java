@@ -42,4 +42,11 @@ public class InputSchedule implements Serializable {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "InputSchedule{" +
+                "week=" + week +
+                '}';
+    }
 }

@@ -52,5 +52,12 @@ public class InputEquipmentGroup implements Serializable {
         return inputEquipments;
     }
 
-
+    @Override
+    public String toString() {
+        return "InputEquipmentGroup{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", inputEquipments=" + inputEquipments +
+                '}';
+    }
 }

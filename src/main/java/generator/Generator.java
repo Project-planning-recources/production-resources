@@ -104,6 +104,7 @@ public class Generator {
                                                                        int maxOperationsCount,
                                                                        int minOperationDuration,
                                                                        int maxOperationDuration) {
+        System.out.println(inputProduction);
 
         ArrayList<InputOrder> orders = new ArrayList<>();
         for (int i = 0; i < ordersCount; i++) {

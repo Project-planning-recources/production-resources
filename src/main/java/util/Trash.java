@@ -35,6 +35,9 @@ public class Trash {
 
         if(GeneratorTester.test(generatorParameters, generatedData.get(0)) && PossibilityTester.test(generatedData.get(0).getInputProduction(), generatedData.get(0).getInputOrderInformation())) {
             System.out.println("Ура!");
+            XMLWriter writer = new XMLWriter();
+            writer.writeProductionFile("production.xml", generatedData.get(0).getInputProduction());
+            writer.writeOrderInformationFile("orders.xml", generatedData.get(0).getInputOrderInformation());
         } else {
             System.out.println(":(");
         }
