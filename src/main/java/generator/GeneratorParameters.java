@@ -54,10 +54,9 @@ public class GeneratorParameters {
     public Date minOrderStartTime;
 
     /**
-     * Максимальное время начала заказа
+     * Максимальное количество для время начала заказа от минимальной даты
      */
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
-    public Date maxOrderStartTime;
+    public int maxDurationStartTime;
 
     /**
      * Минимальная длительность заказа в днях
@@ -134,7 +133,7 @@ public class GeneratorParameters {
                 ", minEquipmentCount=" + minEquipmentCount +
                 ", maxEquipmentCount=" + maxEquipmentCount +
                 ", minOrderStartTime=" + minOrderStartTime +
-                ", maxOrderStartTime=" + maxOrderStartTime +
+                ", maxDurationStartTime=" + maxDurationStartTime +
                 ", minDurationTimeInDays=" + minDurationTimeInDays +
                 ", maxDurationTimeInDays=" + maxDurationTimeInDays +
                 ", minDetailsTypeCount=" + minDetailsTypeCount +

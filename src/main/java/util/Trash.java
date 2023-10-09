@@ -30,7 +30,6 @@ public class Trash {
 
 
         GeneratorParameters generatorParameters = GeneratorJsonReader.readGeneratorParameters("generatorParameters.json");
-        System.out.println(generatorParameters);
         ArrayList<GeneratedData> generatedData = Generator.generateData(1, generatorParameters);
 
         if(GeneratorTester.test(generatorParameters, generatedData.get(0)) && PossibilityTester.test(generatedData.get(0).getInputProduction(), generatedData.get(0).getInputOrderInformation())) {

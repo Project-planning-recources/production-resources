@@ -1,5 +1,7 @@
 package parse.input.order;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
@@ -8,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
  * <b>Данные об операции</b>
  */
 @XmlType(name = "Operation")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class InputOperation {
 
     /**

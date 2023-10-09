@@ -1,16 +1,15 @@
 package generator;
 
-import algorithm.model.production.EquipmentGroup;
 import parse.input.order.*;
 import parse.input.production.*;
-import util.Random.*;
+import util.Random;
 
-import java.time.*;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Generator {
 
@@ -39,7 +38,7 @@ public class Generator {
 
         InputOrderInformation inputOrderInformation = Generator.generateInputOrderInformation(inputProduction, generatorParameters.ordersCount,
                 LocalDateTime.ofEpochSecond(generatorParameters.minOrderStartTime.getTime()/1000, 0, ZoneOffset.ofHours(0)),
-                LocalDateTime.ofEpochSecond(generatorParameters.maxOrderStartTime.getTime()/1000, 0, ZoneOffset.ofHours(0)),
+                generatorParameters.maxDurationStartTime,
                 generatorParameters.minDurationTimeInDays, generatorParameters.maxDurationTimeInDays, generatorParameters.minDetailsTypeCount,
                 generatorParameters.maxDetailsTypeCount, generatorParameters.minDetailsCount, generatorParameters.maxDetailsCount,
                 generatorParameters.minTechProcessCount, generatorParameters.maxTechProcessCount, generatorParameters.minOperationsCount,
@@ -68,10 +67,10 @@ public class Generator {
         }
         inputProduction.setSchedule(inputSchedule);
 
-        int equipmentGroupCount = ThreadLocalRandom.current().nextInt(minEquipmentGroupCount, maxEquipmentGroupCount);
+        int equipmentGroupCount = Random.randomInt(minEquipmentGroupCount, maxEquipmentGroupCount);
         List<InputEquipmentGroup> groups = new ArrayList<>();
         for(int i = 0; i < equipmentGroupCount; i++) {
-            int equipmentCount = ThreadLocalRandom.current().nextInt(minEquipmentCount, maxEquipmentCount);
+            int equipmentCount = Random.randomInt(minEquipmentCount, maxEquipmentCount);
             List<InputEquipment> equipments = new ArrayList<>();
             for (int j = 0; j < equipmentCount; j++) {
                 InputEquipment inputEquipment = new InputEquipment(j + 1, "Оборудование " + (i + 1) + "." + (j + 1));
@@ -91,7 +90,7 @@ public class Generator {
     private static InputOrderInformation generateInputOrderInformation(InputProduction inputProduction,
                                                                        int ordersCount,
                                                                        LocalDateTime minOrderStartTime,
-                                                                       LocalDateTime maxOrderStartTime,
+                                                                       int maxDurationStartTime,
                                                                        int minDurationTimeInDays,
                                                                        int maxDurationTimeInDays,
                                                                        int minDetailsTypeCount,
@@ -108,25 +107,23 @@ public class Generator {
 
         ArrayList<InputOrder> orders = new ArrayList<>();
         for (int i = 0; i < ordersCount; i++) {
-            long minOrderStartTimeInSec = minOrderStartTime.atZone(ZoneId.of("+3")).toInstant().toEpochMilli();
-            long maxOrderStartTimeInSec = maxOrderStartTime.atZone(ZoneId.of("+3")).toInstant().toEpochMilli();
-            long orderStartSeconds = ThreadLocalRandom.current().nextLong(minOrderStartTimeInSec, maxOrderStartTimeInSec);
-            LocalDateTime orderStartTime =  LocalDateTime.ofEpochSecond(orderStartSeconds/1000, 0, ZoneOffset.ofHours(0));
-            int durationTimeInDays = ThreadLocalRandom.current().nextInt(minDurationTimeInDays, maxDurationTimeInDays);
+            long orderStartSeconds =  Random.randomInt(maxDurationStartTime);
+            LocalDateTime orderStartTime = minOrderStartTime.plusDays(orderStartSeconds);
+            int durationTimeInDays = Random.randomInt(minDurationTimeInDays, maxDurationTimeInDays);
             LocalDateTime deadline = orderStartTime.plusDays(durationTimeInDays);
 
-            int detailsTypeCount = ThreadLocalRandom.current().nextInt(minDetailsTypeCount, maxDetailsTypeCount);
+            int detailsTypeCount = Random.randomInt(minDetailsTypeCount, maxDetailsTypeCount);
             ArrayList<InputProduct> products = new ArrayList<>();
             for (int j = 0; j < detailsTypeCount; j++) {
-                int detailsCount = ThreadLocalRandom.current().nextInt(minDetailsCount, maxDetailsCount);
-                int techProcessCount = ThreadLocalRandom.current().nextInt(minTechProcessCount, maxTechProcessCount);
+                int detailsCount = Random.randomInt(minDetailsCount, maxDetailsCount);
+                int techProcessCount = Random.randomInt(minTechProcessCount, maxTechProcessCount);
                 ArrayList<InputTechProcess> techProcesses = new ArrayList<>();
                 for(int k = 0; k < techProcessCount; k++) {
-                    int operationsCount = ThreadLocalRandom.current().nextInt(minOperationsCount, maxOperationsCount);
+                    int operationsCount = Random.randomInt(minOperationsCount, maxOperationsCount);
                     LinkedList<InputOperation> operations = new LinkedList<>();
                     for (int o = 0; o < operationsCount; o++) {
-                        int operationDuration = ThreadLocalRandom.current().nextInt(minOperationDuration, maxOperationDuration);
-                        int requiredGroup = ThreadLocalRandom.current().nextInt(1, inputProduction.getEquipmentGroups().size());
+                        int operationDuration = Random.randomInt(minOperationDuration, maxOperationDuration);
+                        int requiredGroup = Random.randomInt(1, inputProduction.getEquipmentGroups().size());
                         InputOperation inputOperation = new InputOperation(o + 1, "Операция " + (k + 1) + "." + (o + 1), operationDuration,
                                 requiredGroup, 0, 0);
 

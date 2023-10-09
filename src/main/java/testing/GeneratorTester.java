@@ -9,6 +9,7 @@ import parse.input.production.InputSchedule;
 import parse.input.production.InputWorkingDay;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class GeneratorTester {
@@ -79,14 +80,12 @@ public class GeneratorTester {
         LocalDateTime minStartOrderTime = LocalDateTime.ofEpochSecond(
                 generatorParameters.minOrderStartTime.getTime()/1000, 0, ZoneOffset.ofHours(0));
 
-        LocalDateTime maxStartOrderTime = LocalDateTime.ofEpochSecond(
-                generatorParameters.maxOrderStartTime.getTime()/1000, 0, ZoneOffset.ofHours(0));
-
         for (InputOrder order : inputOrderInformation.getOrders()) {
-            if (!(order.getStartTime().isAfter(minStartOrderTime) && order.getStartTime().isBefore(maxStartOrderTime))) {
+            long diffBetweenDates = ChronoUnit.DAYS.between(minStartOrderTime, order.getStartTime());
+            if (!(0 <= diffBetweenDates && diffBetweenDates <= generatorParameters.maxDurationStartTime)) {
                 System.out.println("Раннее время выполнения заказа (" + order.getStartTime()
                         + ") не входит в заданный промежуток [" + minStartOrderTime
-                        + ", " + maxStartOrderTime + "]");
+                        + ", " + minStartOrderTime.plusDays(generatorParameters.maxDurationStartTime) + "]");
                 return false;
             }
 
