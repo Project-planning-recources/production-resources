@@ -1,7 +1,7 @@
 package algorithm.operationchooser;
 
-import model.order.Operation;
-import model.result.OperationResult;
+import algorithm.model.order.Operation;
+import algorithm.model.result.OperationResult;
 
 import java.util.Comparator;
 import java.util.HashMap;

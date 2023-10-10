@@ -1,11 +1,7 @@
 package algorithm;
 
-import algorithm.alternativeness.RandomAlternativeElector;
-import algorithm.operationchooser.GreedyOperationChooser;
-import model.order.Order;
-import model.production.Production;
-import model.result.OperationResult;
-import model.result.Result;
+import parse.input.order.InputOrder;
+import parse.input.production.InputProduction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,8 +12,8 @@ import java.util.ArrayList;
  */
 public class BaseAlgorithm extends AbstractAlgorithm {
 
-    BaseAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime) throws Exception {
-        super(production, orders, startTime, "FirstElement", "Random");
+    BaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) throws Exception {
+        super(inputProduction, inputOrders, startTime, "FirstElement", "Random");
     }
 
 }

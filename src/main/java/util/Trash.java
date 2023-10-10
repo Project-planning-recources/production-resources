@@ -3,16 +3,23 @@ package util;
 
 import algorithm.Algorithm;
 import algorithm.AlgorithmFactory;
-import model.order.OrderInformation;
-import model.production.Production;
-import model.result.Result;
+import generator.GeneratedData;
+import generator.Generator;
+import generator.GeneratorJsonReader;
+import generator.GeneratorParameters;
+import parse.input.order.InputOrderInformation;
+import parse.input.production.InputProduction;
+import parse.output.result.OutputResult;
 import parse.input.XMLReader;
 import parse.output.XMLWriter;
 import testing.ComparisonTester;
+import testing.GeneratorTester;
 import testing.PossibilityTester;
 import testing.RealityTester;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 
 /**
  * Класс для любых тестов и проверок
@@ -21,26 +28,18 @@ public class Trash {
 
     public static void main(String[] args) throws Exception {
 
-        XMLReader reader = new XMLReader();
-        XMLWriter xmlWriter = new XMLWriter();
 
-        Production production = reader.readProductionFile("doc/system.xml");
-        OrderInformation orders = reader.readOrderFile("doc/tech.xml");
+        GeneratorParameters generatorParameters = GeneratorJsonReader.readGeneratorParameters("generatorParameters.json");
+        ArrayList<GeneratedData> generatedData = Generator.generateData(1, generatorParameters);
 
-        Algorithm algorithm1 = AlgorithmFactory.getNewBaseAlgorithm(production, orders.getOrders(), LocalDateTime.of(2017, 1, 1, 8, 0, 0));
-        Result result1 = algorithm1.start();
-        xmlWriter.writeResultFile("test1.xml", result1);
-
-        Algorithm algorithm2 = AlgorithmFactory.getNewBaseAlgorithm(production, orders.getOrders(), LocalDateTime.of(2017, 1, 1, 8, 0, 0));
-        Result result2 = algorithm2.start();
-        xmlWriter.writeResultFile("test2.xml", result2);
-
-        System.out.println(PossibilityTester.test(production, orders));
-        System.out.println(RealityTester.test(production, orders, result1));
-        System.out.println(RealityTester.test(production, orders, result2));
-        ComparisonTester.test(orders, result1, result2);
-
-
+        if(GeneratorTester.test(generatorParameters, generatedData.get(0)) && PossibilityTester.test(generatedData.get(0).getInputProduction(), generatedData.get(0).getInputOrderInformation())) {
+            System.out.println("Ура!");
+            XMLWriter writer = new XMLWriter();
+            writer.writeProductionFile("production.xml", generatedData.get(0).getInputProduction());
+            writer.writeOrderInformationFile("orders.xml", generatedData.get(0).getInputOrderInformation());
+        } else {
+            System.out.println(":(");
+        }
 
     }
 

@@ -1,10 +1,7 @@
 package testing;
 
-import model.order.Order;
-import model.order.OrderInformation;
-import model.result.OrderResult;
-import model.result.ProductResult;
-import model.result.Result;
+import parse.input.order.*;
+import parse.output.result.*;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -29,21 +26,21 @@ public class ComparisonTester {
      */
 
 
-    public static void test(OrderInformation orders, Result first, Result second) {
+    public static void test(InputOrderInformation orders, OutputResult first, OutputResult second) {
         // todo: Проверять, что результаты соответствуют файлу заказов
-        ArrayList<OrderResult> firstResultOrders = first.getOrderResults();
-        ArrayList<OrderResult> secondResultOrders = second.getOrderResults();
+        ArrayList<OutputOrderResult> firstResultOrders = first.getOrderResults();
+        ArrayList<OutputOrderResult> secondResultOrders = second.getOrderResults();
 
-        for (Order order : orders.getOrders()) {
+        for (InputOrder order : orders.getOrders()) {
             double firstCriterion = 0;
-            for (OrderResult firstOrderResult : firstResultOrders) {
+            for (OutputOrderResult firstOrderResult : firstResultOrders) {
                 if (order.getId() == firstOrderResult.getOrderId()) {
                     firstCriterion = getCriterion(order, firstOrderResult);
                 }
             }
 
             double secondCriterion = 0;
-            for (OrderResult secondOrderResult : secondResultOrders) {
+            for (OutputOrderResult secondOrderResult : secondResultOrders) {
                 if (order.getId() == secondOrderResult.getOrderId()) {
                     secondCriterion = getCriterion(order, secondOrderResult);
                 }
@@ -53,7 +50,7 @@ public class ComparisonTester {
 
     }
 
-    private static double getCriterion(Order order, OrderResult orderResult) {
+    private static double getCriterion(InputOrder order, OutputOrderResult orderResult) {
         double overdue = 0;
         double overdueProducts = 0;
 
@@ -62,7 +59,7 @@ public class ComparisonTester {
         if (overdue < 0) {
             return overdue;
         } else {
-            for (ProductResult productResult :
+            for (OutputProductResult productResult :
                     orderResult.getProductResults()) {
                 if (productResult.getEndTime().isAfter(order.getDeadline())) {
                     overdueProducts += (double) Duration.between(order.getDeadline(), productResult.getEndTime()).getSeconds() / 3600;
