@@ -69,10 +69,10 @@ public class ProductionResources {
             for (int i = 0; i < numberOfPacks; i++) {
                 if(GeneratorTester.test(generatorParameters, generatedData.get(i))) {
                     if (PossibilityTester.test(generatedData.get(i).getInputProduction(), generatedData.get(i).getInputOrderInformation())) {
-                        System.out.println("На шаге " + i + " сгенерированы неверные данные.");
+                        WRITER.writeProductionFile("production" + i + ".xml", generatedData.get(i).getInputProduction());
+                        WRITER.writeOrderInformationFile( "orders" + i + ".xml", generatedData.get(i).getInputOrderInformation());
                     } else {
-                        WRITER.writeProductionFile(argv[1] + "prod" + i, generatedData.get(i).getInputProduction());
-                        WRITER.writeOrderInformationFile(argv[1] + "order" + i, generatedData.get(i).getInputOrderInformation());
+                        System.out.println("На шаге " + i + " сгенерированы неверные данные.");
                     }
                 } else {
                     System.out.println("На шаге " + i + " сгенерированные данные не соответствуют параметрам генератора.");

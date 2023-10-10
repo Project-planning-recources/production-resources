@@ -4,7 +4,7 @@
   "endWorkingTime": 17,
   "ordersCount": 1,
   "minEquipmentGroupCount": 1,
-  "maxEquipmentGroupCount": 1,
+  "maxEquipmentGroupCount": 2,
   "minEquipmentCount": 1,
   "maxEquipmentCount": 5,
   "minOrderStartTime": "2023-9-1 0:0",
