@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
   <OrderInformation>
-      <Order id="1" date_begin="02.01.2017 08:00:00" date_end="02.01.2017 09:30:00">
-		<Detail id="1" name="Part1-1" count = "10">
+      <Order id="1" date_begin="02.01.2017 08:00:00" date_end="30.01.2017 09:30:00">
+		<Detail id="1" name="Part1-1" count = "1">
 			<TechProcess id="1">
 				<Operation id="101" name="101" duration="300" equipment_group="1" prev_operation_id="0" next_operation_id="102"/>
 				<Operation id="102" name="102" duration="400" equipment_group="1" prev_operation_id="101" next_operation_id="103"/>

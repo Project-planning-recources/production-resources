@@ -5,6 +5,10 @@ import parse.output.result.*;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+
+import static java.nio.file.Files.size;
 
 
 /**
@@ -25,6 +29,7 @@ public class ComparisonTester {
      * @return Подумать о том, в каком виде получать результаты работы функции и стоит ли их вообще возвращать(можно просто выводить результаты в консоль)
      */
 
+    private static HashMap<Long, HashMap<Long, Double>> productWorksMap;
 
     public static void test(InputOrderInformation orders, OutputResult first, OutputResult second) {
         // todo: Проверять, что результаты соответствуют файлу заказов
@@ -32,6 +37,8 @@ public class ComparisonTester {
         ArrayList<OutputOrderResult> secondResultOrders = second.getOrderResults();
 
         for (InputOrder order : orders.getOrders()) {
+            fillProductWorksMap(order);
+
             double firstCriterion = 0;
             for (OutputOrderResult firstOrderResult : firstResultOrders) {
                 if (order.getId() == firstOrderResult.getOrderId()) {
@@ -50,22 +57,42 @@ public class ComparisonTester {
 
     }
 
+    private static void fillProductWorksMap(InputOrder order) {
+        productWorksMap = new HashMap<>();
+
+        order.getProducts().forEach(inputProduct -> {
+            productWorksMap.putIfAbsent(inputProduct.getId(), new HashMap<>());
+
+            inputProduct.getTechProcesses().forEach(inputTechProcess -> {
+                double works = 0;
+
+                for (int i = 0; i < inputTechProcess.getOperations().size(); i++) {
+                    works += inputTechProcess.getOperations().get(i).getDuration();
+                }
+
+                productWorksMap.get(inputProduct.getId()).putIfAbsent(inputTechProcess.getId(), works);
+
+            });
+        });
+
+    }
+
     private static double getCriterion(InputOrder order, OutputOrderResult orderResult) {
         double overdue = 0;
-        double overdueProducts = 0;
+        double allWorks = 0;
 
-        overdue = (double) Duration.between(order.getDeadline(), orderResult.getEndTime()).getSeconds() / 3600;
-
-        if (overdue < 0) {
-            return overdue;
-        } else {
-            for (OutputProductResult productResult :
-                    orderResult.getProductResults()) {
-                if (productResult.getEndTime().isAfter(order.getDeadline())) {
-                    overdueProducts += (double) Duration.between(order.getDeadline(), productResult.getEndTime()).getSeconds() / 3600;
-                }
+        for (OutputProductResult productResult :
+                orderResult.getProductResults()) {
+            if (productResult.getEndTime().isAfter(order.getDeadline())) {
+                overdue += (double) Duration.between(order.getDeadline(), productResult.getEndTime()).getSeconds();
             }
-            return overdue * overdueProducts;
+
+            allWorks += productWorksMap.get(productResult.getProductId()).get(productResult.getTechProcessId());
         }
+        System.out.println(allWorks);
+        System.out.println(overdue);
+        return overdue / allWorks;
     }
+
+
 }
