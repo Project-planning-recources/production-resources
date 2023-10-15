@@ -335,7 +335,11 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     }
 
+
+
     protected void startOperations(LocalDateTime timeTick) throws Exception {
+
+        // todo: Убрать кандидатов, сделать выбор из фронта по критерию и распараллелить
         ArrayList<OperationResult> candidates = new ArrayList<>();
         this.waitingOperations.forEach(waitingOperation -> {
             try {
