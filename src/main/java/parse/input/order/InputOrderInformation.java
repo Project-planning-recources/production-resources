@@ -39,4 +39,11 @@ public class InputOrderInformation {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "InputOrderInformation{" +
+                "inputOrders=" + inputOrders +
+                '}';
+    }
 }

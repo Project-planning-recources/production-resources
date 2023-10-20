@@ -2,6 +2,7 @@ package parse.input.production;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,10 +20,10 @@ public class InputSchedule implements Serializable {
      */
     @XmlElementWrapper(name="Timetable")
     @XmlElement(name = "Day")
-    private List<InputWorkingDay> week;
+    private final List<InputWorkingDay> week;
 
     public InputSchedule() {
-
+        week = new ArrayList<>();
     }
 
     public InputSchedule(List<InputWorkingDay> week) {
@@ -33,15 +34,6 @@ public class InputSchedule implements Serializable {
         return week;
     }
 
-    public boolean checkWorkDayInScheduleByDayNumber(Short dayNumber) {
-        for(InputWorkingDay day : week) {
-            if(day.getDayNumber().equals(dayNumber)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public InputWorkingDay getWorkDayByDayNumber(Short dayNumber) {
         for(InputWorkingDay day : week) {
            if(day.getDayNumber().equals(dayNumber)) {
@@ -49,5 +41,12 @@ public class InputSchedule implements Serializable {
            }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "InputSchedule{" +
+                "week=" + week +
+                '}';
     }
 }

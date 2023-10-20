@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +29,7 @@ public class XMLReader implements Reader {
     public InputProduction readProductionFile(String productionFileName) {
         InputProduction inputProduction = (InputProduction) readXmlFile(productionFileName, InputProduction.class);
         for(short dayNumber = 1; dayNumber < 8; dayNumber++) {
-            if(!inputProduction.getSchedule().checkWorkDayInScheduleByDayNumber(dayNumber)) {
+            if(Objects.isNull(inputProduction.getSchedule().getWorkDayByDayNumber(dayNumber))) {
                 inputProduction.getSchedule().getWeek().add(new InputWorkingDay(dayNumber, LocalTime.MIN, LocalTime.MIN, false));
             }
         }

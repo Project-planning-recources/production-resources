@@ -28,7 +28,7 @@ public class InputEquipment implements Serializable {
 
     }
 
-    public InputEquipment(long id, String name, boolean isUsing) {
+    public InputEquipment(long id, String name) {
         this.id = id;
         this.name = name;
     }
