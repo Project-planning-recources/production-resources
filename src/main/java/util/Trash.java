@@ -3,6 +3,7 @@ package util;
 
 import algorithm.Algorithm;
 import algorithm.AlgorithmFactory;
+import algorithm.BaseAlgorithm;
 import generator.GeneratedData;
 import generator.Generator;
 import generator.GeneratorJsonReader;
@@ -37,6 +38,18 @@ public class Trash {
             XMLWriter writer = new XMLWriter();
             writer.writeProductionFile("production.xml", generatedData.get(0).getInputProduction());
             writer.writeOrderInformationFile("orders.xml", generatedData.get(0).getInputOrderInformation());
+
+            Algorithm base = new BaseAlgorithm(generatedData.get(0).getInputProduction(), generatedData.get(0).getInputOrderInformation().getOrders(), LocalDateTime.of(2023, 10, 20, 0, 0));
+            System.out.println("GENERATOR" + generatedData.get(0).getInputProduction());
+            System.out.println("GENERATOR" + generatedData.get(0).getInputOrderInformation());
+            OutputResult result = base.start();
+            writer.writeResultFile("result.xml", result);
+            System.out.println("RESULT" + result);
+            if(RealityTester.test(generatedData.get(0).getInputProduction(), generatedData.get(0).getInputOrderInformation(), result)) {
+                System.out.println("Ура2!");
+            } else {
+                System.out.println(":(2");
+            }
         } else {
             System.out.println(":(");
         }

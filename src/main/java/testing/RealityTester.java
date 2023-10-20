@@ -108,7 +108,7 @@ public class RealityTester {
                 startDttm = makeNextDay(startDttm, schedule);
             }
         }
-
+        System.out.println("duration check: " + duration + "  " + operationFromInputData.getDuration());
         return duration == operationFromInputData.getDuration();
     }
 

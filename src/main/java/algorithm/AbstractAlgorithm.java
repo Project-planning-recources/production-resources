@@ -12,6 +12,7 @@ import algorithm.model.result.OperationResult;
 import algorithm.model.result.OrderResult;
 import algorithm.model.result.ProductResult;
 import algorithm.model.result.Result;
+import com.ctc.wstx.exc.WstxOutputException;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -231,6 +232,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         if (isWeekend(timeTick)) {
             while(true) {
                 if (Objects.isNull(day) || !day.getWeekday()) {
+                    System.out.println("day " + day);
                     newTick = LocalDateTime.of(newTick.toLocalDate(), day.getStartWorkingTime());
                     if(isWeekend(newTick)) {
                         newTick = newTick.plus(1, ChronoUnit.DAYS);
@@ -266,6 +268,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected LocalDateTime addOperationTimeToTimeline(LocalDateTime operationStartTime, int duration) {
         LocalDateTime finalTime = operationStartTime.plus(duration, ChronoUnit.SECONDS);
+        System.out.println(operationStartTime + "===============" + finalTime + "==============" + duration);
         LocalDateTime currentDate = operationStartTime;
         WorkingDay currentWorkingDay = production.getSchedule().getWorkDayByDayNumber((short)currentDate.getDayOfWeek().getValue());
         long diffInSeconds = duration;
@@ -354,6 +357,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 choose.getProductResult().setStartTime(timeTick);
             }
             LocalDateTime endTime = addOperationTimeToTimeline(timeTick, this.allOperations.get(choose.getOperationId()).getDuration());
+            System.out.println("choose " + choose + " hash " + this.allOperations.get(choose.getOperationId()));
             choose.setEndTime(endTime);
 
             Equipment equipment = production.getEquipmentForOperation(choose, this.allOperations.get(choose.getOperationId()).getRequiredEquipment());
