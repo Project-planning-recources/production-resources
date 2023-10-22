@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalTime;
 
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
+
 /**
  * Класс, помогающий адаптировать данные о рабочих днях из входного xml-файла
  */
@@ -45,13 +47,15 @@ public class WorkingDayAdapter extends XmlAdapter<WorkingDayAdapter.AdaptedWorki
 
     @Override
     public AdaptedWorkingDay marshal(InputWorkingDay workingDay) {
-        return null;
+        return new AdaptedWorkingDay(String.valueOf(workingDay.getDayNumber()),
+                ISO_LOCAL_TIME.format(workingDay.getStartWorkingTime()) + DELIMITER +
+                        ISO_LOCAL_TIME.format(workingDay.getEndWorkingTime()));
     }
 
     /**
      * Промежуточный класс для парсинга данных из xml-файла в java-класс
      */
-    @XmlType(name = "Include")
+    @XmlType(name = "Day")
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class AdaptedWorkingDay {
 
@@ -66,5 +70,10 @@ public class WorkingDayAdapter extends XmlAdapter<WorkingDayAdapter.AdaptedWorki
          */
         @XmlAttribute(name = "time_period")
         private String timePeriod;
+
+        public AdaptedWorkingDay(String dayNumber, String timePeriod) {
+            this.dayNumber = dayNumber;
+            this.timePeriod = timePeriod;
+        }
     }
 }

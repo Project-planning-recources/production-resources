@@ -15,6 +15,7 @@ import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
 
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -213,7 +214,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected boolean isWeekend(LocalDateTime timeTick) {
         WorkingDay day = production.getSchedule().getWorkDayByDayNumber((short) timeTick.getDayOfWeek().getValue());
-        if (Objects.isNull(day) || !day.getWeekday()) {
+        if (!day.getWeekday()) {
             return true;
         } else {
             return timeTick.toLocalTime().isBefore(day.getStartWorkingTime()) || timeTick.toLocalTime().isAfter(day.getEndWorkingTime());
@@ -229,7 +230,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         WorkingDay day = production.getSchedule().getWorkDayByDayNumber((short) newTick.getDayOfWeek().getValue());
         if (isWeekend(timeTick)) {
             while(true) {
-                if (Objects.isNull(day) || !day.getWeekday()) {
+                if (!day.getWeekday()) {
                     newTick = LocalDateTime.of(newTick.toLocalDate(), day.getStartWorkingTime());
                     if(isWeekend(newTick)) {
                         newTick = newTick.plus(1, ChronoUnit.DAYS);

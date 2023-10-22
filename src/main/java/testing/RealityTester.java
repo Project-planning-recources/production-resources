@@ -7,7 +7,9 @@ import parse.output.result.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * <b>Тест на соответствие результатов работы алгоритма реальности</b>
@@ -41,25 +43,29 @@ public class RealityTester {
                     }
                     InputOperation operationFromInputData = techProcess.getOperationByOperationId(operation.getOperationId());
                     if (!durationCheck(operation, production.getSchedule(), operationFromInputData)) {
-                        System.out.println("Операция " + operation.getOperationId() + " занимает оборудование дольше заявленного");
+                        System.out.println("Операция " + operation.getOperationId() + " из тех. процесса " + techProcess.getId()
+                                + " продукта " + product.getId() + " из заказа " + order.getOrderId() + " занимает оборудование дольше заявленного");
                         flag = false;
                     }
                     if (!sequenceOperationsCheck(product, operation, operationFromInputData)) {
-                        System.out.println("Операция " + operation.getOperationId() + " нарушает технологический процесс");
+                        System.out.println("Операция " + operation.getOperationId() + " из тех. процесса " + techProcess.getId()
+                                + " продукта " + product.getId() + " из заказа " + order.getOrderId() + " нарушает технологический процесс");
                         flag = false;
                     }
                     if (!operationTimePeriodCheck(operation, product)) {
-                        System.out.println("Операция " + operation.getOperationId() + " выполняется в неверное время");
+                        System.out.println("Операция " + operation.getOperationId() + " из тех. процесса " + techProcess.getId()
+                                + " продукта " + product.getId() + " из заказа " + order.getOrderId() + " выполняется в неверное время");
                         flag = false;
                     }
                 }
 
                 if (completedOperations != techProcess.getOperations().size()) {
-                    System.out.println("Не все операции из технологического процесса  " + techProcess.getId() + " были выполнены для продукта " + product.getId());
+                    System.out.println("Не все операции из технологического процесса  " + techProcess.getId() + " были выполнены для продукта " +
+                            product.getId() + " из заказа " + order.getOrderId());
                     flag = false;
                 }
                 if (!productTimePeriodCheck(product, order)) {
-                    System.out.println("Продукт " + product.getId() + " создаётся в неверное время");
+                    System.out.println("Продукт " + product.getId() + " из заказа " + order.getOrderId() + " создаётся в неверное время");
                     flag = false;
                 }
             }
@@ -70,8 +76,9 @@ public class RealityTester {
             }
         }
 
-        if(!usingSameEquipmentCheck(operationResults)) {
-            System.out.println("Две операции занимают одно и то же оборудование в одно и то же время");
+        List<String> errorsWithusingSameEquipment = usingSameEquipmentCheck(operationResults);
+        if(errorsWithusingSameEquipment.size() != 0) {
+            errorsWithusingSameEquipment.forEach(System.out::println);
             flag = false;
         }
 
@@ -163,11 +170,13 @@ public class RealityTester {
     }
 
     //todo: оптимизировать
-    private static boolean usingSameEquipmentCheck(LinkedList<OutputOperationResult> operationResults) {
+    private static List<String> usingSameEquipmentCheck(LinkedList<OutputOperationResult> operationResults) {
+        List<String> errorMessage = new ArrayList<>();
+
         for(int i = 0; i < operationResults.size() - 1; i++) {
             OutputOperationResult operationLeft = operationResults.get(i);
             if(operationLeft.getStartTime() == null || operationLeft.getEndTime() == null) {
-                return false;
+                errorMessage.add("Операция " + operationLeft.getOperationId() + " не имеет время начала и/или конца выполнения");
             }
             for (int j = i + 1; j < operationResults.size() - 1; j++) {
                 OutputOperationResult operationRight = operationResults.get(j);
@@ -178,11 +187,11 @@ public class RealityTester {
                         (operationLeft.getStartTime().isAfter(operationRight.getStartTime()) && operationLeft.getEndTime().isBefore(operationRight.getEndTime())) ||
                         (operationLeft.getStartTime().isBefore(operationRight.getStartTime()) && operationLeft.getEndTime().isAfter(operationRight.getStartTime()) && operationLeft.getEndTime().isBefore(operationRight.getEndTime())) ||
                         (operationLeft.getStartTime().isAfter(operationRight.getStartTime()) && operationLeft.getStartTime().isBefore(operationRight.getEndTime()) && operationLeft.getEndTime().isAfter(operationRight.getEndTime()))) {
-                    return false;
+                    errorMessage.add("Операции " + operationLeft.getOperationId() + " и " + operationRight.getOperationId() + " одновременно выполняются на одном и том же оборудовании");
                 }
             }
         }
-        return true;
+        return errorMessage;
     }
 
     private static LocalDateTime makeNextDay(LocalDateTime dttm, InputSchedule schedule) {
