@@ -4,8 +4,11 @@ import parse.input.production.InputSchedule;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.time.DateTimeException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <b>Класс для Алгоритма</b>
@@ -29,6 +32,11 @@ public class Schedule implements Serializable {
             week.add(new WorkingDay(workingDay));
         });
         this.week = week;
+        for (short i = 1; i <= 7; i++) {
+            if (Objects.isNull(getWorkDayByDayNumber(i))) {
+                this.week.add(new WorkingDay(i, LocalTime.MIDNIGHT, LocalTime.MIDNIGHT, false));
+            }
+        }
     }
 
     public Schedule(List<WorkingDay> week) {
@@ -54,7 +62,7 @@ public class Schedule implements Serializable {
                return day;
            }
         }
-        return null;
+        throw new DateTimeException("День с номером " + dayNumber + " не найден");
     }
 
     @Override

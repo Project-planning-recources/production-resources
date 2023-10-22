@@ -60,23 +60,23 @@ public class Generator {
         InputProduction inputProduction = new InputProduction();
 
         InputSchedule inputSchedule = new InputSchedule();
-        for (int i = 0; i < daysForSchedule; i++) {
-            InputWorkingDay inputWorkingDay = new InputWorkingDay((short) (i + 1), LocalTime.of(startWorkingTime, 0),
+        for (short i = 1; i <= daysForSchedule; i++) {
+            InputWorkingDay inputWorkingDay = new InputWorkingDay(i, LocalTime.of(startWorkingTime, 0),
                     LocalTime.of(endWorkingTime, 0), true);
             inputSchedule.getWeek().add(inputWorkingDay);
         }
         inputProduction.setSchedule(inputSchedule);
 
-        int equipmentGroupCount = Random.randomInt(minEquipmentGroupCount, maxEquipmentGroupCount);
+        long equipmentGroupCount = Random.randomInt(minEquipmentGroupCount, maxEquipmentGroupCount);
         List<InputEquipmentGroup> groups = new ArrayList<>();
-        for(int i = 0; i < equipmentGroupCount; i++) {
-            int equipmentCount = Random.randomInt(minEquipmentCount, maxEquipmentCount);
+        for(long i = 1; i <= equipmentGroupCount; i++) {
+            long equipmentCount = Random.randomInt(minEquipmentCount, maxEquipmentCount);
             List<InputEquipment> equipments = new ArrayList<>();
-            for (int j = 0; j < equipmentCount; j++) {
-                InputEquipment inputEquipment = new InputEquipment(j + 1, "Оборудование " + (i + 1) + "." + (j + 1));
+            for (long j = 1; j <= equipmentCount; j++) {
+                InputEquipment inputEquipment = new InputEquipment(j, "Оборудование " + i + "." + j);
                 equipments.add(inputEquipment);
             }
-            InputEquipmentGroup inputEquipmentGroup = new InputEquipmentGroup(i + 1, "Группа " + (i + 1), equipments);
+            InputEquipmentGroup inputEquipmentGroup = new InputEquipmentGroup(i, "Группа " + i, equipments);
             groups.add(inputEquipmentGroup);
         }
 
@@ -103,46 +103,57 @@ public class Generator {
                                                                        int maxOperationsCount,
                                                                        int minOperationDuration,
                                                                        int maxOperationDuration) {
-        System.out.println(inputProduction);
-
         ArrayList<InputOrder> orders = new ArrayList<>();
-        for (int i = 0; i < ordersCount; i++) {
+        for (int i = 1; i <= ordersCount; i++) {
             long orderStartSeconds =  Random.randomInt(maxDurationStartTime);
             LocalDateTime orderStartTime = minOrderStartTime.plusDays(orderStartSeconds);
             int durationTimeInDays = Random.randomInt(minDurationTimeInDays, maxDurationTimeInDays);
             LocalDateTime deadline = orderStartTime.plusDays(durationTimeInDays);
 
-            int detailsTypeCount = Random.randomInt(minDetailsTypeCount, maxDetailsTypeCount);
+            long detailsTypeCount = Random.randomInt(minDetailsTypeCount, maxDetailsTypeCount);
+            int lengthDetailsCount = (int)(Math.log10(detailsTypeCount) + 1);
+
             ArrayList<InputProduct> products = new ArrayList<>();
-            for (int j = 0; j < detailsTypeCount; j++) {
+            InputOrder order = new InputOrder(i, orderStartTime, deadline, products);
+
+            for (long j = 1; j <= detailsTypeCount; j++) {
                 int detailsCount = Random.randomInt(minDetailsCount, maxDetailsCount);
-                int techProcessCount = Random.randomInt(minTechProcessCount, maxTechProcessCount);
+                long techProcessCount = Random.randomInt(minTechProcessCount, maxTechProcessCount);
+                int lengthTechProcessCount = (int)(Math.log10(techProcessCount) + 1);
+
                 ArrayList<InputTechProcess> techProcesses = new ArrayList<>();
-                for(int k = 0; k < techProcessCount; k++) {
-                    int operationsCount = Random.randomInt(minOperationsCount, maxOperationsCount);
+                long idProduct = i * (long)Math.pow(10, lengthDetailsCount) + j;
+                InputProduct inputProduct = new InputProduct(idProduct, "Деталь " + i + "." + idProduct,
+                        detailsCount, techProcesses);
+
+                for(long k = 1; k <= techProcessCount; k++) {
+                    long operationsCount = Random.randomInt(minOperationsCount, maxOperationsCount);
+                    int lengthOperationsCount = (int)(Math.log10(operationsCount)+1);
+
                     LinkedList<InputOperation> operations = new LinkedList<>();
-                    for (int o = 0; o < operationsCount; o++) {
+                    InputTechProcess inputTechProcess = new InputTechProcess(
+                            inputProduct.getId() * (long)Math.pow(10, lengthTechProcessCount) + k, operations);
+
+                    for (long o = 1; o <= operationsCount; o++) {
                         int operationDuration = Random.randomInt(minOperationDuration, maxOperationDuration);
                         int requiredGroup = Random.randomInt(1, inputProduction.getEquipmentGroups().size());
-                        InputOperation inputOperation = new InputOperation(o + 1, "Операция " + (k + 1) + "." + (o + 1), operationDuration,
+
+                        long idOperation = inputTechProcess.getId() * (long)Math.pow(10, lengthOperationsCount) + o;
+
+                        InputOperation inputOperation = new InputOperation(idOperation,
+                                "Операция " + inputTechProcess.getId() + "." + idOperation, operationDuration,
                                 requiredGroup, 0, 0);
 
                         if (operations.size() != 0) {
                             inputOperation.setPrevOperationId(operations.getLast().getId());
-                            operations.getLast().setNextOperationId(o + 1);
+                            operations.getLast().setNextOperationId(idOperation);
                         }
                         operations.add(inputOperation);
                     }
-
-                    InputTechProcess inputTechProcess = new InputTechProcess(k + 1, operations);
                     techProcesses.add(inputTechProcess);
                 }
-
-                InputProduct inputProduct = new InputProduct(j + 1, "Деталь " + (i + 1) + "." + (j + 1), detailsCount, techProcesses);
                 products.add(inputProduct);
             }
-
-            InputOrder order = new InputOrder(i + 1, orderStartTime, deadline, products);
             orders.add(order);
         }
 
