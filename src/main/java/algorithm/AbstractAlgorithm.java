@@ -233,6 +233,8 @@ public abstract class AbstractAlgorithm implements Algorithm {
             while(true) {
                 if (Objects.isNull(day) || !day.getWeekday()) {
                     System.out.println("day " + day);
+                    System.out.println(production.getSchedule());
+                    System.out.println((short) newTick.getDayOfWeek().getValue());
                     newTick = LocalDateTime.of(newTick.toLocalDate(), day.getStartWorkingTime());
                     if(isWeekend(newTick)) {
                         newTick = newTick.plus(1, ChronoUnit.DAYS);

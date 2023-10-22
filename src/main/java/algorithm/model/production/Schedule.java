@@ -56,4 +56,11 @@ public class Schedule implements Serializable {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Schedule{" +
+                "week=" + week +
+                '}';
+    }
 }

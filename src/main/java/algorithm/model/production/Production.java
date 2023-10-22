@@ -110,4 +110,12 @@ public class Production implements Serializable {
         }
         throw new Exception("No equipment for operation");
     }
+
+    @Override
+    public String toString() {
+        return "Production{" +
+                "schedule=" + schedule +
+                ", equipmentGroups=" + equipmentGroups +
+                '}';
+    }
 }
