@@ -60,7 +60,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
     protected LinkedList<LocalDateTime> timeline;
 
     public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
-                             String operationChooser, String alternativeElector) throws Exception {
+                             String operationChooser, String alternativeElector) {
         this.production = new Production(inputProduction);
         ArrayList<Order> orders = new ArrayList<>();
         inputOrders.forEach(inputOrder -> {
@@ -154,6 +154,8 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 this.allEquipment.put(equipment.getId(), equipment);
             });
         });
+
+        System.out.println(this.allEquipment);
     }
 
     /**
@@ -393,7 +395,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     private long concreteProductId = 1;
 
-    protected int chooseAlternativeness(long concreteProductId, Product product) {
+    protected long chooseAlternativeness(long concreteProductId, Product product) {
         return this.alternativeElector.chooseTechProcess(product);
     }
     /**
@@ -412,11 +414,13 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 /**
                  * Выбираем техпроцесс
                  */
-                int techProcessId = this.alternativeElector.chooseTechProcess(product);
-                LinkedList<Operation> operations = product.getTechProcesses().get(techProcessId).getOperations();
+                long techProcessId = chooseAlternativeness(this.concreteProductId, product);
+                System.out.println("q" + techProcessId);
+                LinkedList<Operation> operations = product.getTechProcessByTechProcessId(techProcessId).getOperations();
+//                LinkedList<Operation> operations = product.getTechProcesses().get(techProcessId).getOperations();
 
                 LinkedList<OperationResult> operationResults = new LinkedList<>();
-                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(), techProcessId + 1, null, null, operationResults, orderResult);
+                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(), techProcessId, null, null, operationResults, orderResult);
                 OperationResult prevOperation = null;
                 for (int j = 0; j < operations.size(); j++) {
                     Operation operation = operations.get(j);

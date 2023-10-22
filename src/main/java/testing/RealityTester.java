@@ -36,11 +36,16 @@ public class RealityTester {
                 long techProcessId = product.getTechProcessId();
                 InputTechProcess techProcess = orders.getOrderByOrderId(order.getOrderId())
                         .getProductByProductId(product.getProductId()).getTechProcessByTechProcessId(techProcessId);
+                System.out.println("order " + order);
+                System.out.println("product " + product);
+                System.out.println("techprocid " + techProcessId);
                 int completedOperations = 0;
                 for (OutputOperationResult operation : product.getPerformedOperations()) {
                     if(operationCompletingCheck(operation)) {
                         completedOperations++;
                     }
+                    System.out.println("oper " + operation.getOperationId());
+                    System.out.println(techProcess);
                     InputOperation operationFromInputData = techProcess.getOperationByOperationId(operation.getOperationId());
                     if (!durationCheck(operation, production.getSchedule(), operationFromInputData)) {
                         System.out.println("Операция " + operation.getOperationId() + " из тех. процесса " + techProcess.getId()

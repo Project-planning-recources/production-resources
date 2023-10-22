@@ -63,4 +63,12 @@ public class InputTechProcess {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "InputTechProcess{" +
+                "id=" + id +
+                ", inputOperations=" + inputOperations +
+                '}';
+    }
 }

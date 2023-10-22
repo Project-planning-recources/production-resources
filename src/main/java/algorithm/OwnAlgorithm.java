@@ -18,8 +18,10 @@ public class OwnAlgorithm extends AbstractAlgorithm {
     protected ArrayList<Integer> alternativeness;
 
     @Override
-    protected int chooseAlternativeness(long concreteProductId, Product product) {
-        return this.alternativeness.get((int) concreteProductId - 1) - 1;
+    protected long chooseAlternativeness(long concreteProductId, Product product) {
+        // todo: ПРОВЕРИТЬ АЙДИ И ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+        throw new RuntimeException("ПРОВЕРИТЬ АЙДИ И ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ");
+//        return this.alternativeness.get((int) concreteProductId - 1);
     }
 
     public OwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String operationChooser, ArrayList<Integer> alternativeness) {
