@@ -41,6 +41,11 @@ public class Schedule implements Serializable {
 
     public Schedule(List<WorkingDay> week) {
         this.week = week;
+        for (short i = 1; i <= 7; i++) {
+            if (Objects.isNull(getWorkDayByDayNumber(i))) {
+                this.week.add(new WorkingDay(i, LocalTime.MIDNIGHT, LocalTime.MIDNIGHT, false));
+            }
+        }
     }
 
     public List<WorkingDay> getWeek() {
@@ -62,6 +67,7 @@ public class Schedule implements Serializable {
                return day;
            }
         }
-        throw new DateTimeException("День с номером " + dayNumber + " не найден");
+
+        return null;
     }
 }
