@@ -71,9 +71,12 @@ public class Generator {
         List<InputEquipmentGroup> groups = new ArrayList<>();
         for(long i = 1; i <= equipmentGroupCount; i++) {
             long equipmentCount = Random.randomInt(minEquipmentCount, maxEquipmentCount);
+            int lengthEquipmentCount = (int)(Math.log10(equipmentCount) + 1);
+
             List<InputEquipment> equipments = new ArrayList<>();
             for (long j = 1; j <= equipmentCount; j++) {
-                InputEquipment inputEquipment = new InputEquipment(j, "Оборудование " + i + "." + j);
+                long idEquipment = i * (long)Math.pow(10, lengthEquipmentCount) + j;
+                InputEquipment inputEquipment = new InputEquipment(idEquipment, "Оборудование " + i + "." + idEquipment);
                 equipments.add(inputEquipment);
             }
             InputEquipmentGroup inputEquipmentGroup = new InputEquipmentGroup(i, "Группа " + i, equipments);
