@@ -88,7 +88,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
             tickOfTime(timeTick);
 
         }
-
         setTimeForOrdersAndResult();
 
         return new OutputResult(this.result);
@@ -155,7 +154,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
             });
         });
 
-        System.out.println(this.allEquipment);
     }
 
     /**
@@ -415,9 +413,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                  * Выбираем техпроцесс
                  */
                 long techProcessId = chooseAlternativeness(this.concreteProductId, product);
-                System.out.println("q" + techProcessId);
                 LinkedList<Operation> operations = product.getTechProcessByTechProcessId(techProcessId).getOperations();
-//                LinkedList<Operation> operations = product.getTechProcesses().get(techProcessId).getOperations();
 
                 LinkedList<OperationResult> operationResults = new LinkedList<>();
                 ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(), techProcessId, null, null, operationResults, orderResult);
