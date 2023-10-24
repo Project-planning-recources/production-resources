@@ -79,6 +79,16 @@ public class OutputResult {
         return outputOrderResults;
     }
 
+    public ArrayList<Integer> getAlternativeness() {
+        ArrayList<Integer> alternativeness = new ArrayList<>();
+        outputOrderResults.forEach(outputOrderResult -> {
+            outputOrderResult.getProductResults().forEach(outputProductResult -> {
+                alternativeness.add((int)outputProductResult.getTechProcessId());
+            });
+        });
+        return alternativeness;
+    }
+
     @Override
     public String toString() {
         return "Result{" +

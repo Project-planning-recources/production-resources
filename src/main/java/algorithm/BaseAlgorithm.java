@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class BaseAlgorithm extends AbstractAlgorithm {
 
-    BaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) throws Exception {
+    public BaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) {
         super(inputProduction, inputOrders, startTime, "FirstElement", "Random");
     }
 

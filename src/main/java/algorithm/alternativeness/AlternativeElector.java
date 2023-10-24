@@ -11,5 +11,5 @@ public interface AlternativeElector {
      * @param product - деталь, для которой выбираем техпроцесс
      * @return номер выбранного техпроцесса
      */
-    int chooseTechProcess(Product product);
+    long chooseTechProcess(Product product);
 }

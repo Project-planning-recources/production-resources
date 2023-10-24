@@ -86,4 +86,14 @@ public class Operation {
     public long getNextOperationId() {
         return nextOperationId;
     }
+
+    @Override
+    public String toString() {
+        return "Operation{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", duration=" + duration +
+                ", requiredEquipment=" + requiredEquipment +
+                '}';
+    }
 }

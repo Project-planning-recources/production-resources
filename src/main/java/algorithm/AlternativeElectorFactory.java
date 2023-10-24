@@ -10,12 +10,17 @@ import algorithm.operationchooser.OperationChooser;
 public class AlternativeElectorFactory {
     private AlternativeElectorFactory() {}
 
-    public static AlternativeElector getAlternativeElector(String elector, AbstractAlgorithm abstractAlgorithm) throws Exception {
-        switch(elector) {
-            case("Random"):
-                return new RandomAlternativeElector();
-            default:
-                throw new Exception("Unsupported elector");
+    public static AlternativeElector getAlternativeElector(String elector, AbstractAlgorithm abstractAlgorithm) {
+
+        if(elector != null) {
+            switch(elector) {
+                case("Random"):
+                    return new RandomAlternativeElector();
+                default:
+                    throw new RuntimeException("Unsupported elector");
+            }
+        } else {
+            return null;
         }
     }
 }

@@ -9,8 +9,9 @@ import java.util.ArrayList;
 public class RandomAlternativeElector implements AlternativeElector {
 
     @Override
-    public int chooseTechProcess(Product product) {
+    public long chooseTechProcess(Product product) {
         ArrayList<TechProcess> techProcesses = product.getTechProcesses();
-        return Random.randomInt(techProcesses.size());
+        int randomed = Random.randomInt(techProcesses.size());
+        return techProcesses.get(randomed).getId();
     }
 }

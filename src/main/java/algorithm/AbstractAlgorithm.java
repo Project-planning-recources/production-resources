@@ -1,6 +1,7 @@
 package algorithm;
 
 import algorithm.alternativeness.AlternativeElector;
+import algorithm.model.order.Product;
 import algorithm.operationchooser.OperationChooser;
 import algorithm.model.order.Operation;
 import algorithm.model.order.Order;
@@ -59,7 +60,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
     protected LinkedList<LocalDateTime> timeline;
 
     public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
-                             String operationChooser, String alternativeElector) throws Exception {
+                             String operationChooser, String alternativeElector) {
         this.production = new Production(inputProduction);
         ArrayList<Order> orders = new ArrayList<>();
         inputOrders.forEach(inputOrder -> {
@@ -87,7 +88,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
             tickOfTime(timeTick);
 
         }
-
         setTimeForOrdersAndResult();
 
         return new OutputResult(this.result);
@@ -153,6 +153,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 this.allEquipment.put(equipment.getId(), equipment);
             });
         });
+
     }
 
     /**
@@ -229,7 +230,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         WorkingDay day = production.getSchedule().getWorkDayByDayNumber((short) newTick.getDayOfWeek().getValue());
         if (isWeekend(timeTick)) {
             while(true) {
-                if (Objects.isNull(day) || !day.getWeekday()) {
+                if (!day.getWeekday()) {
                     newTick = LocalDateTime.of(newTick.toLocalDate(), day.getStartWorkingTime());
                     if(isWeekend(newTick)) {
                         newTick = newTick.plus(1, ChronoUnit.DAYS);
@@ -392,6 +393,9 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     private long concreteProductId = 1;
 
+    protected long chooseAlternativeness(long concreteProductId, Product product) {
+        return this.alternativeElector.chooseTechProcess(product);
+    }
     /**
      * Добавляем операции заказа, у которого наступило время раннего начала, в список операций
      * Добавляем в объект результата объекты результатов заказа, деталей и операций
@@ -408,11 +412,11 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 /**
                  * Выбираем техпроцесс
                  */
-                int techProcessId = this.alternativeElector.chooseTechProcess(product);
-                LinkedList<Operation> operations = product.getTechProcesses().get(techProcessId).getOperations();
+                long techProcessId = chooseAlternativeness(this.concreteProductId, product);
+                LinkedList<Operation> operations = product.getTechProcessByTechProcessId(techProcessId).getOperations();
 
                 LinkedList<OperationResult> operationResults = new LinkedList<>();
-                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(), techProcessId + 1, null, null, operationResults, orderResult);
+                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(), techProcessId, null, null, operationResults, orderResult);
                 OperationResult prevOperation = null;
                 for (int j = 0; j < operations.size(); j++) {
                     Operation operation = operations.get(j);
