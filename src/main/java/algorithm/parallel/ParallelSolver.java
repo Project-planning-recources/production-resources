@@ -7,6 +7,7 @@ import parse.output.result.OutputResult;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ParallelSolver extends Thread {
 
@@ -15,7 +16,7 @@ public class ParallelSolver extends Thread {
     private LocalDateTime startTime;
 
     private OwnAlgorithm algorithm;
-    private ArrayList<Integer> alternativeness;
+    private HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> alternativeness;
     private ParallelMain main;
 
     private boolean solving = false;
@@ -30,7 +31,7 @@ public class ParallelSolver extends Thread {
         this.main = main;
     }
 
-    public boolean setData(ArrayList<Integer> alternativeness) {
+    public boolean setData(HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> alternativeness) {
         if (solving) {
             return false;
         } else {

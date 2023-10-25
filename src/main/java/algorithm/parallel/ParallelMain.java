@@ -1,6 +1,7 @@
 package algorithm.parallel;
 
 import algorithm.BaseAlgorithm;
+import algorithm.model.ResultPoint;
 import parse.input.order.InputOrder;
 import parse.input.order.InputOrderInformation;
 import parse.input.production.InputProduction;
@@ -9,6 +10,7 @@ import testing.ComparisonTester;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ParallelMain extends Thread {
 
@@ -39,7 +41,7 @@ public class ParallelMain extends Thread {
         try {
             OutputResult firstStart = baseAlgorithm.start();
 
-            ArrayList<Integer> firstStartAlternativeness = firstStart.getAlternativeness();
+            HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> firstStartAlternativeness = firstStart.getAlternativeness();
 
             this.solvers.forEach(parallelSolver -> parallelSolver.setData(firstStartAlternativeness));
             this.solvers.forEach(ParallelSolver::run);
@@ -69,7 +71,7 @@ public class ParallelMain extends Thread {
 
     }
 
-    public void addResult(ArrayList<Integer> alternativeness, OutputResult result) {
+    public void addResult(HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> alternativeness, OutputResult result) {
         this.results.add(new ResultPoint(alternativeness, result));
     }
 }
