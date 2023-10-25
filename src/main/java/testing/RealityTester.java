@@ -201,6 +201,7 @@ public class RealityTester {
 
     private static LocalDateTime makeNextDay(LocalDateTime dttm, InputSchedule schedule) {
         dttm = dttm.plusDays(1);
+        System.out.println((short)dttm.getDayOfWeek().getValue());
         InputWorkingDay workingDay = schedule.getWorkDayByDayNumber((short)dttm.getDayOfWeek().getValue());
         return LocalDateTime.of(dttm.toLocalDate(), workingDay.getStartWorkingTime());
     }

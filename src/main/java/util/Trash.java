@@ -31,28 +31,27 @@ public class Trash {
 
 
         GeneratorParameters generatorParameters = GeneratorJsonReader.readGeneratorParameters("generatorParameters.json");
-        ArrayList<GeneratedData> generatedData = Generator.generateData(100, generatorParameters);
+        ArrayList<GeneratedData> generatedData = Generator.generateData(1, generatorParameters);
 
         generatedData.forEach(generatedData1 -> {
-            if(GeneratorTester.test(generatorParameters, generatedData1) && PossibilityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation())) {
+            if (GeneratorTester.test(generatorParameters, generatedData1) && PossibilityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation())) {
                 System.out.println("Ура!");
                 XMLWriter writer = new XMLWriter();
-//            writer.writeProductionFile("production.xml", generatedData.get(0).getInputProduction());
-//            writer.writeOrderInformationFile("orders.xml", generatedData.get(0).getInputOrderInformation());
+                writer.writeProductionFile("production.xml", generatedData.get(0).getInputProduction());
+                writer.writeOrderInformationFile("orders.xml", generatedData.get(0).getInputOrderInformation());
 
                 Algorithm base = new BaseAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), LocalDateTime.of(2023, 10, 20, 0, 0));
-//            System.out.println("GENERATOR" + generatedData.get(0).getInputProduction());
-//            System.out.println("GENERATOR" + generatedData.get(0).getInputOrderInformation());
                 OutputResult result = null;
                 try {
                     result = base.start();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-//            writer.writeResultFile("result.xml", result);
-//            System.out.println("RESULT" + result);
-                if(RealityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation(), result)) {
+                writer.writeResultFile("result.xml", result);
+                if (RealityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation(), result)) {
                     System.out.println("Ура2!");
+
+                    System.out.println("Критерий = " + Criterion.getCriterion(generatedData1.getInputOrderInformation(), result));
                 } else {
                     System.out.println(":(2");
                 }

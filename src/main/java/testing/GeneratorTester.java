@@ -28,22 +28,29 @@ public class GeneratorTester {
         InputProduction inputProduction = generatedData.getInputProduction();
 
         InputSchedule inputSchedule = inputProduction.getSchedule();
-        if (generatorParameters.daysForSchedule != inputSchedule.getWeek().size()) {
-            System.out.println("Количество рабочих дней (" + inputSchedule.getWeek().size()
+        int iwdCounter = 0;
+        for (InputWorkingDay iwd :
+                inputSchedule.getWeek()) {
+            if(iwd.getWeekday()) {
+                iwdCounter++;
+            }
+        }
+        if (generatorParameters.daysForSchedule != iwdCounter) {
+            System.out.println("Количество рабочих дней (" + iwdCounter
                     + ") не совпадает с заданным количеством (" + generatorParameters.daysForSchedule + ")");
             return false;
         }
 
         for (InputWorkingDay day : inputSchedule.getWeek()) {
             LocalTime startTime = LocalTime.of(generatorParameters.startWorkingTime, 0);
-            if (!startTime.equals(day.getStartWorkingTime())) {
+            if (!startTime.equals(day.getStartWorkingTime()) && day.getWeekday()) {
                 System.out.println("Время начала рабочего дня (" + day.getStartWorkingTime().toString()
                         + ") не совпадает с заданным (" + startTime + ")");
                 return false;
             }
 
             LocalTime endTime = LocalTime.of(generatorParameters.endWorkingTime, 0);
-            if (!endTime.equals(day.getEndWorkingTime())) {
+            if (!endTime.equals(day.getEndWorkingTime()) && day.getWeekday()) {
                 System.out.println("Время конца рабочего дня (" + day.getEndWorkingTime().toString()
                         + ") не совпадает с заданным (" + startTime + ")");
                 return false;
