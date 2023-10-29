@@ -32,6 +32,11 @@ public class OperationResult {
     private long nextOperationId;
 
     /**
+     * ID необходимой группы оборудования
+     */
+    private long equipmentGroupId;
+
+    /**
      * ID выбранного для операции конкретного оборудования
      */
     private long equipmentId;
@@ -57,11 +62,12 @@ public class OperationResult {
 
     }
 
-    public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentId,
-                           LocalDateTime startTime, LocalDateTime endTime, ProductResult productResult) {
+    public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentGroupId,
+                           long equipmentId, LocalDateTime startTime, LocalDateTime endTime, ProductResult productResult) {
         this.operationId = operationId;
         this.prevOperationId = prevOperationId;
         this.nextOperationId = nextOperationId;
+        this.equipmentGroupId = equipmentGroupId;
         this.equipmentId = equipmentId;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -78,6 +84,10 @@ public class OperationResult {
 
     public long getNextOperationId() {
         return nextOperationId;
+    }
+
+    public long getEquipmentGroupId() {
+        return equipmentGroupId;
     }
 
     public long getEquipmentId() {

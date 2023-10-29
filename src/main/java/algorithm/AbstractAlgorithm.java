@@ -424,7 +424,8 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 OperationResult prevOperation = null;
                 for (int j = 0; j < operations.size(); j++) {
                     Operation operation = operations.get(j);
-                    OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(), operation.getNextOperationId(),
+                    OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(),
+                            operation.getNextOperationId(), operation.getRequiredEquipment(),
                             0, null, null, productResult);
 
                     if(prevOperation != null) {
