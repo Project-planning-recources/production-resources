@@ -90,6 +90,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         }
         setTimeForOrdersAndResult();
 
+
         return new OutputResult(this.result);
     }
 

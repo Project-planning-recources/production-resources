@@ -2,34 +2,85 @@ package util;
 
 
 import algorithm.Algorithm;
-import algorithm.AlgorithmFactory;
+import algorithm.AlternativenessOwnAlgorithm;
 import algorithm.BaseAlgorithm;
 import generator.GeneratedData;
 import generator.Generator;
 import generator.GeneratorJsonReader;
 import generator.GeneratorParameters;
-import parse.input.order.InputOrderInformation;
-import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
 import parse.input.XMLReader;
 import parse.output.XMLWriter;
-import testing.ComparisonTester;
 import testing.GeneratorTester;
 import testing.PossibilityTester;
 import testing.RealityTester;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Класс для любых тестов и проверок
  */
 public class Trash {
+    private final static XMLReader READER = new XMLReader();
+    private final static XMLWriter WRITER = new XMLWriter();
+    private final static GeneratorParameters GENERATOR_PARAMETERS;
+
+    static {
+        try {
+            GENERATOR_PARAMETERS = GeneratorJsonReader.readGeneratorParameters("generatorParameters.json");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) throws Exception {
 
+        System.out.println("=====START=====");
+//        checkGenerator();
+        checkOwnAlgorithm();
+        System.out.println("=====FINISH=====");
 
+    }
+
+    public static void checkOwnAlgorithm() throws Exception {
+
+        for (int i = 0; i < 1; i++) {
+            ArrayList<GeneratedData> generatedData = Generator.generateData(1, GENERATOR_PARAMETERS);
+            generatedData.forEach(generatedData1 -> {
+
+                if (GeneratorTester.test(GENERATOR_PARAMETERS, generatedData1) && PossibilityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation())) {
+                    System.out.println("yay!");
+                WRITER.writeProductionFile("production.xml", generatedData1.getInputProduction());
+                WRITER.writeOrderInformationFile("orders.xml", generatedData1.getInputOrderInformation());
+
+//
+
+//                InputOrderInformation orderFile = reader.readOrderFile("orders.xml");
+
+                    Algorithm algorithm = new AlternativenessOwnAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null);
+//                Algorithm algorithm = new BaseAlgorithm(generatedData1.getInputProduction(), orderFile.getOrders(), null);
+
+                    OutputResult result = null;
+                    try {
+                        result = algorithm.start();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+//                System.out.println(result);
+//                System.out.println(RealityTester.test(generatedData1.getInputProduction(), orderFile, result));
+                    //writer.writeResultFile("result.xml", result);
+
+                } else {
+                    System.out.println(":(");
+                }
+            });
+        }
+
+    }
+
+    public static void checkGenerator() throws Exception {
         GeneratorParameters generatorParameters = GeneratorJsonReader.readGeneratorParameters("generatorParameters.json");
         ArrayList<GeneratedData> generatedData = Generator.generateData(1, generatorParameters);
 
@@ -59,8 +110,7 @@ public class Trash {
                 System.out.println(":(");
             }
         });
-
-
     }
+
 
 }
