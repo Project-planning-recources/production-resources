@@ -59,26 +59,45 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected LinkedList<LocalDateTime> timeline;
 
+
+    public AbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime,
+                             OperationChooser operationChooser, AlternativeElector alternativeElector) {
+        this.production = production;
+        this.orders = orders;
+        this.startTime = startTime;
+
+        initAlgorithm(operationChooser, alternativeElector);
+    }
     public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
-                             String operationChooser, String alternativeElector) {
+                             OperationChooser operationChooser, AlternativeElector alternativeElector) {
         this.production = new Production(inputProduction);
         ArrayList<Order> orders = new ArrayList<>();
         inputOrders.forEach(inputOrder -> {
             orders.add(new Order(inputOrder));
         });
         this.orders = orders;
-
-        // todo: Использовать время начала
         this.startTime = startTime;
 
+        initAlgorithm(operationChooser, alternativeElector);
+    }
+
+    protected void initAlgorithm(OperationChooser operationChooser, AlternativeElector alternativeElector) {
         this.ongoingOperations = new ArrayList<>();
         this.waitingOperations = new ArrayList<>();
         initOperationsHashMap();
         initEquipmentHashMap();
         initTimeline();
         initResult();
-        this.operationChooser = OperationChooserFactory.getOperationChooser(operationChooser, this);
-        this.alternativeElector = AlternativeElectorFactory.getAlternativeElector(alternativeElector, this);
+        this.operationChooser = operationChooser;
+        this.alternativeElector = alternativeElector;
+    }
+
+    /**
+     * Если поддерживается операция, возвращает хэш-мапу альтернативностей
+     * @return хэш-мапа распределения альтернативностей
+     */
+    protected HashMap<Long, Integer> getAlternativenessMap() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -394,9 +413,9 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     private long concreteProductId = 1;
 
-    protected long chooseAlternativeness(long concreteProductId, Product product) {
-        return this.alternativeElector.chooseTechProcess(product);
-    }
+//    protected long chooseAlternativeness(long concreteProductId, Product product) {
+//        return this.alternativeElector.chooseTechProcess(product);
+//    }
     /**
      * Добавляем операции заказа, у которого наступило время раннего начала, в список операций
      * Добавляем в объект результата объекты результатов заказа, деталей и операций
@@ -413,7 +432,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 /**
                  * Выбираем техпроцесс
                  */
-                long techProcessId = chooseAlternativeness(this.concreteProductId, product);
+                long techProcessId = this.alternativeElector.chooseTechProcess(product);
                 LinkedList<Operation> operations = product.getTechProcessByTechProcessId(techProcessId).getOperations();
 
                 LinkedList<OperationResult> operationResults = new LinkedList<>();

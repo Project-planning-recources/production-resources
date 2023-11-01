@@ -1,8 +1,10 @@
 package algorithm;
 
+import algorithm.alternativeness.AlternativeElector;
 import algorithm.model.order.Order;
 import algorithm.model.order.Product;
 import algorithm.model.production.Production;
+import algorithm.operationchooser.OperationChooser;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -16,18 +18,16 @@ import java.util.HashMap;
  */
 public class OwnAlgorithm extends AbstractAlgorithm {
 
-    protected HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> alternativeness;
+    protected HashMap<Long, Integer> variant;
+
+    public OwnAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector, HashMap<Long, Integer> variant) {
+        super(production, orders, startTime, operationChooser, alternativeElector);
+        this.variant = variant;
+
+    }
 
     @Override
-    protected long chooseAlternativeness(long concreteProductId, Product product) {
-        // todo: переделать функцию, идти по мапе детали и вычитать единицу соответствующую альтернативности, возвращая этот тип альтернативности. Поменять принимаемые параметры
-        throw new RuntimeException("ПРОВЕРИТЬ АЙДИ И ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ");
-//        return this.alternativeness.get((int) concreteProductId - 1);
+    protected HashMap<Long, Integer> getAlternativenessMap() {
+        return this.variant;
     }
-
-    public OwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String operationChooser, HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> alternativeness) {
-        super(inputProduction, inputOrders, startTime, operationChooser, null);
-        this.alternativeness = alternativeness;
-    }
-
 }

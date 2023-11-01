@@ -20,6 +20,8 @@ public class Product {
      */
     private long id;
 
+    private long orderId;
+
     /**
      * Название детали
      */
@@ -30,6 +32,7 @@ public class Product {
      */
     private Integer count;
 
+
     /**
      * Список возможных альтернативных техпроцессов для детали
      */
@@ -39,8 +42,9 @@ public class Product {
 
     }
 
-    public Product(InputProduct inputProduct) {
+    public Product(InputProduct inputProduct, long orderId) {
         this.id = inputProduct.getId();
+        this.orderId = orderId;
         this.name = inputProduct.getName();
         this.count = inputProduct.getCount();
 
@@ -60,6 +64,10 @@ public class Product {
 
     public long getId() {
         return id;
+    }
+
+    public long getOrderId() {
+        return orderId;
     }
 
     public String getName() {

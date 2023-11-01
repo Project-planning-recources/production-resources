@@ -31,12 +31,12 @@ public class ParallelSolver extends Thread {
         this.main = main;
     }
 
-    public boolean setData(HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> alternativeness) {
+    public boolean setData(HashMap<Long, Integer> variant) {
         if (solving) {
             return false;
         } else {
             this.alternativeness = alternativeness;
-            this.algorithm = new OwnAlgorithm(this.inputProduction, this.inputOrders, this.startTime, "FirstElement", alternativeness);
+//            this.algorithm = new OwnAlgorithm(this.inputProduction, this.inputOrders, this.startTime, "FirstElement", variant);
             return true;
         }
     }

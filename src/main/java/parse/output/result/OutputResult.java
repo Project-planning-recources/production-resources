@@ -80,7 +80,7 @@ public class OutputResult {
         return outputOrderResults;
     }
 
-    public HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> getAlternativeness() {
+    public HashMap<Long, Integer> getAlternativeness() {
 
         return null;
     }

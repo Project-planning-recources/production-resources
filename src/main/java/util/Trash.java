@@ -18,6 +18,7 @@ import testing.RealityTester;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Класс для любых тестов и проверок
@@ -51,16 +52,13 @@ public class Trash {
             generatedData.forEach(generatedData1 -> {
 
                 if (GeneratorTester.test(GENERATOR_PARAMETERS, generatedData1) && PossibilityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation())) {
-                    System.out.println("yay!");
-                WRITER.writeProductionFile("production.xml", generatedData1.getInputProduction());
-                WRITER.writeOrderInformationFile("orders.xml", generatedData1.getInputOrderInformation());
+                    WRITER.writeProductionFile("production.xml", generatedData1.getInputProduction());
+                    WRITER.writeOrderInformationFile("orders.xml", generatedData1.getInputOrderInformation());
 
 //
 
-//                InputOrderInformation orderFile = reader.readOrderFile("orders.xml");
-
-                    Algorithm algorithm = new AlternativenessOwnAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null);
-//                Algorithm algorithm = new BaseAlgorithm(generatedData1.getInputProduction(), orderFile.getOrders(), null);
+                    Algorithm algorithm = new AlternativenessOwnAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null, 5, 10);
+//                    Algorithm algorithm = new BaseAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null);
 
                     OutputResult result = null;
                     try {
@@ -68,9 +66,9 @@ public class Trash {
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-//                System.out.println(result);
-//                System.out.println(RealityTester.test(generatedData1.getInputProduction(), orderFile, result));
-                    //writer.writeResultFile("result.xml", result);
+//                    System.out.println(result);
+                    System.out.println(RealityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation(), result));
+                    WRITER.writeResultFile("result.xml", result);
 
                 } else {
                     System.out.println(":(");

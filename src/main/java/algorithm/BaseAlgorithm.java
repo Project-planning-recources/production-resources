@@ -1,5 +1,7 @@
 package algorithm;
 
+import algorithm.alternativeness.RandomAlternativeElector;
+import algorithm.operationchooser.FirstElementChooser;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 public class BaseAlgorithm extends AbstractAlgorithm {
 
     public BaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) {
-        super(inputProduction, inputOrders, startTime, "FirstElement", "Random");
+        super(inputProduction, inputOrders, startTime, new FirstElementChooser(), new RandomAlternativeElector());
     }
 
 }

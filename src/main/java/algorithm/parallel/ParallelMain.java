@@ -41,7 +41,7 @@ public class ParallelMain extends Thread {
         try {
             OutputResult firstStart = baseAlgorithm.start();
 
-            HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> firstStartAlternativeness = firstStart.getAlternativeness();
+            HashMap<Long, Integer> firstStartAlternativeness = firstStart.getAlternativeness();
 
             this.solvers.forEach(parallelSolver -> parallelSolver.setData(firstStartAlternativeness));
             this.solvers.forEach(ParallelSolver::run);
