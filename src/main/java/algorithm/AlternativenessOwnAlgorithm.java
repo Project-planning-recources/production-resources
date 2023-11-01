@@ -107,9 +107,10 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
                 i--;
             }
         }
-
+        System.out.println("qwe");
         Algorithm algorithm = new OwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(this.variation.get(0)), this.variation.get(0));
         OutputResult result = algorithm.start();
+        System.out.println("rty");
 
         double criterion = Criterion.getCriterion(this.orders, result);
         System.out.println(criterion);

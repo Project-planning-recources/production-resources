@@ -20,7 +20,6 @@ public class ProductionResources {
 
 
     private static final String[] FOR_FIRST_ARG = {"ALG", "GEN", "TEST", "HELP"};
-
     private static final String[] FOR_ALG_TYPE = {"BASE", "OWN"};
     private static final String[] FOR_TEST_TYPE = {"POSS", "REAL", "COMP"};
     private static final XMLReader READER = new XMLReader();
@@ -57,9 +56,25 @@ public class ProductionResources {
                 Algorithm algorithm = null;
                 if ("base".equalsIgnoreCase(argv[1])) {
                     algorithm = AlgorithmFactory.getNewBaseAlgorithm(production, orders.getOrders(), null);
-                    WRITER.writeResultFile(argv[4], algorithm.start());
+                    OutputResult result = algorithm.start();
+                    if(RealityTester.test(production, orders, result)) {
+                        WRITER.writeResultFile(argv[4], result);
+                    } else {
+                        System.out.println("Неверные результаты.");
+                    }
+                } else if ("own".equalsIgnoreCase(argv[1])) {
+                    System.out.println("1");
+                    algorithm = AlgorithmFactory.getNewOwnAlgorithm(production, orders.getOrders(), null, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]), Integer.parseInt(argv[7]));
+                    System.out.println("2");
+                    OutputResult result = algorithm.start();
+                    System.out.println("3");
+                    if(RealityTester.test(production, orders, result)) {
+                        WRITER.writeResultFile(argv[4], result);
+                    } else {
+                        System.out.println("Неверные результаты.");
+                    }
                 } else {
-                    System.out.println("WILL BE IN FUTURE");
+                    System.out.println("Неверный список аргументов. Используйте \"help\" чтобы увидеть список доступных команд.");
                 }
             }
         }else if(argv.length > 0 && "gen".equalsIgnoreCase(argv[0]) && checkForGen(argv)) {
@@ -115,10 +130,19 @@ public class ProductionResources {
 
     private static boolean checkForAlg(String[] argv) {
         if (argv.length >= 5) {
-            for (String alg :
-                    FOR_ALG_TYPE) {
-                if (alg.equalsIgnoreCase(argv[1])) {
-                    return true;
+            if("base".equalsIgnoreCase(argv[1])) {
+                return true;
+            }
+            if ("own".equalsIgnoreCase(argv[1])) {
+                if (argv.length == 8) {
+                    try {
+                        Integer.parseInt(argv[5]);
+                        Integer.parseInt(argv[6]);
+                        Integer.parseInt(argv[7]);
+                        return true;
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
                 }
             }
         }

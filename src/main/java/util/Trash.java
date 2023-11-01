@@ -55,7 +55,10 @@ public class Trash {
                     WRITER.writeProductionFile("production.xml", generatedData1.getInputProduction());
                     WRITER.writeOrderInformationFile("orders.xml", generatedData1.getInputOrderInformation());
 
-//
+
+                    WRITER.writeProductionFile("testprod.xml",READER.readProductionFile("production.xml"));
+                    WRITER.writeOrderInformationFile("testorder.xml", READER.readOrderFile("orders.xml"));
+
 
                     Algorithm algorithm = new AlternativenessOwnAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null, 5, 10);
 //                    Algorithm algorithm = new BaseAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null);
@@ -69,6 +72,11 @@ public class Trash {
 //                    System.out.println(result);
                     System.out.println(RealityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation(), result));
                     WRITER.writeResultFile("result.xml", result);
+
+
+
+                    WRITER.writeResultFile("testresult.xml", READER.readResultFile("result.xml"));
+                    System.out.println("Ура!");
 
                 } else {
                     System.out.println(":(");
