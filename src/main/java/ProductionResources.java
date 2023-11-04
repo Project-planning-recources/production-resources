@@ -1,5 +1,4 @@
-import algorithm.Algorithm;
-import algorithm.AlgorithmFactory;
+import algorithm.*;
 import generator.GeneratedData;
 import generator.Generator;
 import generator.GeneratorJsonReader;
@@ -13,7 +12,12 @@ import testing.ComparisonTester;
 import testing.GeneratorTester;
 import testing.PossibilityTester;
 import testing.RealityTester;
+import util.Criterion;
+import util.Data;
 
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class ProductionResources {
@@ -36,10 +40,11 @@ public class ProductionResources {
      *             <p>GEN - запустить генератор файлов производства и заказов, сохранить в файлы</p>
      *             <p>Следующие аргументы для GEN: <имя файла параметров генератора>.json <количество экземпляров для генерации></p>
      *             <p>TEST - запустить тестирование на уже существующих данных</p>
-     *             <p>Второй аргумент после TEST - Тип теста: POSS / REAL / COMP</p>
+     *             <p>Второй аргумент после TEST - Тип теста: POSS / REAL / COMP / BASIS</p>
      *             <p>      Следующие аргументы для POSS: <имя файла производства>.xml <имя файла заказов>.xml</p>
      *             <p>      Следующие аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml</p>
      *             <p>      Следующие аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml </p>
+     *             <p>      Следующие аргументы для BASIS: <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей></p>
      *             <br>
      *             <p>Примеры:</p>
      *             <p>      java ProductionResources ALG BASE production.xml orders.xml result.xml </p>
@@ -57,7 +62,7 @@ public class ProductionResources {
                 if ("base".equalsIgnoreCase(argv[1])) {
                     algorithm = AlgorithmFactory.getNewBaseAlgorithm(production, orders.getOrders(), null);
                     OutputResult result = algorithm.start();
-                    if(RealityTester.test(production, orders, result)) {
+                    if (RealityTester.test(production, orders, result)) {
                         WRITER.writeResultFile(argv[4], result);
                     } else {
                         System.out.println("Неверные результаты.");
@@ -68,7 +73,7 @@ public class ProductionResources {
                     System.out.println("2");
                     OutputResult result = algorithm.start();
                     System.out.println("3");
-                    if(RealityTester.test(production, orders, result)) {
+                    if (RealityTester.test(production, orders, result)) {
                         WRITER.writeResultFile(argv[4], result);
                     } else {
                         System.out.println("Неверные результаты.");
@@ -77,15 +82,15 @@ public class ProductionResources {
                     System.out.println("Неверный список аргументов. Используйте \"help\" чтобы увидеть список доступных команд.");
                 }
             }
-        }else if(argv.length > 0 && "gen".equalsIgnoreCase(argv[0]) && checkForGen(argv)) {
+        } else if (argv.length > 0 && "gen".equalsIgnoreCase(argv[0]) && checkForGen(argv)) {
             GeneratorParameters generatorParameters = GeneratorJsonReader.readGeneratorParameters(argv[1]);
             int numberOfPacks = Integer.parseInt(argv[2]);
             ArrayList<GeneratedData> generatedData = Generator.generateData(numberOfPacks, generatorParameters);
             for (int i = 0; i < numberOfPacks; i++) {
-                if(GeneratorTester.test(generatorParameters, generatedData.get(i))) {
+                if (GeneratorTester.test(generatorParameters, generatedData.get(i))) {
                     if (PossibilityTester.test(generatedData.get(i).getInputProduction(), generatedData.get(i).getInputOrderInformation())) {
-                        WRITER.writeProductionFile("production" + i + ".xml", generatedData.get(i).getInputProduction());
-                        WRITER.writeOrderInformationFile( "orders" + i + ".xml", generatedData.get(i).getInputOrderInformation());
+                        WRITER.writeProductionFile((i + 1) + "_production.xml", generatedData.get(i).getInputProduction());
+                        WRITER.writeOrderInformationFile((i + 1) + "_orders.xml", generatedData.get(i).getInputOrderInformation());
                     } else {
                         System.out.println("На шаге " + i + " сгенерированы неверные данные.");
                     }
@@ -93,34 +98,80 @@ public class ProductionResources {
                     System.out.println("На шаге " + i + " сгенерированные данные не соответствуют параметрам генератора.");
                 }
             }
-        }else if (argv.length > 0 && "test".equalsIgnoreCase(argv[0]) && checkForTest(argv)) {
-            InputProduction production = null;
-            InputOrderInformation orders = null;
-            OutputResult result1 = null;
-            OutputResult result2 = null;
-            if ("poss".equalsIgnoreCase(argv[1])) {
-                production = READER.readProductionFile(argv[2]);
-                orders = READER.readOrderFile(argv[3]);
-                if (PossibilityTester.test(production, orders)) {
-                    System.out.println("Заказы можно выполнить на данном производстве.");
-                } else {
-                    System.out.println("Заказы нельзя выполнить на данном производстве.");
+        } else if (argv.length > 0 && "test".equalsIgnoreCase(argv[0]) && checkForTest(argv)) {
+            if ("basis".equalsIgnoreCase(argv[1])) {
+                int count = Integer.parseInt(argv[3]);
+                int startGen = Integer.parseInt(argv[4]);
+                int budgetGen = Integer.parseInt(argv[5]);
+
+                try (FileWriter writer = new FileWriter("results.csv", false)) {
+                    writer.write("№;Количество заказов;Количество операций;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
+                            "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Общее время просрочки;Критерий\n");
+
+                    for (int i = 0; i < count; i++) {
+                        InputProduction production = READER.readProductionFile("Small Basis/" + (i + 1) + "_production.xml");
+                        InputOrderInformation orders = READER.readOrderFile("Small Basis/" + (i + 1) + "_orders.xml");
+
+                        if (PossibilityTester.test(production, orders)) {
+//                            BaseAlgorithm baseAlgorithm = new BaseAlgorithm(production, orders.getOrders(), null);
+//                            OutputResult baseResult = baseAlgorithm.start();
+
+                            AlternativenessOwnAlgorithm ownAlgorithm = new AlternativenessOwnAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
+                            OutputResult ownResult = ownAlgorithm.start();
+
+                            if (RealityTester.test(production, orders, ownResult)) {
+                                Data.AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
+                                writer.write((i + 1) + ";" +
+                                        orders.getOrders().size() + ";" +
+                                        Data.getOperationsCount(ownResult) + ";" +
+                                        alternativenessCount.min + ";" +
+                                        alternativenessCount.max + ";" +
+                                        alternativenessCount.average + ";" +
+                                        Criterion.getCriterion(orders, ownResult) + "\n");
+                                WRITER.writeResultFile((i+1) + "_result.xml", ownResult);
+                                System.out.println(i + ": Завершён...");
+                            } else {
+                                System.out.println(i + ": Результат собственного алгоритма не соответствует заказам");
+                            }
+
+                        } else {
+                            System.out.println(i + ": Заказы не соответствуют производству");
+                        }
+                    }
+                    System.out.println("Работа завершена.");
                 }
-            } else if ("real".equalsIgnoreCase(argv[1])) {
-                production = READER.readProductionFile(argv[2]);
-                orders = READER.readOrderFile(argv[3]);
-                result1 = READER.readResultFile(argv[4]);
-                if(RealityTester.test(production, orders, result1)) {
-                    System.out.println("Данная укладка заказов по производственному времени возможна.");
-                } else {
-                    System.out.println("Данная укладка заказов по производственному времени невозможна.");
-                }
+
+
             } else {
-                orders = READER.readOrderFile(argv[2]);
-                result1 = READER.readResultFile(argv[3]);
-                result2 = READER.readResultFile(argv[4]);
-                ComparisonTester.test(orders, result1, result2);
+                InputProduction production = null;
+                InputOrderInformation orders = null;
+                OutputResult result1 = null;
+                OutputResult result2 = null;
+                if ("poss".equalsIgnoreCase(argv[1])) {
+                    production = READER.readProductionFile(argv[2]);
+                    orders = READER.readOrderFile(argv[3]);
+                    if (PossibilityTester.test(production, orders)) {
+                        System.out.println("Заказы можно выполнить на данном производстве.");
+                    } else {
+                        System.out.println("Заказы нельзя выполнить на данном производстве.");
+                    }
+                } else if ("real".equalsIgnoreCase(argv[1])) {
+                    production = READER.readProductionFile(argv[2]);
+                    orders = READER.readOrderFile(argv[3]);
+                    result1 = READER.readResultFile(argv[4]);
+                    if (RealityTester.test(production, orders, result1)) {
+                        System.out.println("Данная укладка заказов по производственному времени возможна.");
+                    } else {
+                        System.out.println("Данная укладка заказов по производственному времени невозможна.");
+                    }
+                } else {
+                    orders = READER.readOrderFile(argv[2]);
+                    result1 = READER.readResultFile(argv[3]);
+                    result2 = READER.readResultFile(argv[4]);
+                    ComparisonTester.test(orders, result1, result2);
+                }
             }
+
         } else if (argv.length > 0 && "help".equalsIgnoreCase(argv[0])) {
             help();
         } else {
@@ -130,7 +181,7 @@ public class ProductionResources {
 
     private static boolean checkForAlg(String[] argv) {
         if (argv.length >= 5) {
-            if("base".equalsIgnoreCase(argv[1])) {
+            if ("base".equalsIgnoreCase(argv[1])) {
                 return true;
             }
             if ("own".equalsIgnoreCase(argv[1])) {
@@ -151,7 +202,12 @@ public class ProductionResources {
 
     private static boolean checkForGen(String[] argv) {
         if (argv.length >= 3) {
-            return Integer.parseInt(argv[2]) > 0;
+            try {
+                return Integer.parseInt(argv[2]) > 0;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+
         }
         return false;
     }
@@ -162,7 +218,24 @@ public class ProductionResources {
                 return true;
             } else if ("real".equalsIgnoreCase(argv[1]) && argv.length >= 5) {
                 return true;
-            } else return "comp".equalsIgnoreCase(argv[1]) && argv.length >= 5;
+            } else if ("comp".equalsIgnoreCase(argv[1]) && argv.length >= 6) {
+                return true;
+            } else {
+                if ("basis".equalsIgnoreCase(argv[1]) && argv.length >= 6) {
+                    Integer count = null;
+                    Integer startGen = null;
+                    Integer budget = null;
+                    try {
+                        count = Integer.parseInt(argv[3]);
+                        startGen = Integer.parseInt(argv[4]);
+                        budget = Integer.parseInt(argv[5]);
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                    return count > 0 && startGen > 0 && budget > startGen;
+                }
+
+            }
         }
         return false;
     }

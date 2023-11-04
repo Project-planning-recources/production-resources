@@ -19,7 +19,6 @@ public class Criterion {
 
         for (InputOrder order : ordersInformation.getOrders()) {
             HashMap<Long, HashMap<Long, Double>> productWorksMap = getProductWorksMap(order);
-            System.out.println(productWorksMap);
             for (OutputOrderResult firstOrderResult : result.getOrderResults()) {
                 if (order.getId() == firstOrderResult.getOrderId()) {
                     criterion += Criterion.getCriterionForOrder(order, firstOrderResult, productWorksMap);
