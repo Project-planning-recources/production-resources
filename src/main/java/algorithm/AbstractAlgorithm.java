@@ -12,6 +12,8 @@ import algorithm.model.result.OperationResult;
 import algorithm.model.result.OrderResult;
 import algorithm.model.result.ProductResult;
 import algorithm.model.result.Result;
+import algorithm.parallel.CompositeRecord;
+import algorithm.parallel.Record;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -19,6 +21,7 @@ import parse.output.result.OutputResult;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class AbstractAlgorithm implements Algorithm {
 
@@ -26,6 +29,8 @@ public abstract class AbstractAlgorithm implements Algorithm {
      * Предприятие
      */
     protected Production production;
+
+    protected Record record;
 
     /**
      * Все заказы
@@ -59,6 +64,16 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected LinkedList<LocalDateTime> timeline;
 
+    protected HashMap<Long, Operation> allOperations;
+
+    protected Result result;
+
+    protected HashMap<Long, Equipment> allEquipment;
+
+    private ArrayList<OperationResult> ongoingOperations;
+
+    private long concreteProductId = 1;
+
     public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
                              String operationChooser, String alternativeElector) {
         this.production = new Production(inputProduction);
@@ -79,6 +94,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         initResult();
         this.operationChooser = OperationChooserFactory.getOperationChooser(operationChooser, this);
         this.alternativeElector = AlternativeElectorFactory.getAlternativeElector(alternativeElector, this);
+        this.record = new CompositeRecord(production.getEquipmentGroups());
     }
 
     @Override
@@ -127,8 +143,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
         this.result.setAllEndTime(lastResult);
     }
 
-    protected HashMap<Long, Operation> allOperations;
-
     protected void initOperationsHashMap () {
         this.allOperations = new HashMap<>();
 
@@ -142,8 +156,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
             });
         });
     }
-
-    protected HashMap<Long, Equipment> allEquipment;
 
     protected void initEquipmentHashMap () {
         this.allEquipment = new HashMap<>();
@@ -166,9 +178,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
             addTimeToTimeline(order.getStartTime());
         });
     }
-
-
-    protected Result result;
 
     /**
      * Создаёт пустой объект результатов
@@ -205,7 +214,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
             }
         }
     }
-
 
     /**
      * Проверяет, рабочее время или выходной
@@ -293,9 +301,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
         return finalTime;
     }
 
-
-    private ArrayList<OperationResult> ongoingOperations;
-
     /**
      * В данной функции обрабатываем один такт времени
      */
@@ -335,48 +340,29 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     }
 
+    protected void startOperations(LocalDateTime timeTick) {
 
+        OperationResult choose;
 
-    protected void startOperations(LocalDateTime timeTick) throws Exception {
-
-        // todo: Убрать кандидатов, сделать выбор из фронта по критерию и распараллелить
-        ArrayList<OperationResult> candidates = new ArrayList<>();
-        this.waitingOperations.forEach(waitingOperation -> {
-            try {
-                if(this.production.isOperationCanBePerformed(this.allOperations.get(waitingOperation.getOperationId()).getRequiredEquipment())) {
-                    candidates.add(waitingOperation);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        while (true) {
+            choose = record.getRecord(waitingOperations, timeTick);
+            if (Objects.isNull(choose)) {
+                break;
             }
-        });
-        while(!candidates.isEmpty()) {
-            OperationResult choose = operationChooser.choose(candidates);
 
             choose.setStartTime(timeTick);
-            if(choose.getPrevOperationId() == 0) {
+            if (choose.getPrevOperationId() == 0) {
                 choose.getProductResult().setStartTime(timeTick);
             }
             LocalDateTime endTime = addOperationTimeToTimeline(timeTick, this.allOperations.get(choose.getOperationId()).getDuration());
             choose.setEndTime(endTime);
 
-            Equipment equipment = production.getEquipmentForOperation(choose, this.allOperations.get(choose.getOperationId()).getRequiredEquipment());
+            Equipment equipment = allEquipment.get(choose.getEquipmentId());
+            equipment.addOperation(choose);
             equipment.setUsing(true);
-            choose.setEquipmentId(equipment.getId());
 
             this.waitingOperations.remove(choose);
             this.ongoingOperations.add(choose);
-
-            candidates.clear();
-            this.waitingOperations.forEach(waitingOperation -> {
-                try {
-                    if(this.production.isOperationCanBePerformed(this.allOperations.get(waitingOperation.getOperationId()).getRequiredEquipment())) {
-                        candidates.add(waitingOperation);
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
         }
     }
 
@@ -395,11 +381,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     }
 
-    private long concreteProductId = 1;
-
     protected long chooseAlternativeness(long concreteProductId, Product product) {
         return this.alternativeElector.chooseTechProcess(product);
     }
+
     /**
      * Добавляем операции заказа, у которого наступило время раннего начала, в список операций
      * Добавляем в объект результата объекты результатов заказа, деталей и операций
@@ -444,7 +429,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 productResults.add(productResult);
             }
         });
-
 
         this.result.getOrderResults().add(orderResult);
     }
