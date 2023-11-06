@@ -34,7 +34,7 @@ public class Trash {
     public static void main(String[] args) throws Exception {
 
 
-        /*GeneratorParameters generatorParameters = GeneratorJsonReader.readGeneratorParameters("generatorParameters.json");
+        GeneratorParameters generatorParameters = GeneratorJsonReader.readGeneratorParameters("generatorParameters.json");
         ArrayList<GeneratedData> generatedData = Generator.generateData(100, generatorParameters);
 
         generatedData.forEach(generatedData1 -> {
@@ -63,34 +63,7 @@ public class Trash {
             } else {
                 System.out.println(":(");
             }
-        });*/
-
-        List<OperationResult> performedOperations = new ArrayList<>();
-        OperationResult o1 = new OperationResult();
-        o1.setEndTime(LocalDateTime.now().minusYears(1));
-        performedOperations.add(o1);
-        OperationResult o2 = new OperationResult();
-        o2.setEndTime(LocalDateTime.now().plusYears(1));
-        performedOperations.add(o2);
-        OperationResult o3 = new OperationResult();
-        o3.setEndTime(LocalDateTime.now().plusYears(2));
-        performedOperations.add(o3);
-        OperationResult o4 = new OperationResult();
-        performedOperations.add(o4);
-
-        LocalDateTime whenEquipmentWouldBeFree = performedOperations
-                .stream()
-                .filter(operation -> Objects.nonNull(operation.getEndTime()))
-                .filter(operation -> operation.getEndTime().isAfter(LocalDateTime.now()))
-                .map(OperationResult::getEndTime)
-                .collect(Collectors.toList())
-                .stream()
-                .max(LocalDateTime::compareTo)
-                .orElse(null);
-
-        System.out.println(Objects.nonNull(whenEquipmentWouldBeFree));
-        System.out.println(whenEquipmentWouldBeFree);
-
+        });
     }
 
 }
