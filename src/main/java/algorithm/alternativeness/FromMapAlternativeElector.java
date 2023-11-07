@@ -17,7 +17,7 @@ public class FromMapAlternativeElector implements AlternativeElector{
 
 
         for (TechProcess techProcess : product.getTechProcesses()) {
-            long hash = Hash.hashForTechProcess(product.getOrderId(), product.getId(), techProcess.getId());
+            long hash = Hash.hash(product.getOrderId(), product.getId(), techProcess.getId());
             int count = variant.get(hash);
             if(count > 0) {
                 variant.replace(hash, --count);

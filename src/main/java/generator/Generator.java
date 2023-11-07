@@ -128,7 +128,12 @@ public class Generator {
 
             for (long j = 1; j <= detailsTypeCount; j++) {
                 int detailsCount = Random.randomInt(minDetailsCount, maxDetailsCount);
-                long techProcessCount = Random.randomInt(minTechProcessCount, maxTechProcessCount);
+                long techProcessCount;
+                if(j == 1) {
+                    techProcessCount = maxTechProcessCount;
+                } else {
+                    techProcessCount = Random.randomInt(minTechProcessCount, maxTechProcessCount);
+                }
                 int lengthTechProcessCount = (int)(Math.log10(techProcessCount) + 1);
 
                 ArrayList<InputTechProcess> techProcesses = new ArrayList<>();
