@@ -43,6 +43,7 @@ public class Trash {
 //        checkGenerator();
         checkOwnAlgorithm();
 
+
         System.out.println("=====FINISH=====");
 
     }

@@ -189,48 +189,92 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
                 flag = false;
             }
         }
+
         System.out.println(firstVariant);
         System.out.println(secondVariant);
 
-        System.out.println(getCriterionForVariant(firstVariant));
-        System.out.println(getCriterionForVariant(secondVariant));
+        double criterionForFirstVariant = getCriterionForVariant(firstVariant);
+        double criterionForSecondVariant = getCriterionForVariant(secondVariant);
+
+        HashMap<Long, Integer> betweenVariant = null;
+        HashMap<Long, Integer> beyondVariant = null;
+
+        if(criterionForFirstVariant < criterionForSecondVariant) {
+            System.out.println("1 < 2");
+            betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 10.8);
+            beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 11.2);
+        } else if(criterionForFirstVariant > criterionForSecondVariant) {
+            System.out.println("1 > 2");
+            betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 10.2);
+            beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, -10.2);
+        } else {
+            betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.5);
+        }
+
+        System.out.println(betweenVariant);
+        System.out.println(beyondVariant);
 
 
-        // alpha = 0.5 - среднее арифметическое
+    }
 
+    private HashMap<Long, Integer> generateVariantFromTwo(HashMap<Long, Integer> firstVariant,
+                                                          HashMap<Long, Integer> secondVariant,
+                                                          double alpha) {
+        HashMap<Long, Double> alphaVariant = new HashMap<>();
+        for (Order order : this.orders) {
+            for (Product product : order.getProducts()) {
+                for (TechProcess techProcess : product.getTechProcesses()) {
+                    long hash = Hash.hash(order.getId(), product.getId(), techProcess.getId());
 
-        for(double alpha = 0; alpha <= 1; alpha += 0.2) {
-            for (Order order : this.orders) {
-                for (Product product : order.getProducts()) {
-                    for (TechProcess techProcess : product.getTechProcesses()) {
-                        long hash = Hash.hash(order.getId(), product.getId(), techProcess.getId());
+                    alphaVariant.put(hash, firstVariant.get(hash) * alpha + secondVariant.get(hash) * (1-alpha));
+                }
+            }
+        }
+        System.out.println(alphaVariant);
+        return makeVariantIntegerAndPositive(alphaVariant);
+    }
 
-                        alphaVariant.put(hash, firstVariant.get(hash) * alpha + secondVariant.get(hash) * (1-alpha));
+    private HashMap<Long, Integer> makeVariantIntegerAndPositive(HashMap<Long, Double> alphaVariant) {
+        HashMap<Long, Integer> integerAndPositiveAlphaVariant = new HashMap<>();
+        System.out.println("negative double: " + alphaVariant);
+        for (Order order : this.orders) {
+            for (Product product : order.getProducts()) {
+                ArrayList<TechProcess> techProcesses = product.getTechProcesses();
+                for (int i = 0; i < techProcesses.size(); i++) {
+                    long hash = Hash.hash(order.getId(), product.getId(), techProcesses.get(i).getId());
+
+                    double value = alphaVariant.get(hash);
+                    if (value < 0) {
+                        alphaVariant.replace(hash, (double) 0);
+                        for (int j = 0; j < techProcesses.size(); j++) {
+                            if(i != j) {
+                                long innerHash = Hash.hash(order.getId(), product.getId(), techProcesses.get(j).getId());
+
+                                alphaVariant.replace(innerHash, alphaVariant.get(innerHash) + value / (techProcesses.size() - 1));
+                            }
+                        }
                     }
                 }
             }
-            System.out.println(alphaVariant);
+        }
+        System.out.println("positive double: " + alphaVariant);
+
+
+        for (Order order : this.orders) {
+            for (Product product : order.getProducts()) {
+                for (TechProcess techProcess : product.getTechProcesses()) {
+                    long hash = Hash.hash(order.getId(), product.getId(), techProcess.getId());
+
+                    integerAndPositiveAlphaVariant.put(hash, alphaVariant.get(hash).intValue());
+                }
+            }
         }
 
-
-
-
-
-
-
+        System.out.println("positive integer: " + alphaVariant);
+        return integerAndPositiveAlphaVariant;
     }
 
-    private HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> makeVariantIntegerAndPositive(HashMap<Long, HashMap<Long, HashMap<Long, Double>>> alphaVariant) {
-        return null;
-    }
 
-    private HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> generateVariantFromTwo(HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> firstVariant,
-                                                                                        HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> secondVariant,
-                                                                                        double alpha) {
-        HashMap<Long, HashMap<Long, HashMap<Long, Double>>> alphaVariant = null;
-
-        return makeVariantIntegerAndPositive(alphaVariant);
-    }
 
     private Boolean checkVariantAvailability(HashMap<Long, Integer> variant) {
 
