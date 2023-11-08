@@ -41,7 +41,8 @@ public class Trash {
         System.out.println("=====START=====");
 
 //        checkGenerator();
-        checkOwnAlgorithm();
+       checkOwnAlgorithm();
+
 
 
         System.out.println("=====FINISH=====");

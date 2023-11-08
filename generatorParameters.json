@@ -16,7 +16,7 @@
   "minDetailsCount": 100,
   "maxDetailsCount": 200,
   "minTechProcessCount": 1,
-  "maxTechProcessCount": 2,
+  "maxTechProcessCount": 4,
   "minOperationsCount": 1,
   "maxOperationsCount": 5,
   "minOperationDuration": 600,
