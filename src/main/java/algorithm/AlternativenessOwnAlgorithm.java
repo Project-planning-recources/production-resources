@@ -80,6 +80,8 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         if(this.threadsNum == 1) {
             return startConsistentAlg();
         } else {
+
+            // todo: Написать тестер и адаптировать записываемую табличку в отдельном классе, запускать и собирать информацию
             return startParallelAlg();
         }
     }
@@ -197,7 +199,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
                 } while(firstVariant == secondVariant);
 
                 pairsHash = Hash.hash((long) firstVariant.hashCode(), (long) secondVariant.hashCode());
-                System.out.println(firstVariant + " " + secondVariant + pairsHash);
+//                System.out.println(firstVariant + " " + secondVariant + pairsHash);
                 if(!this.variantPairs.containsKey(pairsHash)) {
                     flag = false;
                     this.variantPairs.put(pairsHash, true);
