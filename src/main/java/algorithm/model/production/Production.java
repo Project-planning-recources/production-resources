@@ -3,9 +3,7 @@ package algorithm.model.production;
 import algorithm.model.order.Operation;
 import algorithm.model.result.OperationResult;
 import parse.input.production.InputProduction;
-import parse.input.production.InputSchedule;
 
-import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,10 +94,10 @@ public class Production implements Serializable {
         this.equipmentGroups = equipmentGroups;
     }
 
-    public Equipment getEquipmentForOperation(OperationResult choose, Long requirement) throws Exception {
+    public Equipment getEquipmentForOperation(OperationResult choose) throws Exception {
         for (EquipmentGroup equipmentGroup :
                 equipmentGroups) {
-            if(equipmentGroup.getId() == requirement) {
+            if(equipmentGroup.getId() == choose.getEquipmentGroupId()) {
                 for (Equipment e :
                         equipmentGroup.getEquipment()) {
                     if(!e.isUsing()) {

@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class RealityTester {
             }
         }
 
-        List<String> errorsWithusingSameEquipment = usingSameEquipmentCheck(operationResults);
+        List<String> errorsWithusingSameEquipment = usingSameEquipmentCheck(operationResults, result.getPerformedOperationsOnEquipments());
         if(errorsWithusingSameEquipment.size() != 0) {
             errorsWithusingSameEquipment.forEach(System.out::println);
             flag = false;
@@ -175,16 +176,19 @@ public class RealityTester {
     }
 
     //todo: оптимизировать
-    private static List<String> usingSameEquipmentCheck(LinkedList<OutputOperationResult> operationResults) {
+    private static List<String> usingSameEquipmentCheck(LinkedList<OutputOperationResult> operationResults,
+                                                        HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments) {
         List<String> errorMessage = new ArrayList<>();
 
-        for(int i = 0; i < operationResults.size() - 1; i++) {
-            OutputOperationResult operationLeft = operationResults.get(i);
+        for(OutputOperationResult operationLeft : operationResults) {
             if(operationLeft.getStartTime() == null || operationLeft.getEndTime() == null) {
                 errorMessage.add("Операция " + operationLeft.getOperationId() + " не имеет время начала и/или конца выполнения");
             }
-            for (int j = i + 1; j < operationResults.size() - 1; j++) {
-                OutputOperationResult operationRight = operationResults.get(j);
+            ArrayList<OutputOperationResult> operationsOnEquipment = performedOperationsOnEquipments.get(operationLeft.getEquipmentId());
+            for (OutputOperationResult operationRight : operationsOnEquipment) {
+                if (operationLeft.getOperationId() == operationRight.getOperationId()) {
+                    continue;
+                }
                 if (operationLeft.getEquipmentId() != operationRight.getEquipmentId()) {
                     continue;
                 }

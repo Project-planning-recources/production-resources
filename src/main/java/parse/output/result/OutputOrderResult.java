@@ -1,6 +1,5 @@
 package parse.output.result;
 
-import algorithm.model.order.Order;
 import algorithm.model.result.OrderResult;
 import parse.adapter.DateAdapter;
 
@@ -8,6 +7,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * <b>Класс для IO</b>
@@ -48,14 +48,14 @@ public class OutputOrderResult {
     }
 
 
-    public OutputOrderResult(OrderResult orderResult) {
+    public OutputOrderResult(OrderResult orderResult, HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments) {
         this.orderId = orderResult.getOrderId();
         this.startTime = orderResult.getStartTime();
         this.endTime = orderResult.getEndTime();
 
         ArrayList<OutputProductResult> outputProductResults = new ArrayList<>();
         orderResult.getProductResults().forEach(productResult -> {
-            outputProductResults.add(new OutputProductResult(productResult));
+            outputProductResults.add(new OutputProductResult(productResult, performedOperationsOnEquipments));
         });
         this.outputProductResults = outputProductResults;
     }

@@ -1,9 +1,5 @@
 package algorithm.model.result;
 
-import parse.adapter.DateAdapter;
-
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -32,6 +28,16 @@ public class OperationResult {
     private long nextOperationId;
 
     /**
+     * Длительность в секундах
+     */
+    private int duration;
+
+    /**
+     * ID необходимой группы оборудования
+     */
+    private long equipmentGroupId;
+
+    /**
      * ID выбранного для операции конкретного оборудования
      */
     private long equipmentId;
@@ -57,11 +63,13 @@ public class OperationResult {
 
     }
 
-    public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentId,
-                           LocalDateTime startTime, LocalDateTime endTime, ProductResult productResult) {
+    public OperationResult(long operationId, long prevOperationId, long nextOperationId, int duration, long equipmentGroupId,
+                           long equipmentId, LocalDateTime startTime, LocalDateTime endTime, ProductResult productResult) {
         this.operationId = operationId;
         this.prevOperationId = prevOperationId;
         this.nextOperationId = nextOperationId;
+        this.duration = duration;
+        this.equipmentGroupId = equipmentGroupId;
         this.equipmentId = equipmentId;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -78,6 +86,14 @@ public class OperationResult {
 
     public long getNextOperationId() {
         return nextOperationId;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public long getEquipmentGroupId() {
+        return equipmentGroupId;
     }
 
     public long getEquipmentId() {

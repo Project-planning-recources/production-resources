@@ -39,17 +39,21 @@ public class OutputResult {
     @XmlElement(name = "Order")
     private ArrayList<OutputOrderResult> outputOrderResults;
 
-    public OutputResult() {
+    @XmlTransient
+    private HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments;
 
+    public OutputResult() {
+        performedOperationsOnEquipments = new HashMap<>();
     }
 
     public OutputResult(Result result) {
         this.allStartTime = result.getAllStartTime();
         this.allEndTime = result.getAllEndTime();
+        performedOperationsOnEquipments = new HashMap<>();
 
         ArrayList<OutputOrderResult> outputOrderResults = new ArrayList<>();
         result.getOrderResults().forEach(orderResult -> {
-            outputOrderResults.add(new OutputOrderResult(orderResult));
+            outputOrderResults.add(new OutputOrderResult(orderResult, performedOperationsOnEquipments));
         });
         this.outputOrderResults = outputOrderResults;
     }
@@ -83,6 +87,10 @@ public class OutputResult {
     public HashMap<Long, Integer> getAlternativeness() {
 
         return null;
+    }
+
+    public HashMap<Long, ArrayList<OutputOperationResult>> getPerformedOperationsOnEquipments() {
+        return performedOperationsOnEquipments;
     }
 
     @Override
