@@ -3,6 +3,9 @@ package testing;
 import parse.input.order.*;
 import parse.input.production.*;
 
+import java.util.List;
+import java.util.Objects;
+
 
 /**
  * <b>Тестер на физическую возможность выполнить данный заказ на данном производстве</b>
@@ -24,7 +27,7 @@ public class PossibilityTester {
             for (InputProduct p : or.getProducts()) {
                 for (InputTechProcess tp : p.getTechProcesses()) {
                     for (InputOperation o : tp.getOperations()) {
-                        if (!production.isPossibleToMake(o)) {
+                        if (!isPossibleToMake(production.getEquipmentGroups(), o)) {
                             System.out.println("Операция " + o.getId() + " не может быть выполнена");
                             flag = false;
                         }
@@ -35,5 +38,13 @@ public class PossibilityTester {
         return flag;
     }
 
+    private static boolean isPossibleToMake(List<InputEquipmentGroup> inputEquipmentGroups, InputOperation operation) {
+        for (InputEquipmentGroup e : inputEquipmentGroups) {
+            if (e.getId() == operation.getRequiredEquipment() || Objects.nonNull(e.getEquipment())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }
