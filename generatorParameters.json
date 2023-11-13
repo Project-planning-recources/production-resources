@@ -9,16 +9,16 @@
   "maxEquipmentCount": 5,
   "minOrderStartTime": "2023-9-1 0:0",
   "maxDurationStartTime": 1,
-  "minDurationTimeInDays": 1,
-  "maxDurationTimeInDays": 1,
+  "minDurationTimeInDays": 10,
+  "maxDurationTimeInDays": 30,
   "minDetailsTypeCount": 1,
   "maxDetailsTypeCount": 1,
-  "minDetailsCount": 100,
-  "maxDetailsCount": 200,
+  "minDetailsCount": 1000,
+  "maxDetailsCount": 2000,
   "minTechProcessCount": 1,
-  "maxTechProcessCount": 4,
+  "maxTechProcessCount": 2,
   "minOperationsCount": 1,
   "maxOperationsCount": 5,
   "minOperationDuration": 600,
-  "maxOperationDuration": 6000
+  "maxOperationDuration": 2000
 }

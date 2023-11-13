@@ -128,10 +128,13 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         Pair<HashMap<Long, Integer>, Double> recordPair = null;
         double recordCriterion = Double.MAX_VALUE;
 
+
         for (Pair<HashMap<Long, Integer>, Double> variationPair : this.variation) {
             if(variationPair.getValue() < recordCriterion) {
                 recordPair = variationPair;
+                recordCriterion = variationPair.getValue();
             }
+            System.out.println(variationPair.getValue() + " " + recordCriterion);
         }
 
         if(recordPair == null) {

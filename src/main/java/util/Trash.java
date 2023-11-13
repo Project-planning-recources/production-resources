@@ -39,9 +39,8 @@ public class Trash {
     public static void main(String[] args) throws Exception {
 
         System.out.println("=====START=====");
-
 //        checkGenerator();
-       checkOwnAlgorithm();
+        checkOwnAlgorithm();
 
 
 
@@ -64,7 +63,7 @@ public class Trash {
 //                    WRITER.writeOrderInformationFile("testorder.xml", READER.readOrderFile("orders.xml"));
 
 
-                    Algorithm algorithm = new AlternativenessOwnAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null, 4, 10);
+                    Algorithm algorithm = new AlternativenessOwnAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null, 10, 50);
 //                    Algorithm algorithm = new BaseAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null);
 
                     OutputResult result = null;
