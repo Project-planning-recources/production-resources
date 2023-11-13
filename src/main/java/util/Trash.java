@@ -40,8 +40,20 @@ public class Trash {
 
         System.out.println("=====START=====");
 //        checkGenerator();
-        checkOwnAlgorithm();
+//        checkOwnAlgorithm();
 
+        Algorithm algorithm = new AlternativenessOwnAlgorithm(READER.readProductionFile("production error.xml"), READER.readOrderFile("orders error.xml").getOrders(), null, 10, 50);
+//                    Algorithm algorithm = new BaseAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null);
+
+        OutputResult result = null;
+        try {
+            result = algorithm.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+//                    System.out.println(result);
+        System.out.println(RealityTester.test(READER.readProductionFile("production error.xml"), READER.readOrderFile("orders error.xml"), result));
+        WRITER.writeResultFile("result.xml", result);
 
 
         System.out.println("=====FINISH=====");

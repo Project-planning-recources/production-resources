@@ -322,6 +322,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
             for (Product product : order.getProducts()) {
                 int deal = product.getCount();
                 for (TechProcess techProcess : product.getTechProcesses()) {
+                    System.out.println(order.getId() + " " + product.getId() + " " + techProcess.getId() + " " + variant);
                     int value = variant.get(Hash.hash(order.getId(), product.getId(), techProcess.getId()));
                     if(value < 0) {
                         System.out.println("||||||||||||Значение < 0   " + value);
