@@ -58,6 +58,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         this.variation = new ArrayList<>();
         this.variantPairs = new HashMap<>();
     }
+
     public AlternativenessOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int threadsNum, int startVariatorCount, int variatorBudget) {
         this.production = new Production(inputProduction);
         ArrayList<Order> orders = new ArrayList<>();
@@ -77,7 +78,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
 
     @Override
     public OutputResult start() throws Exception {
-        if(this.threadsNum == 1) {
+        if (this.threadsNum == 1) {
             return startConsistentAlg();
         } else {
 
@@ -89,6 +90,10 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
     private ArrayList<Pair<HashMap<Long, Integer>, Double>> variation;
 
     private HashMap<Long, Boolean> variantPairs;
+
+    private void loading() {
+        System.out.println("Calculating " + (this.variation.size() - 1) + "/" + this.variatorBudget);
+    }
 
     private OutputResult startConsistentAlg() throws Exception {
 
@@ -105,24 +110,25 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         });
 
 
-
         for (int i = 0; i < this.startVariatorCount; i++) {
             HashMap<Long, Integer> variant = generateRandomAlternativesDistribution();
-            if(checkVariantAvailability(variant)) {
+            if (checkVariantAvailability(variant)) {
 
                 Algorithm algorithm = new OwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant), variant);
                 OutputResult result = algorithm.start();
 
                 this.variation.add(new Pair<>(variant, Criterion.getCriterion(this.orders, result)));
+                loading();
             } else {
                 i--;
             }
+
         }
 
-        while(this.variation.size() < this.variatorBudget) {
+        while (this.variation.size() < this.variatorBudget) {
             generateAndAddNewVariants();
 
-            System.out.println("variation " + this.variation.size());
+            loading();
         }
 
         Pair<HashMap<Long, Integer>, Double> recordPair = null;
@@ -130,14 +136,14 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
 
 
         for (Pair<HashMap<Long, Integer>, Double> variationPair : this.variation) {
-            if(variationPair.getValue() < recordCriterion) {
+            if (variationPair.getValue() < recordCriterion) {
                 recordPair = variationPair;
                 recordCriterion = variationPair.getValue();
             }
-            System.out.println(variationPair.getValue() + " " + recordCriterion);
+//            System.out.println(variationPair.getValue() + " " + recordCriterion);
         }
 
-        if(recordPair == null) {
+        if (recordPair == null) {
             throw new Exception("Unreachable code");
         }
 
@@ -163,7 +169,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
 
                 int remain = product.getCount();
                 for (int i = 0; i < techProcesses.size(); i++) {
-                    if(i == techProcesses.size() - 1) {
+                    if (i == techProcesses.size() - 1) {
                         variant.put(Hash.hash(order.getId(), product.getId(), techProcesses.get(i)), remain);
                     } else {
                         int deal = Random.randomInt(remain + 1);
@@ -181,7 +187,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
 
         boolean generationFlag = true;
 
-        while(generationFlag) {
+        while (generationFlag) {
             HashMap<Long, Integer> firstVariant = null;
             HashMap<Long, Integer> secondVariant = null;
 
@@ -190,7 +196,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
             double criterionForSecondVariant = 0;
 
             boolean flag = true;
-            while(flag) {
+            while (flag) {
 
                 Pair<HashMap<Long, Integer>, Double> firstPair = this.variation.get(Random.randomInt(this.variation.size()));
                 firstVariant = firstPair.getKey();
@@ -199,11 +205,11 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
                     Pair<HashMap<Long, Integer>, Double> secondPair = this.variation.get(Random.randomInt(this.variation.size()));
                     secondVariant = secondPair.getKey();
                     criterionForSecondVariant = secondPair.getValue();
-                } while(firstVariant == secondVariant);
+                } while (firstVariant == secondVariant);
 
                 pairsHash = Hash.hash((long) firstVariant.hashCode(), (long) secondVariant.hashCode());
 //                System.out.println(firstVariant + " " + secondVariant + pairsHash);
-                if(!this.variantPairs.containsKey(pairsHash)) {
+                if (!this.variantPairs.containsKey(pairsHash)) {
                     flag = false;
                     this.variantPairs.put(pairsHash, true);
                 }
@@ -213,15 +219,14 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
 //        System.out.println(secondVariant);
 
 
-
             HashMap<Long, Integer> betweenVariant = null;
             HashMap<Long, Integer> beyondVariant = null;
 
-            if(criterionForFirstVariant < criterionForSecondVariant) {
+            if (criterionForFirstVariant < criterionForSecondVariant) {
 //            System.out.println("1 < 2");
                 betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.8);
                 beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 1.2);
-            } else if(criterionForFirstVariant > criterionForSecondVariant) {
+            } else if (criterionForFirstVariant > criterionForSecondVariant) {
 //            System.out.println("1 > 2");
                 betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.2);
                 beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, -0.2);
@@ -231,24 +236,23 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
 
 
             int addCount = 0;
-            if(checkVariantAvailability(betweenVariant)) {
+            if (checkVariantAvailability(betweenVariant)) {
                 double criterionForBetween = getCriterionForVariant(betweenVariant);
                 this.variation.add(new Pair<>(betweenVariant, criterionForBetween));
                 addCount++;
             }
 
 
-            if(checkVariantAvailability(beyondVariant)) {
+            if (beyondVariant != null && checkVariantAvailability(beyondVariant)) {
                 double criterionForBeyond = getCriterionForVariant(beyondVariant);
                 this.variation.add(new Pair<>(beyondVariant, criterionForBeyond));
                 addCount++;
             }
-            if(addCount != 0) {
+            if (addCount != 0) {
                 generationFlag = false;
             }
         }
     }
-
 
 
     private HashMap<Long, Integer> generateVariantFromTwo(HashMap<Long, Integer> firstVariant,
@@ -264,8 +268,8 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
                 for (TechProcess techProcess : product.getTechProcesses()) {
                     long hash = Hash.hash(order.getId(), product.getId(), techProcess.getId());
 
-                    double value = firstVariant.get(hash) * alpha + secondVariant.get(hash) * (1-alpha);
-                    if(value < 0) {
+                    double value = firstVariant.get(hash) * alpha + secondVariant.get(hash) * (1 - alpha);
+                    if (value < 0) {
                         alphaVariant.put(hash, 0.0);
                         negativeBudget -= value;
                     } else {
@@ -282,24 +286,23 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
 
                 for (Pair<Long, Double> p :
                         positiveValues) {
-                    if(p.getValue() < avg) {
+                    if (p.getValue() < avg) {
                         negativeBudget -= p.getValue();
                         count--;
                         avg = negativeBudget / count;
                         p.setValue(0.0);
                     } else {
-                        p.setValue(p.getValue() - avg);;
+                        p.setValue(p.getValue() - avg);
+                        ;
                         int round = (int) Math.round(p.getValue());
                         budget -= round;
                         negativeBudget -= avg;
                     }
                 }
 
-                if(budget == 1) {
-                    positiveValues.get(positiveValues.size()-1).setValue(positiveValues.get(positiveValues.size()-1).getValue() + 1);
-                } else if(budget == -1) {
-                    positiveValues.get(positiveValues.size()-1).setValue(positiveValues.get(positiveValues.size()-1).getValue() - 1);
-                }
+                //Если остались нераспределенные или лишние детали
+                positiveValues.get(positiveValues.size() - 1).setValue(positiveValues.get(positiveValues.size() - 1).getValue() + budget);
+
 
 //                System.out.println("afterpairs " + positiveValues + " " + negativeBudget + " " + product.getCount());
 
@@ -322,9 +325,8 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
             for (Product product : order.getProducts()) {
                 int deal = product.getCount();
                 for (TechProcess techProcess : product.getTechProcesses()) {
-                    System.out.println(order.getId() + " " + product.getId() + " " + techProcess.getId() + " " + variant);
                     int value = variant.get(Hash.hash(order.getId(), product.getId(), techProcess.getId()));
-                    if(value < 0) {
+                    if (value < 0) {
                         System.out.println("||||||||||||Значение < 0   " + value);
                         return false;
                     }
@@ -338,16 +340,14 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         }
 
         for (Pair<HashMap<Long, Integer>, Double> v : this.variation) {
-            if(v.getKey().equals(variant)) {
-                System.out.println("||||||||||||Такой уже есть");
+            if (v.getKey().equals(variant)) {
+//                System.out.println("||||||||||||Такой уже есть");
                 return false;
             }
         }
 
         return true;
     }
-
-
 
 
     private OutputResult startParallelAlg() {

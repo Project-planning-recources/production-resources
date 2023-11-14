@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OrderInformation>
+    <Order id="1" date_begin="01.09.2023 00:00:00" date_end="01.10.2023 00:00:00">
+        <Detail id="11" name="Деталь 1.11" count="1000">
+            <TechProcess id="111">
+                <Operation id="1111" name="Операция 111.1111" duration="1475" equipment_group="1" prev_operation_id="0" next_operation_id="1112"/>
+                <Operation id="1112" name="Операция 111.1112" duration="1522" equipment_group="2" prev_operation_id="1111" next_operation_id="1113"/>
+                <Operation id="1113" name="Операция 111.1113" duration="2691" equipment_group="1" prev_operation_id="1112" next_operation_id="0"/>
+            </TechProcess>
+            <TechProcess id="112">
+                <Operation id="1121" name="Операция 112.1121" duration="1675" equipment_group="2" prev_operation_id="0" next_operation_id="1122"/>
+                <Operation id="1122" name="Операция 112.1122" duration="2788" equipment_group="1" prev_operation_id="1121" next_operation_id="1123"/>
+                <Operation id="1123" name="Операция 112.1123" duration="1067" equipment_group="1" prev_operation_id="1122" next_operation_id="0"/>
+            </TechProcess>
+        </Detail>
+    </Order>
+</OrderInformation>

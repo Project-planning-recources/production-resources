@@ -7,8 +7,8 @@
             <Day day_of_week="3" time_period="09:00:00-17:00:00"/>
             <Day day_of_week="4" time_period="09:00:00-17:00:00"/>
             <Day day_of_week="5" time_period="09:00:00-17:00:00"/>
-            <Day day_of_week="6" time_period="00:00:00-00:00:00"/>
-            <Day day_of_week="7" time_period="00:00:00-00:00:00"/>
+            <Day day_of_week="6" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="7" time_period="09:00:00-17:00:00"/>
         </Timetable>
     </CalendarInformation>
     <EquipmentInformation>
@@ -23,6 +23,9 @@
             <Equipment id="22" name="Оборудование 2.22"/>
             <Equipment id="23" name="Оборудование 2.23"/>
             <Equipment id="24" name="Оборудование 2.24"/>
+            <Equipment id="25" name="Оборудование 2.25"/>
+            <Equipment id="26" name="Оборудование 2.26"/>
+            <Equipment id="27" name="Оборудование 2.27"/>
         </EquipmentGroup>
     </EquipmentInformation>
 </SystemInformation>

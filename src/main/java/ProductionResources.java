@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ProductionResources {
 
@@ -34,7 +35,7 @@ public class ProductionResources {
      * Перед созданием объекта алгоритма запустить со считанными из файла объектами production и orders PossibilityTester
      *
      * @param argv - аргументы командной строки:
-     *             <p>1 аргумент - Тип работы: ALG / GEN / TEST</p>
+     *             <p>1 аргумент - Тип работы: ALG / GEN / TEST / COMP_RESULT_TABLES</p>
      *             <p>ALG - запустить работу алгоритма, записать результаты в файл</p>
      *             <p>Следующие аргументы для ALG: <тип алгоритма>(BASE / OWN) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml</p>
      *             <p>GEN - запустить генератор файлов производства и заказов, сохранить в файлы</p>
@@ -45,6 +46,8 @@ public class ProductionResources {
      *             <p>      Следующие аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml</p>
      *             <p>      Следующие аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml </p>
      *             <p>      Следующие аргументы для BASIS: <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей></p>
+     *             <p> COMP_RESULT_TABLES - сравнить таблицы с результатами работы двух алгоритмов</p>
+     *             <p>Следующие аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv</p>
      *             <br>
      *             <p>Примеры:</p>
      *             <p>      java ProductionResources ALG BASE production.xml orders.xml result.xml </p>
@@ -100,6 +103,7 @@ public class ProductionResources {
             }
         } else if (argv.length > 0 && "test".equalsIgnoreCase(argv[0]) && checkForTest(argv)) {
             if ("basis".equalsIgnoreCase(argv[1])) {
+                System.out.println(Arrays.toString(argv));
                 int count = Integer.parseInt(argv[3]);
                 int startGen = Integer.parseInt(argv[4]);
                 int budgetGen = Integer.parseInt(argv[5]);
@@ -109,8 +113,8 @@ public class ProductionResources {
                             "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Общее время просрочки;Критерий\n");
 
                     for (int i = 0; i < count; i++) {
-                        InputProduction production = READER.readProductionFile("Small Basis/" + (i + 1) + "_production.xml");
-                        InputOrderInformation orders = READER.readOrderFile("Small Basis/" + (i + 1) + "_orders.xml");
+                        InputProduction production = READER.readProductionFile(argv[2] + "/" + (i + 1) + "_production.xml");
+                        InputOrderInformation orders = READER.readOrderFile(argv[2] + "/" + (i + 1) + "_orders.xml");
 
                         if (PossibilityTester.test(production, orders)) {
 //                            BaseAlgorithm baseAlgorithm = new BaseAlgorithm(production, orders.getOrders(), null);
@@ -172,9 +176,11 @@ public class ProductionResources {
                 }
             }
 
+        } else if (argv.length > 0 && "comp_result_tables".equalsIgnoreCase(argv[0])) {
+            // todo: реализовать if
         } else if (argv.length > 0 && "help".equalsIgnoreCase(argv[0])) {
             help();
-        } else {
+        }  else {
             System.out.println("Неверный список аргументов. Используйте \"help\" чтобы увидеть список доступных команд.");
         }
     }

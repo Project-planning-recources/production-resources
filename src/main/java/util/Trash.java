@@ -8,6 +8,8 @@ import generator.GeneratedData;
 import generator.Generator;
 import generator.GeneratorJsonReader;
 import generator.GeneratorParameters;
+import parse.input.order.InputOrderInformation;
+import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
 import parse.input.XMLReader;
 import parse.output.XMLWriter;
@@ -39,11 +41,40 @@ public class Trash {
     public static void main(String[] args) throws Exception {
 
         System.out.println("=====START=====");
-//        checkGenerator();
-//        checkOwnAlgorithm();
 
-        Algorithm algorithm = new AlternativenessOwnAlgorithm(READER.readProductionFile("production error.xml"), READER.readOrderFile("orders error.xml").getOrders(), null, 10, 50);
-//                    Algorithm algorithm = new BaseAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null);
+        int dataCount = 1;
+
+//        checkGenerator();
+
+//        generate(dataCount);
+        checkOwnAlgorithm();
+
+        System.out.println("=====FINISH=====");
+
+    }
+
+    public static ArrayList<GeneratedData> generate(int dataCount) {
+        ArrayList<GeneratedData> generatedData = Generator.generateData(dataCount, GENERATOR_PARAMETERS);
+        generatedData.forEach(generatedData1 -> {
+            if (GeneratorTester.test(GENERATOR_PARAMETERS, generatedData1) && PossibilityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation())) {
+                WRITER.writeProductionFile("production.xml", generatedData1.getInputProduction());
+                WRITER.writeOrderInformationFile("orders.xml", generatedData1.getInputOrderInformation());
+                System.out.println("Good gen");
+            } else {
+                System.out.println("Bad gen");
+            }
+        });
+        return generatedData;
+    }
+
+
+
+    public static void checkOwnAlgorithm() throws Exception {
+
+        InputProduction production = READER.readProductionFile("production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("orders.xml");
+
+        Algorithm algorithm = new AlternativenessOwnAlgorithm(production, orderFile.getOrders(), null, 10, 50);
 
         OutputResult result = null;
         try {
@@ -51,54 +82,16 @@ public class Trash {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-//                    System.out.println(result);
-        System.out.println(RealityTester.test(READER.readProductionFile("production error.xml"), READER.readOrderFile("orders error.xml"), result));
-        WRITER.writeResultFile("result.xml", result);
 
+        System.out.println("Testing...");
 
-        System.out.println("=====FINISH=====");
-
-    }
-
-    public static void checkOwnAlgorithm() throws Exception {
-
-        for (int i = 0; i < 1; i++) {
-            ArrayList<GeneratedData> generatedData = Generator.generateData(1, GENERATOR_PARAMETERS);
-            generatedData.forEach(generatedData1 -> {
-
-                if (GeneratorTester.test(GENERATOR_PARAMETERS, generatedData1) && PossibilityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation())) {
-                    WRITER.writeProductionFile("production.xml", generatedData1.getInputProduction());
-                    WRITER.writeOrderInformationFile("orders.xml", generatedData1.getInputOrderInformation());
-
-
-//                    WRITER.writeProductionFile("testprod.xml",READER.readProductionFile("production.xml"));
-//                    WRITER.writeOrderInformationFile("testorder.xml", READER.readOrderFile("orders.xml"));
-
-
-                    Algorithm algorithm = new AlternativenessOwnAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null, 10, 50);
-//                    Algorithm algorithm = new BaseAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), null);
-
-                    OutputResult result = null;
-                    try {
-                        result = algorithm.start();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-//                    System.out.println(result);
-                    System.out.println(RealityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation(), result));
-                    WRITER.writeResultFile("result.xml", result);
-
-
-
-//                    WRITER.writeResultFile("testresult.xml", READER.readResultFile("result.xml"));
-                    System.out.println("Ура!");
-
-                } else {
-                    System.out.println(":(");
-                }
-            });
+        if(RealityTester.test(production, orderFile, result)) {
+            WRITER.writeResultFile("result.xml", result);
+            System.out.println("Creterion: " + Criterion.getCriterion(orderFile, result));
+            System.out.println("Done!");
+        } else {
+            System.out.println("Bad2!");
         }
-
     }
 
     public static void checkGenerator() throws Exception {
