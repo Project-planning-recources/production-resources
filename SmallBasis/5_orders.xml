@@ -19,7 +19,7 @@
                 <Operation id="1133" name="Операция 113.1133" duration="1284" equipment_group="1" prev_operation_id="1132" next_operation_id="0"/>
             </TechProcess>
         </Detail>
-        <Detail id="12" name="Деталь 1.12" count="700">
+        <Detail id="12" name="Деталь 1.12" count="1000">
             <TechProcess id="121">
                 <Operation id="1211" name="Операция 121.1211" duration="2952" equipment_group="2" prev_operation_id="0" next_operation_id="1212"/>
                 <Operation id="1212" name="Операция 121.1212" duration="1749" equipment_group="2" prev_operation_id="1211" next_operation_id="1213"/>
@@ -34,7 +34,7 @@
         </Detail>
     </Order>
     <Order id="2" date_begin="01.09.2023 00:00:00" date_end="01.10.2023 00:00:00">
-        <Detail id="21" name="Деталь 2.21" count="700">
+        <Detail id="21" name="Деталь 2.21" count="1000">
             <TechProcess id="211">
                 <Operation id="2111" name="Операция 211.2111" duration="1385" equipment_group="2" prev_operation_id="0" next_operation_id="2112"/>
                 <Operation id="2112" name="Операция 211.2112" duration="1271" equipment_group="1" prev_operation_id="2111" next_operation_id="2113"/>
@@ -55,7 +55,7 @@
                 <Operation id="2134" name="Операция 213.2134" duration="1316" equipment_group="1" prev_operation_id="2133" next_operation_id="0"/>
             </TechProcess>
         </Detail>
-        <Detail id="22" name="Деталь 2.22" count="500">
+        <Detail id="22" name="Деталь 2.22" count="1000">
             <TechProcess id="221">
                 <Operation id="2211" name="Операция 221.2211" duration="2862" equipment_group="1" prev_operation_id="0" next_operation_id="2212"/>
                 <Operation id="2212" name="Операция 221.2212" duration="1851" equipment_group="1" prev_operation_id="2211" next_operation_id="2213"/>
