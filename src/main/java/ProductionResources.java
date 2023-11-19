@@ -214,7 +214,6 @@ public class ProductionResources {
                             for (int i = 1; i < results1.size(); i++) {
                                 String[] split1 = results1.get(i).split(";");
                                 String[] split2 = results2.get(i).split(";");
-                                System.out.println(split1[7]);
                                 double days1 = Double.parseDouble(split1[7]);
                                 double days2 = Double.parseDouble(split2[7]);
                                 double criterion1 = Double.parseDouble(split1[8]);
@@ -237,7 +236,7 @@ public class ProductionResources {
                                             (criterion2 - criterion1) + "\n");
                                 } else if(criterion1 > criterion2) {
                                     writer.write(argv[2] + ";" +
-                                            (criterion2 - criterion1) + "\n");
+                                            (criterion1 - criterion2) + "\n");
                                 } else {
                                     writer.write(";Одинаково;0\n");
                                 }
