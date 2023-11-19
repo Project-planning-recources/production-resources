@@ -1,6 +1,5 @@
 package parse.output.result;
 
-import algorithm.model.result.OperationResult;
 import algorithm.model.result.ProductResult;
 import parse.adapter.DateAdapter;
 
@@ -8,6 +7,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -66,7 +66,7 @@ public class OutputProductResult {
 
     }
 
-    public OutputProductResult(ProductResult productResult) {
+    public OutputProductResult(ProductResult productResult, HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments) {
         this.id = productResult.getId();
         this.productId = productResult.getProductId();
         this.techProcessId = productResult.getTechProcessId();
@@ -75,7 +75,7 @@ public class OutputProductResult {
 
         LinkedList<OutputOperationResult> performedOperations = new LinkedList<>();
         productResult.getPerformedOperations().forEach(operationResult -> {
-            performedOperations.add(new OutputOperationResult(operationResult));
+            performedOperations.add(new OutputOperationResult(operationResult, performedOperationsOnEquipments));
         });
         this.performedOperations = performedOperations;
     }

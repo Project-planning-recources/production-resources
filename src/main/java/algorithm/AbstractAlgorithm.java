@@ -1,7 +1,6 @@
 package algorithm;
 
 import algorithm.alternativeness.AlternativeElector;
-import algorithm.model.order.Product;
 import algorithm.operationchooser.OperationChooser;
 import algorithm.model.order.Operation;
 import algorithm.model.order.Order;
@@ -359,7 +358,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         ArrayList<OperationResult> candidates = new ArrayList<>();
         this.waitingOperations.forEach(waitingOperation -> {
             try {
-                if(this.production.isOperationCanBePerformed(this.allOperations.get(waitingOperation.getOperationId()).getRequiredEquipment())) {
+                if(this.production.isOperationCanBePerformed(waitingOperation.getEquipmentGroupId())) {
                     candidates.add(waitingOperation);
                 }
             } catch (Exception e) {
@@ -373,10 +372,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
             if(choose.getPrevOperationId() == 0) {
                 choose.getProductResult().setStartTime(timeTick);
             }
-            LocalDateTime endTime = addOperationTimeToTimeline(timeTick, this.allOperations.get(choose.getOperationId()).getDuration());
+            LocalDateTime endTime = addOperationTimeToTimeline(timeTick, choose.getDuration());
             choose.setEndTime(endTime);
 
-            Equipment equipment = production.getEquipmentForOperation(choose, this.allOperations.get(choose.getOperationId()).getRequiredEquipment());
+            Equipment equipment = production.getEquipmentForOperation(choose);
             equipment.setUsing(true);
             choose.setEquipmentId(equipment.getId());
 
@@ -386,7 +385,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
             candidates.clear();
             this.waitingOperations.forEach(waitingOperation -> {
                 try {
-                    if(this.production.isOperationCanBePerformed(this.allOperations.get(waitingOperation.getOperationId()).getRequiredEquipment())) {
+                    if(this.production.isOperationCanBePerformed(waitingOperation.getEquipmentGroupId())) {
                         candidates.add(waitingOperation);
                     }
                 } catch (Exception e) {
@@ -436,11 +435,13 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 LinkedList<Operation> operations = product.getTechProcessByTechProcessId(techProcessId).getOperations();
 
                 LinkedList<OperationResult> operationResults = new LinkedList<>();
-                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(), techProcessId, null, null, operationResults, orderResult);
+                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(), techProcessId,
+                        null, null, operationResults, orderResult);
                 OperationResult prevOperation = null;
                 for (int j = 0; j < operations.size(); j++) {
                     Operation operation = operations.get(j);
-                    OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(), operation.getNextOperationId(),
+                    OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(),
+                            operation.getNextOperationId(), operation.getDuration(), operation.getRequiredEquipment(),
                             0, null, null, productResult);
 
                     if(prevOperation != null) {

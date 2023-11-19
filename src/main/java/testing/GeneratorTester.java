@@ -10,7 +10,9 @@ import parse.input.production.InputWorkingDay;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class GeneratorTester {
 
@@ -25,9 +27,14 @@ public class GeneratorTester {
      * @return Boolean
      */
     public static boolean test(GeneratorParameters generatorParameters, GeneratedData generatedData) {
+        boolean flag = true;
         InputProduction inputProduction = generatedData.getInputProduction();
 
         InputSchedule inputSchedule = inputProduction.getSchedule();
+        if (Objects.isNull(inputSchedule) || Objects.isNull(inputSchedule.getWeek()) || inputSchedule.getWeek().isEmpty()) {
+            System.out.println("Рабочее расписание не создано");
+            flag = false;
+        }
         int iwdCounter = 0;
         for (InputWorkingDay iwd :
                 inputSchedule.getWeek()) {
@@ -38,7 +45,12 @@ public class GeneratorTester {
         if (generatorParameters.daysForSchedule != iwdCounter) {
             System.out.println("Количество рабочих дней (" + iwdCounter
                     + ") не совпадает с заданным количеством (" + generatorParameters.daysForSchedule + ")");
-            return false;
+            flag = false;
+        }
+
+        if (inputSchedule.getWeek().size() > 7) {
+            System.out.println("Сгенерировано более 7 дней");
+            flag = false;
         }
 
         for (InputWorkingDay day : inputSchedule.getWeek()) {
@@ -46,42 +58,58 @@ public class GeneratorTester {
             if (!startTime.equals(day.getStartWorkingTime()) && day.getWeekday()) {
                 System.out.println("Время начала рабочего дня (" + day.getStartWorkingTime().toString()
                         + ") не совпадает с заданным (" + startTime + ")");
-                return false;
+                flag = false;
             }
 
             LocalTime endTime = LocalTime.of(generatorParameters.endWorkingTime, 0);
             if (!endTime.equals(day.getEndWorkingTime()) && day.getWeekday()) {
                 System.out.println("Время конца рабочего дня (" + day.getEndWorkingTime().toString()
                         + ") не совпадает с заданным (" + startTime + ")");
-                return false;
+                flag = false;
             }
         }
 
+        if (Objects.isNull(inputProduction.getEquipmentGroups())) {
+            System.out.println("Группы оборудования не были созданы");
+            flag = false;
+        }
+
         int equipmentGroupsCount = inputProduction.getEquipmentGroups().size();
-        if (!(generatorParameters.minEquipmentGroupCount <= equipmentGroupsCount
+        if (flag && !(generatorParameters.minEquipmentGroupCount <= equipmentGroupsCount
                 && generatorParameters.maxEquipmentGroupCount >= equipmentGroupsCount)) {
             System.out.println("Количество групп оборудования (" + equipmentGroupsCount
                     + ") не входит в заданный промежуток [" + generatorParameters.minEquipmentGroupCount
                     + ", " + generatorParameters.maxEquipmentGroupCount + "]");
-            return false;
+            flag = false;
         }
 
         for (InputEquipmentGroup group : inputProduction.getEquipmentGroups()) {
+            if (Objects.isNull(group)) {
+                System.out.println("Оборудования не были созданы");
+                flag = false;
+                continue;
+            }
+
             if (!(generatorParameters.minEquipmentCount <= group.getEquipment().size()
                     && generatorParameters.maxEquipmentCount >= group.getEquipment().size())) {
                 System.out.println("Количество оборудования в группе "+ group.getId() + "(" + group.getEquipment().size()
                         + ") не входит в заданный промежуток [" + generatorParameters.minEquipmentCount
                         + ", " + generatorParameters.maxEquipmentCount + "]");
-                return false;
+                flag = false;
             }
         }
 
         InputOrderInformation inputOrderInformation = generatedData.getInputOrderInformation();
 
-        if (generatorParameters.ordersCount != inputOrderInformation.getOrders().size()) {
+        if (Objects.isNull(inputOrderInformation.getOrders())) {
+            System.out.println("Заказы не были созданы");
+            flag = false;
+        }
+
+        if (flag && generatorParameters.ordersCount != inputOrderInformation.getOrders().size()) {
             System.out.println("Количество заказов (" + inputOrderInformation.getOrders().size()
                     + ") не совпадает с заданным количеством (" + generatorParameters.ordersCount + ")");
-            return false;
+            flag = false;
         }
 
         LocalDateTime minStartOrderTime = LocalDateTime.ofEpochSecond(
@@ -89,48 +117,67 @@ public class GeneratorTester {
 
         for (InputOrder order : inputOrderInformation.getOrders()) {
             long diffBetweenDates = ChronoUnit.DAYS.between(minStartOrderTime, order.getStartTime());
-            if (!(0 <= diffBetweenDates && diffBetweenDates <= generatorParameters.maxDurationStartTime)) {
+            if (flag && !(0 <= diffBetweenDates && diffBetweenDates <= generatorParameters.maxDurationStartTime)) {
                 System.out.println("Раннее время выполнения заказа (" + order.getStartTime()
                         + ") не входит в заданный промежуток [" + minStartOrderTime
                         + ", " + minStartOrderTime.plusDays(generatorParameters.maxDurationStartTime) + "]");
-                return false;
+                flag = false;
             }
 
             long durationDays = Duration.between(order.getStartTime(), order.getDeadline()).toDays();
-            if (!(generatorParameters.minDurationTimeInDays <= durationDays && durationDays <= generatorParameters.maxDurationTimeInDays)) {
+            if (flag && !(generatorParameters.minDurationTimeInDays <= durationDays && durationDays
+                    <= generatorParameters.maxDurationTimeInDays)) {
                 System.out.println("Длительность выполнения заказа (" + durationDays
                         + ") не входит в заданный промежуток [" + generatorParameters.minDurationTimeInDays
                         + ", " + generatorParameters.maxDurationTimeInDays + "]");
-                return false;
+                flag = false;
             }
 
             List<InputProduct> products = order.getProducts();
+            if (Objects.isNull(products)) {
+                System.out.println("Детали не были созданы");
+                flag = false;
+                continue;
+            }
+
             if (!(generatorParameters.minDetailsTypeCount <= products.size() &&
                     products.size() <= generatorParameters.maxDetailsTypeCount)) {
                 System.out.println("Количество типов деталей (" + products.size()
                         + ") не входит в заданный промежуток [" + generatorParameters.minDetailsTypeCount
                         + ", " + generatorParameters.maxDetailsTypeCount + "]");
-                return false;
+                flag = false;
             }
 
             for (InputProduct product : products) {
                 List<InputTechProcess> processes = product.getTechProcesses();
+                if (Objects.isNull(processes)) {
+                    System.out.println("Техпроцессы не были созданы");
+                    flag = false;
+                    continue;
+                }
+
                 if (!(generatorParameters.minTechProcessCount <= processes.size() &&
                         processes.size() <= generatorParameters.maxTechProcessCount)) {
                     System.out.println("Количество техпроцессов (" + processes.size()
                             + ") не входит в заданный промежуток [" + generatorParameters.minTechProcessCount
                             + ", " + generatorParameters.maxTechProcessCount + "]");
-                    return false;
+                    flag = false;
                 }
 
                 for (InputTechProcess process : processes) {
                     List<InputOperation> operations = process.getOperations();
+                    if (Objects.isNull(operations)) {
+                        System.out.println("Операцмм не были созданы");
+                        flag = false;
+                        continue;
+                    }
+
                     if (!(generatorParameters.minOperationsCount <= operations.size() &&
                             operations.size() <= generatorParameters.maxOperationsCount)) {
                         System.out.println("Количество операций (" + operations.size()
                                 + ") не входит в заданный промежуток [" + generatorParameters.minOperationsCount
                                 + ", " + generatorParameters.maxOperationsCount + "]");
-                        return false;
+                        flag = false;
                     }
 
                     for (InputOperation operation : operations) {
@@ -139,7 +186,7 @@ public class GeneratorTester {
                             System.out.println("Время выполнения операции (" + operation.getDuration()
                                     + ") не входит в заданный промежуток [" + generatorParameters.minOperationDuration
                                     + ", " + generatorParameters.maxOperationDuration + "]");
-                            return false;
+                            flag = false;
                         }
 
                         if (!(1 <= operation.getRequiredEquipment() &&
@@ -147,13 +194,13 @@ public class GeneratorTester {
                             System.out.println("Требуемая группа оборудования (" + operation.getRequiredEquipment()
                                     + ") не входит в число имеющихся групп [" + 1
                                     + ", " + equipmentGroupsCount + "]");
-                            return false;
+                            flag = false;
                         }
                     }
                 }
             }
         }
 
-        return true;
+        return flag;
     }
 }
