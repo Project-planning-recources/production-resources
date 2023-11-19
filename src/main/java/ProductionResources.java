@@ -237,7 +237,7 @@ public class ProductionResources {
                                             (criterion2 - criterion1) + "\n");
                                 } else if(criterion1 > criterion2) {
                                     writer.write(argv[2] + ";" +
-                                            (criterion2 - criterion1) + "\n");
+                                            (criterion1 - criterion2) + "\n");
                                 } else {
                                     writer.write(";Одинаково;0\n");
                                 }
