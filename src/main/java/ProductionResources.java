@@ -15,11 +15,13 @@ import testing.RealityTester;
 import util.Criterion;
 import util.Data;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProductionResources {
 
@@ -36,23 +38,23 @@ public class ProductionResources {
      *
      * @param argv - аргументы командной строки:
      *             <p>1 аргумент - Тип работы: ALG / GEN / TEST / COMP_RESULT_TABLES</p>
-     *             <p>ALG - запустить работу алгоритма, записать результаты в файл</p>
-     *             <p>Следующие аргументы для ALG: <тип алгоритма>(BASE / OWN) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml</p>
-     *             <p>GEN - запустить генератор файлов производства и заказов, сохранить в файлы</p>
-     *             <p>Следующие аргументы для GEN: <имя файла параметров генератора>.json <количество экземпляров для генерации></p>
-     *             <p>TEST - запустить тестирование на уже существующих данных</p>
-     *             <p>Второй аргумент после TEST - Тип теста: POSS / REAL / COMP / BASIS</p>
-     *             <p>      Следующие аргументы для POSS: <имя файла производства>.xml <имя файла заказов>.xml</p>
-     *             <p>      Следующие аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml</p>
-     *             <p>      Следующие аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml </p>
-     *             <p>      Следующие аргументы для BASIS: <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей></p>
-     *             <p> COMP_RESULT_TABLES - сравнить таблицы с результатами работы двух алгоритмов</p>
-     *             <p>Следующие аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv</p>
+     *             <p>    ALG - запустить работу алгоритма, записать результаты в файл</p>
+     *             <p>        Следующие аргументы для ALG: <тип алгоритма>(BASE / OWN) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml</p>
+     *             <p>    GEN - запустить генератор файлов производства и заказов, сохранить в файлы</p>
+     *             <p>        Следующие аргументы для GEN: <имя файла параметров генератора>.json <количество экземпляров для генерации></p>
+     *             <p>    TEST - запустить тестирование на уже существующих данных</p>
+     *             <p>        Второй аргумент после TEST - Тип теста: POSS / REAL / COMP / BASIS</p>
+     *             <p>    Следующие аргументы для POSS: <имя файла производства>.xml <имя файла заказов>.xml</p>
+     *             <p>    Следующие аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml</p>
+     *             <p>    Следующие аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml </p>
+     *             <p>    Следующие аргументы для BASIS: <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей> <имя файла результатов>.xml</p>
+     *             <p>    COMP_RESULT_TABLES - сравнить таблицы с результатами работы двух алгоритмов</p>
+     *             <p>        Следующие аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv</p>
      *             <br>
      *             <p>Примеры:</p>
-     *             <p>      java ProductionResources ALG BASE production.xml orders.xml result.xml </p>
-     *             <p>      java ProductionResources TEST REAL production.xml orders.xml result.xml </p>
-     *             <p>      java ProductionResources TEST POSS production.xml orders.xml resultBase.xml resultOwn.xml </p>
+     *             <p>    java ProductionResources ALG BASE production.xml orders.xml result.xml </p>
+     *             <p>    java ProductionResources TEST REAL production.xml orders.xml result.xml </p>
+     *             <p>    java ProductionResources TEST POSS production.xml orders.xml resultBase.xml resultOwn.xml </p>
      */
     public static void main(String[] argv) throws Exception {
         if (argv.length > 0 && "alg".equalsIgnoreCase(argv[0]) && checkForAlg(argv)) {
@@ -108,9 +110,9 @@ public class ProductionResources {
                 int startGen = Integer.parseInt(argv[4]);
                 int budgetGen = Integer.parseInt(argv[5]);
 
-                try (FileWriter writer = new FileWriter("results.csv", false)) {
+                try (FileWriter writer = new FileWriter(argv[6], false)) {
                     writer.write("№;Количество заказов;Количество операций;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
-                            "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Общее время просрочки;Критерий\n");
+                            "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Среднее количество дней просрочки в днях;Критерий\n");
 
                     for (int i = 0; i < count; i++) {
                         InputProduction production = READER.readProductionFile(argv[2] + "/" + (i + 1) + "_production.xml");
@@ -128,9 +130,11 @@ public class ProductionResources {
                                 writer.write((i + 1) + ";" +
                                         orders.getOrders().size() + ";" +
                                         Data.getOperationsCount(ownResult) + ";" +
+                                        Data.getEquipmentCount(production) + ";" +
                                         alternativenessCount.min + ";" +
                                         alternativenessCount.max + ";" +
                                         alternativenessCount.average + ";" +
+                                        Data.getAverageOverdueDays(orders.getOrders(), ownResult) + ";" +
                                         Criterion.getCriterion(orders, ownResult) + "\n");
                                 WRITER.writeResultFile((i+1) + "_result.xml", ownResult);
                                 System.out.println(i + ": Завершён...");
@@ -176,8 +180,55 @@ public class ProductionResources {
                 }
             }
 
-        } else if (argv.length > 0 && "comp_result_tables".equalsIgnoreCase(argv[0])) {
-            // todo: реализовать if
+        } else if (argv.length == 4 && "comp_result_tables".equalsIgnoreCase(argv[0])) {
+            try (BufferedReader reader1 = new BufferedReader(new FileReader(argv[1]))) {
+                List<String> results1 = reader1.lines().collect(Collectors.toList());
+                try (BufferedReader reader2 = new BufferedReader(new FileReader(argv[2]))) {
+                    List<String> results2 = reader2.lines().collect(Collectors.toList());
+
+                    if(results1.size() == results2.size()) {
+                        try (FileWriter writer = new FileWriter(argv[3], false)) {
+                            writer.write("№;Имя файла с лучшим результатом по времени просрочки;Обгон по времени просрочки;Имя файла с лучшим результатом по критерию;Обгон по критерию\n");
+
+                            for (int i = 1; i < results1.size(); i++) {
+                                String[] split1 = results1.get(i).split(";");
+                                String[] split2 = results2.get(i).split(";");
+                                System.out.println(split1[7]);
+                                int days1 = Integer.parseInt(split1[7]);
+                                int days2 = Integer.parseInt(split2[7]);
+                                double criterion1 = Double.parseDouble(split1[8]);
+                                double criterion2 = Double.parseDouble(split2[8]);
+
+                                if(days1 < days2) {
+                                    writer.write(i + ";" +
+                                            argv[1] + ";" +
+                                            (days2 - days1) + ";");
+                                } else if(days1 > days2) {
+                                    writer.write(i + ";" +
+                                            argv[2] + ";" +
+                                            (days1 - days2) + ";");
+                                } else {
+                                    writer.write((i+1) + ";Одинаково;0;");
+                                }
+
+                                if(criterion1 < criterion2) {
+                                    writer.write(argv[1] + ";" +
+                                            (criterion2 - criterion1) + "\n");
+                                } else if(criterion1 > criterion2) {
+                                    writer.write(argv[2] + ";" +
+                                            (criterion2 - criterion1) + "\n");
+                                } else {
+                                    writer.write(";Одинаково;0\n");
+                                }
+                            }
+                        }
+                    } else {
+                        System.out.println("Несовпадающие таблицы результатов.");
+                    }
+
+                }
+            }
+
         } else if (argv.length > 0 && "help".equalsIgnoreCase(argv[0])) {
             help();
         }  else {
@@ -227,7 +278,7 @@ public class ProductionResources {
             } else if ("comp".equalsIgnoreCase(argv[1]) && argv.length >= 6) {
                 return true;
             } else {
-                if ("basis".equalsIgnoreCase(argv[1]) && argv.length >= 6) {
+                if ("basis".equalsIgnoreCase(argv[1]) && argv.length >= 7) {
                     Integer count = null;
                     Integer startGen = null;
                     Integer budget = null;

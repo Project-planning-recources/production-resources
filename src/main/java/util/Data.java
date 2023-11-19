@@ -1,6 +1,7 @@
 package util;
 
 import parse.input.order.InputOrder;
+import parse.input.order.InputOrderInformation;
 import parse.input.order.InputProduct;
 import parse.input.production.InputEquipmentGroup;
 import parse.input.production.InputProduction;
@@ -8,6 +9,7 @@ import parse.output.result.OutputOrderResult;
 import parse.output.result.OutputProductResult;
 import parse.output.result.OutputResult;
 
+import java.time.Duration;
 import java.util.ArrayList;
 
 public class Data {
@@ -57,6 +59,22 @@ public class Data {
         }
 
         return new AlternativenessCount(min, max, average / details);
+    }
+
+    public static int getAverageOverdueDays(ArrayList<InputOrder> orders, OutputResult result) {
+        int average = 0;
+
+        for (InputOrder order :
+                orders) {
+            for (OutputOrderResult orderResult :
+                    result.getOrderResults()) {
+                if(order.getId() == orderResult.getOrderId()) {
+                    average += (int) (Duration.between(order.getDeadline(), orderResult.getEndTime()).getSeconds() / 86400);
+                }
+            }
+        }
+
+        return average / orders.size();
     }
 
     public static class AlternativenessCount {

@@ -88,6 +88,7 @@ public class Trash {
         if(RealityTester.test(production, orderFile, result)) {
             WRITER.writeResultFile("result.xml", result);
             System.out.println("Creterion: " + Criterion.getCriterion(orderFile, result));
+            System.out.println("Overdue: " + Data.getAverageOverdueDays(orderFile.getOrders(), result));
             System.out.println("Done!");
         } else {
             System.out.println("Bad2!");
