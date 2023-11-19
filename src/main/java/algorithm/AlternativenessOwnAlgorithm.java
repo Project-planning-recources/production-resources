@@ -224,12 +224,18 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
 
             if (criterionForFirstVariant < criterionForSecondVariant) {
 //            System.out.println("1 < 2");
-                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.8);
-                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 1.2);
+                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.5);
+                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.8);
+
+//                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.8);
+//                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 1.2);
             } else if (criterionForFirstVariant > criterionForSecondVariant) {
 //            System.out.println("1 > 2");
-                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.2);
-                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, -0.2);
+                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.5);
+                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.2);
+
+//                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.2);
+//                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, -0.2);
             } else {
                 betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.5);
             }

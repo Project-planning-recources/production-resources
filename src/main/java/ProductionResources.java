@@ -47,7 +47,7 @@ public class ProductionResources {
      *             <p>    Следующие аргументы для POSS: <имя файла производства>.xml <имя файла заказов>.xml</p>
      *             <p>    Следующие аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml</p>
      *             <p>    Следующие аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml </p>
-     *             <p>    Следующие аргументы для BASIS: <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей> <имя файла результатов>.xml</p>
+     *             <p>    Следующие аргументы для BASIS: <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей> <имя файла результатов>.xml <количество запусков алгоритма></p>
      *             <p>    COMP_RESULT_TABLES - сравнить таблицы с результатами работы двух алгоритмов</p>
      *             <p>        Следующие аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv</p>
      *             <br>
@@ -109,10 +109,11 @@ public class ProductionResources {
                 int count = Integer.parseInt(argv[3]);
                 int startGen = Integer.parseInt(argv[4]);
                 int budgetGen = Integer.parseInt(argv[5]);
+                int startsAlg = Integer.parseInt(argv[7]);
 
                 try (FileWriter writer = new FileWriter(argv[6], false)) {
                     writer.write("№;Количество заказов;Количество операций;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
-                            "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Среднее количество дней просрочки в днях;Критерий\n");
+                            "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Среднее количество дней просрочки в днях;Средний критерий;Среднее время исполнения в секундах\n");
 
                     for (int i = 0; i < count; i++) {
                         InputProduction production = READER.readProductionFile(argv[2] + "/" + (i + 1) + "_production.xml");
@@ -122,28 +123,48 @@ public class ProductionResources {
 //                            BaseAlgorithm baseAlgorithm = new BaseAlgorithm(production, orders.getOrders(), null);
 //                            OutputResult baseResult = baseAlgorithm.start();
 
-                            AlternativenessOwnAlgorithm ownAlgorithm = new AlternativenessOwnAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
-                            OutputResult ownResult = ownAlgorithm.start();
+                            Data.AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
+                            long equipmentCount = Data.getEquipmentCount(production);
 
-                            if (RealityTester.test(production, orders, ownResult)) {
-                                Data.AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
-                                writer.write((i + 1) + ";" +
-                                        orders.getOrders().size() + ";" +
-                                        Data.getOperationsCount(ownResult) + ";" +
-                                        Data.getEquipmentCount(production) + ";" +
-                                        alternativenessCount.min + ";" +
-                                        alternativenessCount.max + ";" +
-                                        alternativenessCount.average + ";" +
-                                        Data.getAverageOverdueDays(orders.getOrders(), ownResult) + ";" +
-                                        Criterion.getCriterion(orders, ownResult) + "\n");
-                                WRITER.writeResultFile((i+1) + "_result.xml", ownResult);
-                                System.out.println(i + ": Завершён...");
-                            } else {
-                                System.out.println(i + ": Результат собственного алгоритма не соответствует заказам");
+                            long operationsCount = 0;
+                            long averageOverdueDays = 0;
+                            double averageCriterion = 0;
+                            long averageTime = 0;
+
+                            for (int j = 0; j < startsAlg; j++) {
+
+                                System.out.println(i + ":" + j + ": Запущен...");
+
+                                long startTime = System.currentTimeMillis();
+                                AlternativenessOwnAlgorithm ownAlgorithm = new AlternativenessOwnAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
+                                OutputResult ownResult = ownAlgorithm.start();
+
+                                if (RealityTester.test(production, orders, ownResult)) {
+                                    long endTime = System.currentTimeMillis();
+
+                                    operationsCount += Data.getOperationsCount(ownResult);
+                                    averageOverdueDays += Data.getAverageOverdueDays(orders.getOrders(), ownResult);
+                                    averageCriterion += Criterion.getCriterion(orders, ownResult);
+                                    averageTime += (endTime - startTime) / 1000;
+
+                                    System.out.println(i + ":" + j + ": Завершён...");
+                                } else {
+                                    throw new Exception(i + ":" + j + ": Результат собственного алгоритма не соответствует заказам");
+                                }
                             }
 
+                            writer.write((i + 1) + ";" +
+                                    orders.getOrders().size() + ";" +
+                                    ((double) operationsCount / startsAlg) + ";" +
+                                    equipmentCount + ";" +
+                                    alternativenessCount.min + ";" +
+                                    alternativenessCount.max + ";" +
+                                    alternativenessCount.average + ";" +
+                                    ((double) averageOverdueDays / startsAlg) + ";" +
+                                    (averageCriterion / startsAlg) + ";" +
+                                    ((double) averageTime / startsAlg) + " секунд\n");
                         } else {
-                            System.out.println(i + ": Заказы не соответствуют производству");
+                            throw new Exception(i + ": Заказы не соответствуют производству");
                         }
                     }
                     System.out.println("Работа завершена.");
@@ -278,18 +299,20 @@ public class ProductionResources {
             } else if ("comp".equalsIgnoreCase(argv[1]) && argv.length >= 6) {
                 return true;
             } else {
-                if ("basis".equalsIgnoreCase(argv[1]) && argv.length >= 7) {
+                if ("basis".equalsIgnoreCase(argv[1]) && argv.length >= 8) {
                     Integer count = null;
                     Integer startGen = null;
                     Integer budget = null;
+                    Integer algStarts = null;
                     try {
                         count = Integer.parseInt(argv[3]);
                         startGen = Integer.parseInt(argv[4]);
                         budget = Integer.parseInt(argv[5]);
+                        algStarts = Integer.parseInt(argv[7]);
                     } catch (NumberFormatException e) {
                         return false;
                     }
-                    return count > 0 && startGen > 0 && budget > startGen;
+                    return count > 0 && startGen > 0 && budget > startGen && algStarts > 0;
                 }
 
             }
