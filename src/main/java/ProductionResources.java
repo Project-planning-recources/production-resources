@@ -215,8 +215,8 @@ public class ProductionResources {
                                 String[] split1 = results1.get(i).split(";");
                                 String[] split2 = results2.get(i).split(";");
                                 System.out.println(split1[7]);
-                                int days1 = Integer.parseInt(split1[7]);
-                                int days2 = Integer.parseInt(split2[7]);
+                                double days1 = Double.parseDouble(split1[7]);
+                                double days2 = Double.parseDouble(split2[7]);
                                 double criterion1 = Double.parseDouble(split1[8]);
                                 double criterion2 = Double.parseDouble(split2[8]);
 
@@ -321,14 +321,14 @@ public class ProductionResources {
     }
 
     private static void help() {
-        System.out.println("1 аргумент - Тип работы: ALG / GEN / TEST");
+        System.out.println("1 аргумент - Тип работы: ALG / GEN / TEST / COMP_RESULT_TABLES");
         System.out.println("    Аргументы для ALG: <тип алгоритма>(BASE / OWN) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml");
         System.out.println("    Аргументы для GEN: <имя файла параметров генератора>.json <количество экземпляров для генерации>");
-        System.out.println("    Аргументы для TEST: Тип теста: POSS / REAL / COMP");
+        System.out.println("    Аргументы для TEST: Тип теста: POSS / REAL / COMP / BASIS");
         System.out.println("        Аргументы для POSS: <имя файла производства>.xml <имя файла заказов>.xml");
         System.out.println("        Аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml");
         System.out.println("        Аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml");
+        System.out.println("        Аргументы для BASIS: <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей> <имя файла результатов>.xml <количество запусков алгоритма>");
+        System.out.println("    Аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv");
     }
-
-
 }
