@@ -2,7 +2,7 @@ package util;
 
 
 import algorithm.Algorithm;
-import algorithm.AlternativenessOwnAlgorithm;
+import algorithm.AlphaAlgorithm;
 import algorithm.BaseAlgorithm;
 import generator.GeneratedData;
 import generator.Generator;
@@ -19,8 +19,6 @@ import testing.RealityTester;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
 /**
  * Класс для любых тестов и проверок
@@ -74,7 +72,7 @@ public class Trash {
         InputProduction production = READER.readProductionFile("production.xml");
         InputOrderInformation orderFile = READER.readOrderFile("orders.xml");
 
-        Algorithm algorithm = new AlternativenessOwnAlgorithm(production, orderFile.getOrders(), null, 10, 50);
+        Algorithm algorithm = new AlphaAlgorithm(production, orderFile.getOrders(), null, 10, 50);
 
         OutputResult result = null;
         try {

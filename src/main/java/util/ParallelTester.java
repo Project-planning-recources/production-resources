@@ -1,36 +1,39 @@
 package util;
 
-import algorithm.AlternativenessOwnAlgorithm;
+import algorithm.AlphaAlgorithm;
+import parse.input.XMLReader;
 import parse.input.order.InputOrderInformation;
 import parse.input.production.InputProduction;
+import parse.output.XMLWriter;
 import parse.output.result.OutputResult;
 import testing.PossibilityTester;
 import testing.RealityTester;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class ParallelTester {
+
+    private static final XMLReader READER = new XMLReader();
+    private static final XMLWriter WRITER = new XMLWriter();
     public static void main(String[] args) {
 
         int threadsNum = 4;
         int startGen = 10;
         int budgetGen = 100;
-        int startsAlg = 10;
+        int startsAlg = 1;
         int basisSize = 5;
 
-        try (FileWriter writer = new FileWriter(argv[6], false)) {
+        try (FileWriter writer = new FileWriter("parallel.csv", false)) {
             writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
                     "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Количество произведенных операций;Среднее суммарное количество дней просрочки;Средний критерий;Среднее время исполнения в секундах\n");
 
             for (int i = 0; i < basisSize; i++) {
-                InputProduction production = READER.readProductionFile(argv[2] + "/" + (i + 1) + "_production.xml");
-                InputOrderInformation orders = READER.readOrderFile(argv[2] + "/" + (i + 1) + "_orders.xml");
+                InputProduction production = READER.readProductionFile("ParallelBasis/" + (i + 1) + "_production.xml");
+                InputOrderInformation orders = READER.readOrderFile( "ParallelBasis/" + (i + 1) + "_orders.xml");
 
                 if (PossibilityTester.test(production, orders)) {
-//                            BaseAlgorithm baseAlgorithm = new BaseAlgorithm(production, orders.getOrders(), null);
-//                            OutputResult baseResult = baseAlgorithm.start();
+
 
                     Data.AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
                     long equipmentCount = Data.getEquipmentCount(production);
@@ -45,11 +48,12 @@ public class ParallelTester {
                         System.out.println(i + ":" + j + ": Запущен...");
 
                         long startTime = System.currentTimeMillis();
-                        AlternativenessOwnAlgorithm ownAlgorithm = new AlternativenessOwnAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
+                        AlphaAlgorithm ownAlgorithm = new AlphaAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
                         OutputResult ownResult = ownAlgorithm.start();
+                        long endTime = System.currentTimeMillis();
 
                         if (RealityTester.test(production, orders, ownResult)) {
-                            long endTime = System.currentTimeMillis();
+
 
                             performOperationsCount += Data.getPerformOperationsCount(ownResult);
                             averageOverdueDays += Data.getAverageOverdueDays(orders.getOrders(), ownResult);
@@ -80,6 +84,10 @@ public class ParallelTester {
                 }
             }
             System.out.println("Работа завершена.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

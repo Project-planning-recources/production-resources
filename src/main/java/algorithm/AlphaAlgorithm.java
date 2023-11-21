@@ -18,28 +18,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Objects;
 
-public class AlternativenessOwnAlgorithm implements Algorithm {
-
-    /**
-     * Предприятие
-     */
-    protected Production production;
-
-    /**
-     * Все заказы
-     */
-    protected ArrayList<Order> orders;
-
-    /**
-     * Время начала работы
-     */
-    protected LocalDateTime startTime;
-    private int startVariatorCount = 10;
-    private int variatorBudget = 100;
-
-    public AlternativenessOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget) {
+public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
+    public AlphaAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget) {
 
         this.production = new Production(inputProduction);
         ArrayList<Order> orders = new ArrayList<>();
@@ -110,22 +91,20 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         return new OwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(recordPair.getKey()), recordPair.getKey()).start();
     }
 
-    private ArrayList<Pair<HashMap<Long, Integer>, Double>> variation;
 
-    private HashMap<Long, Boolean> variantPairs;
 
-    private void loading() {
+    protected void loading() {
         System.out.println("Calculating " + (this.variation.size() - 1) + "/" + this.variatorBudget);
     }
 
-    private double getCriterionForVariant(HashMap<Long, Integer> variant) throws Exception {
+    protected double getCriterionForVariant(HashMap<Long, Integer> variant) throws Exception {
         Algorithm algorithm = new OwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant), variant);
         OutputResult result = algorithm.start();
 
         return Criterion.getCriterion(this.orders, result);
     }
 
-    private HashMap<Long, Integer> generateRandomAlternativesDistribution() {
+    protected HashMap<Long, Integer> generateRandomAlternativesDistribution() {
         HashMap<Long, Integer> variant = new HashMap<>();
 
         this.orders.forEach(order -> {
@@ -151,7 +130,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         return variant;
     }
 
-    private void generateAndAddNewVariants() throws Exception {
+    protected void generateAndAddNewVariants() throws Exception {
 
         boolean generationFlag = true;
 
@@ -229,7 +208,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
     }
 
 
-    private HashMap<Long, Integer> generateVariantFromTwo(HashMap<Long, Integer> firstVariant,
+    protected HashMap<Long, Integer> generateVariantFromTwo(HashMap<Long, Integer> firstVariant,
                                                           HashMap<Long, Integer> secondVariant,
                                                           double alpha) {
 
@@ -293,7 +272,7 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         return readyAlphaVariant;
     }
 
-    private Boolean checkVariantAvailability(HashMap<Long, Integer> variant) {
+    protected Boolean checkVariantAvailability(HashMap<Long, Integer> variant) {
 
         for (Order order : this.orders) {
             for (Product product : order.getProducts()) {
