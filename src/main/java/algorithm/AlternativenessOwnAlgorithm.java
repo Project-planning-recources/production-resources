@@ -6,7 +6,6 @@ import algorithm.model.order.Product;
 import algorithm.model.order.TechProcess;
 import algorithm.model.production.Production;
 import algorithm.operationchooser.FirstElementChooser;
-import algorithm.parallel.ParallelSolver;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -37,8 +36,6 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
      * Время начала работы
      */
     protected LocalDateTime startTime;
-
-    private int threadsNum = 1;
     private int startVariatorCount = 10;
     private int variatorBudget = 100;
 
@@ -59,45 +56,8 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         this.variantPairs = new HashMap<>();
     }
 
-    public AlternativenessOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int threadsNum, int startVariatorCount, int variatorBudget) {
-        this.production = new Production(inputProduction);
-        ArrayList<Order> orders = new ArrayList<>();
-        inputOrders.forEach(inputOrder -> {
-            orders.add(new Order(inputOrder));
-        });
-        this.orders = orders;
-
-        this.startTime = startTime;
-        this.threadsNum = threadsNum;
-        this.startVariatorCount = startVariatorCount;
-        this.variatorBudget = variatorBudget;
-
-        this.variation = new ArrayList<>();
-        this.variantPairs = new HashMap<>();
-    }
-
     @Override
     public OutputResult start() throws Exception {
-        if (this.threadsNum == 1) {
-            return startConsistentAlg();
-        } else {
-
-            // todo: Написать тестер и адаптировать записываемую табличку в отдельном классе, запускать и собирать информацию
-            return startParallelAlg();
-        }
-    }
-
-    private ArrayList<Pair<HashMap<Long, Integer>, Double>> variation;
-
-    private HashMap<Long, Boolean> variantPairs;
-
-    private void loading() {
-        System.out.println("Calculating " + (this.variation.size() - 1) + "/" + this.variatorBudget);
-    }
-
-    private OutputResult startConsistentAlg() throws Exception {
-
-
         HashMap<Long, Integer> alt = new HashMap<>();
 
 
@@ -148,6 +108,14 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         }
 
         return new OwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(recordPair.getKey()), recordPair.getKey()).start();
+    }
+
+    private ArrayList<Pair<HashMap<Long, Integer>, Double>> variation;
+
+    private HashMap<Long, Boolean> variantPairs;
+
+    private void loading() {
+        System.out.println("Calculating " + (this.variation.size() - 1) + "/" + this.variatorBudget);
     }
 
     private double getCriterionForVariant(HashMap<Long, Integer> variant) throws Exception {
@@ -353,19 +321,5 @@ public class AlternativenessOwnAlgorithm implements Algorithm {
         }
 
         return true;
-    }
-
-
-    private OutputResult startParallelAlg() {
-        ArrayList<ParallelSolver> solvers = new ArrayList<>();
-//        solvers.add(new ParallelSolver(this.inputProduction, this.inputOrders, this.startTime));
-//        solvers.add(new ParallelSolver(this.inputProduction, this.inputOrders, this.startTime));
-//        solvers.add(new ParallelSolver(this.inputProduction, this.inputOrders, this.startTime));
-//        solvers.add(new ParallelSolver(this.inputProduction, this.inputOrders, this.startTime));
-//
-//        ParallelMain parallelMain = new ParallelMain(this.inputProduction, this.inputOrders, this.startTime, solvers);
-//        parallelMain.start();
-
-        return null;
     }
 }

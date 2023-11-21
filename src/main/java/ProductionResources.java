@@ -74,7 +74,7 @@ public class ProductionResources {
                     }
                 } else if ("own".equalsIgnoreCase(argv[1])) {
                     System.out.println("1");
-                    algorithm = AlgorithmFactory.getNewOwnAlgorithm(production, orders.getOrders(), null, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]), Integer.parseInt(argv[7]));
+                    algorithm = AlgorithmFactory.getNewOwnAlgorithm(production, orders.getOrders(), null, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]));
                     System.out.println("2");
                     OutputResult result = algorithm.start();
                     System.out.println("3");
