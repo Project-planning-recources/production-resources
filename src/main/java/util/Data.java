@@ -1,8 +1,8 @@
 package util;
 
 import parse.input.order.InputOrder;
-import parse.input.order.InputOrderInformation;
 import parse.input.order.InputProduct;
+import parse.input.order.InputTechProcess;
 import parse.input.production.InputEquipmentGroup;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputOrderResult;
@@ -13,9 +13,10 @@ import java.time.Duration;
 import java.util.ArrayList;
 
 public class Data {
-    private Data() {}
+    private Data() {
+    }
 
-    public static int getOperationsCount(OutputResult result) {
+    public static int getPerformOperationsCount(OutputResult result) {
         int operationsCount = 0;
 
         for (OutputOrderResult orderResult : result.getOrderResults()) {
@@ -47,10 +48,10 @@ public class Data {
             for (InputProduct inputProduct : inputOrder.getProducts()) {
                 int size = inputProduct.getTechProcesses().size();
 
-                if(size < min) {
+                if (size < min) {
                     min = size;
                 }
-                if(size > max) {
+                if (size > max) {
                     max = size;
                 }
                 average += size;
@@ -68,13 +69,56 @@ public class Data {
                 orders) {
             for (OutputOrderResult orderResult :
                     result.getOrderResults()) {
-                if(order.getId() == orderResult.getOrderId()) {
+                if (order.getId() == orderResult.getOrderId()) {
                     average += (int) (Duration.between(order.getDeadline(), orderResult.getEndTime()).getSeconds() / 86400);
                 }
             }
         }
 
         return average;
+    }
+
+    public static int getDetailTypesCount(ArrayList<InputOrder> orders) {
+        int detailTypes = 0;
+        for (InputOrder order :
+                orders) {
+            detailTypes += order.getProducts().size();
+        }
+        return detailTypes;
+    }
+
+    public static double getAverageDetailsCount(ArrayList<InputOrder> orders) {
+        double detailsCount = 0;
+        int detailTypes = 0;
+        for (InputOrder order :
+                orders) {
+            for (InputProduct product :
+                    order.getProducts()) {
+                detailsCount += product.getCount();
+            }
+            detailTypes += order.getProducts().size();
+        }
+        return detailsCount / detailTypes;
+    }
+
+    public static double getAverageOperationsCountOnDetail(ArrayList<InputOrder> orders) {
+        double operationsCount = 0;
+        int techProcessCount = 0;
+
+        for (InputOrder order :
+                orders) {
+            for (InputProduct product :
+                    order.getProducts()) {
+                for (InputTechProcess techProcess :
+                        product.getTechProcesses()) {
+                    operationsCount += techProcess.getOperations().size();
+                }
+                techProcessCount += product.getTechProcesses().size();
+            }
+
+        }
+
+        return operationsCount / techProcessCount;
     }
 
     public static class AlternativenessCount {
