@@ -113,7 +113,7 @@ public class ProductionResources {
 
                 try (FileWriter writer = new FileWriter(argv[6], false)) {
                     writer.write("№;Количество заказов;Количество операций;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
-                            "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Среднее количество дней просрочки в днях;Средний критерий;Среднее время исполнения в секундах\n");
+                            "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Среднее суммарное количество дней просрочки;Средний критерий;Среднее время исполнения в секундах\n");
 
                     for (int i = 0; i < count; i++) {
                         InputProduction production = READER.readProductionFile(argv[2] + "/" + (i + 1) + "_production.xml");
@@ -162,7 +162,7 @@ public class ProductionResources {
                                     alternativenessCount.average + ";" +
                                     ((double) averageOverdueDays / startsAlg) + ";" +
                                     (averageCriterion / startsAlg) + ";" +
-                                    ((double) averageTime / startsAlg) + " секунд\n");
+                                    ((double) averageTime / startsAlg) + "\n");
                         } else {
                             throw new Exception(i + ": Заказы не соответствуют производству");
                         }

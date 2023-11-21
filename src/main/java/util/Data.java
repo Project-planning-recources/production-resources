@@ -74,7 +74,7 @@ public class Data {
             }
         }
 
-        return average / orders.size();
+        return average;
     }
 
     public static class AlternativenessCount {
