@@ -18,6 +18,6 @@ public class AlgorithmFactory {
     }
 
     public static Algorithm getNewOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget) throws Exception {
-        return new AlternativenessOwnAlgorithm(inputProduction, inputOrders, startTime, startVariatorCount, variatorBudget);
+        return new AlphaAlgorithm(inputProduction, inputOrders, startTime, startVariatorCount, variatorBudget);
     }
 }
