@@ -74,7 +74,7 @@ public class ProductionResources {
                     }
                 } else if ("own".equalsIgnoreCase(argv[1])) {
                     System.out.println("1");
-                    algorithm = AlgorithmFactory.getNewOwnAlgorithm(production, orders.getOrders(), null, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]), Integer.parseInt(argv[7]));
+                    algorithm = AlgorithmFactory.getNewOwnAlgorithm(production, orders.getOrders(), null, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]));
                     System.out.println("2");
                     OutputResult result = algorithm.start();
                     System.out.println("3");
@@ -112,8 +112,8 @@ public class ProductionResources {
                 int startsAlg = Integer.parseInt(argv[7]);
 
                 try (FileWriter writer = new FileWriter(argv[6], false)) {
-                    writer.write("№;Количество заказов;Количество операций;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
-                            "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Среднее суммарное количество дней просрочки;Средний критерий;Среднее время исполнения в секундах\n");
+                    writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
+                            "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Количество произведенных операций;Среднее суммарное количество дней просрочки;Средний критерий;Среднее время исполнения в секундах\n");
 
                     for (int i = 0; i < count; i++) {
                         InputProduction production = READER.readProductionFile(argv[2] + "/" + (i + 1) + "_production.xml");
@@ -126,7 +126,7 @@ public class ProductionResources {
                             Data.AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
                             long equipmentCount = Data.getEquipmentCount(production);
 
-                            long operationsCount = 0;
+                            long performOperationsCount = 0;
                             long averageOverdueDays = 0;
                             double averageCriterion = 0;
                             long averageTime = 0;
@@ -142,7 +142,7 @@ public class ProductionResources {
                                 if (RealityTester.test(production, orders, ownResult)) {
                                     long endTime = System.currentTimeMillis();
 
-                                    operationsCount += Data.getOperationsCount(ownResult);
+                                    performOperationsCount += Data.getPerformOperationsCount(ownResult);
                                     averageOverdueDays += Data.getAverageOverdueDays(orders.getOrders(), ownResult);
                                     averageCriterion += Criterion.getCriterion(orders, ownResult);
                                     averageTime += (endTime - startTime) / 1000;
@@ -155,11 +155,14 @@ public class ProductionResources {
 
                             writer.write((i + 1) + ";" +
                                     orders.getOrders().size() + ";" +
-                                    ((double) operationsCount / startsAlg) + ";" +
+                                    Data.getDetailTypesCount(orders.getOrders()) + ";" +
+                                    Data.getAverageDetailsCount(orders.getOrders()) + ";" +
+                                    Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
                                     equipmentCount + ";" +
                                     alternativenessCount.min + ";" +
                                     alternativenessCount.max + ";" +
                                     alternativenessCount.average + ";" +
+                                    ((double) performOperationsCount / startsAlg) + ";" +
                                     ((double) averageOverdueDays / startsAlg) + ";" +
                                     (averageCriterion / startsAlg) + ";" +
                                     ((double) averageTime / startsAlg) + "\n");
