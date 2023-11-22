@@ -17,18 +17,18 @@ public class ParallelMain extends Thread {
     private InputProduction inputProduction;
     private ArrayList<InputOrder> inputOrders;
     private LocalDateTime startTime;
-    private ArrayList<ParallelSolver> solvers;
+    private ArrayList<ParallelSolver1> solvers;
 
 
     private ArrayList<ResultPoint> results;
 
-    public ParallelMain(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, ArrayList<ParallelSolver> solvers) {
+    public ParallelMain(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, ArrayList<ParallelSolver1> solvers) {
         this.inputProduction = inputProduction;
         this.inputOrders = inputOrders;
         this.startTime = startTime;
         this.solvers = solvers;
 
-        this.solvers.forEach(parallelSolver -> parallelSolver.setMain(this));
+//        this.solvers.forEach(parallelSolver -> parallelSolver.setMain(this));
 
         results = new ArrayList<>();
     }
@@ -43,18 +43,18 @@ public class ParallelMain extends Thread {
 
             HashMap<Long, Integer> firstStartAlternativeness = firstStart.getAlternativeness();
 
-            this.solvers.forEach(parallelSolver -> parallelSolver.setData(firstStartAlternativeness));
-            this.solvers.forEach(ParallelSolver::run);
+//            this.solvers.forEach(parallelSolver -> parallelSolver.setData(firstStartAlternativeness));
+            this.solvers.forEach(ParallelSolver1::run);
 
             boolean running = true;
             while(running) {
                 for (int i = 0; i < this.solvers.size(); i++) {
-                    if(solvers.get(i).isSolving()) {
-                        break;
-                    }
-                    if(i == this.solvers.size() - 1 && !this.solvers.get(i).isSolving()) {
-                        running = false;
-                    }
+//                    if(solvers.get(i).isSolving()) {
+//                        break;
+//                    }
+//                    if(i == this.solvers.size() - 1 && !this.solvers.get(i).isSolving()) {
+//                        running = false;
+//                    }
                 }
                 Thread.sleep(1000);
                 System.out.println("running...");
