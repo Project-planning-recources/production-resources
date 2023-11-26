@@ -17,8 +17,6 @@ public class OperationChooserFactory {
                 return new FirstElementChooser();
             case("DateComingOrder"):
                 return new DateComingOrderChooser();
-            case("Greedy"):
-                return new GreedyOperationChooser(abstractAlgorithm.allOperations);
             default:
                 throw new RuntimeException("Unsupported chooser");
         }

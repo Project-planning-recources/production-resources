@@ -11,5 +11,5 @@ public interface Record {
     /**
      * Возвращает рекордное значение среди списка доступных операций. Если такая операция не найдена, возвращается null
      */
-    OperationResult getRecord(List<OperationResult> operations, LocalDateTime timeTick);
+    OperationResult getRecord(LocalDateTime timeTick);
 }

@@ -79,12 +79,6 @@ public class Equipment implements Serializable {
 
     }
 
-    public long getDistanceBetweenComingAndLastBusyDate(LocalDateTime date) {
-        LocalDateTime whenEquipmentWouldBeFree = getBusyTime(date);
-        return Objects.isNull(whenEquipmentWouldBeFree) ? 0 :
-                Duration.between(date, whenEquipmentWouldBeFree).get(ChronoUnit.SECONDS);
-    }
-
     private LocalDateTime getBusyTime(LocalDateTime date) {
         return performedOperations
                 .stream()

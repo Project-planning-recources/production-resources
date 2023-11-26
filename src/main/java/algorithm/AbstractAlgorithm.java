@@ -2,18 +2,18 @@ package algorithm;
 
 import algorithm.alternativeness.AlternativeElector;
 import algorithm.model.order.Product;
+import algorithm.model.order.TechProcess;
+import algorithm.model.result.*;
 import algorithm.operationchooser.OperationChooser;
 import algorithm.model.order.Operation;
 import algorithm.model.order.Order;
 import algorithm.model.production.Equipment;
 import algorithm.model.production.Production;
 import algorithm.model.production.WorkingDay;
-import algorithm.model.result.OperationResult;
-import algorithm.model.result.OrderResult;
-import algorithm.model.result.ProductResult;
-import algorithm.model.result.Result;
 import algorithm.parallel.CompositeRecord;
 import algorithm.parallel.Record;
+import org.apache.directory.server.core.avltree.AvlTree;
+import org.apache.directory.server.core.avltree.AvlTreeImpl;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -53,18 +53,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
     protected AlternativeElector alternativeElector;
 
     /**
-     * Лист с операциями, которые можем начать выполнять в текущий момент
-     * (Операции без предшественников и с прошедшим временем раннего начала)
-     */
-    protected ArrayList<OperationResult> waitingOperations;
-
-    /**
      * Таймлайн (список тактирования) для тактирования по времени. Содержит в себе времена,
      * в которые мы производим опросы оборудования. По данному таймлайну выполняется алгоритм
      */
     protected LinkedList<LocalDateTime> timeline;
-
-    protected HashMap<Long, Operation> allOperations;
 
     protected Result result;
 
@@ -87,14 +79,12 @@ public abstract class AbstractAlgorithm implements Algorithm {
         this.startTime = startTime;
 
         this.ongoingOperations = new ArrayList<>();
-        this.waitingOperations = new ArrayList<>();
-        initOperationsHashMap();
+        initResult();
         initEquipmentHashMap();
         initTimeline();
-        initResult();
         this.operationChooser = OperationChooserFactory.getOperationChooser(operationChooser, this);
         this.alternativeElector = AlternativeElectorFactory.getAlternativeElector(alternativeElector, this);
-        this.record = new CompositeRecord(production.getEquipmentGroups());
+        this.record = new CompositeRecord(production.getEquipmentGroups(), initOperationsHashMap());
     }
 
     @Override
@@ -143,18 +133,49 @@ public abstract class AbstractAlgorithm implements Algorithm {
         this.result.setAllEndTime(lastResult);
     }
 
-    protected void initOperationsHashMap () {
-        this.allOperations = new HashMap<>();
+    protected AvlTree<OperationResult> initOperationsHashMap() {
+        AvlTree<OperationResult> operationAvlTree = new AvlTreeImpl<>(OperationResult::compareTo);
 
+        ArrayList<OrderResult> orderResults = new ArrayList<>();
+        AtomicLong addingOrder = new AtomicLong(1);
         this.orders.forEach(order -> {
+
+            ArrayList<ProductResult> productResults = new ArrayList<>();
+            OrderResult orderResult = new OrderResult(order.getId(), null, null, productResults);
+            orderResult.setResult(this.result);
+
             order.getProducts().forEach(product -> {
-                product.getTechProcesses().forEach(techProcess -> {
-                    techProcess.getOperations().forEach(operation -> {
-                        allOperations.put(operation.getId(), operation);
-                    });
+
+                long techProcessId = chooseAlternativeness(this.concreteProductId, product);
+                TechProcess techProcess = product.getTechProcessByTechProcessId(techProcessId);
+                LinkedList<OperationResult> operationResults = new LinkedList<>();
+                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(),
+                        techProcessId, null, null, operationResults, orderResult);
+
+                AtomicLong orderInTechProcess = new AtomicLong(1);
+
+                techProcess.getOperations().forEach(operation -> {
+
+                    OperationPriorities priorities = new OperationPriorities(operation.getId(), order.getStartTime(),
+                            orderInTechProcess.get(), order.getDeadline(), addingOrder.get());
+                    OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(),
+                            operation.getNextOperationId(), operation.getRequiredEquipment(),
+                            0, operation.getDuration(), null, null, productResult, priorities);
+                    operationResults.add(operationResult);
+                    operationAvlTree.insert(operationResult);
+                    orderInTechProcess.getAndIncrement();
+                    addingOrder.getAndIncrement();
+
                 });
+
+                productResults.add(productResult);
             });
+
+            orderResults.add(orderResult);
         });
+
+        this.result.getOrderResults().addAll(orderResults);
+        return operationAvlTree;
     }
 
     protected void initEquipmentHashMap () {
@@ -305,16 +326,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
      * В данной функции обрабатываем один такт времени
      */
     protected void tickOfTime(LocalDateTime timeTick) throws Exception {
-        /**
-         * Добавляем операции заказа, для которого наступило время раннего начала
-         */
-        this.orders.forEach(order -> {
-            if(order.getStartTime().isEqual(timeTick)) {
-                addNewOrderOperations(order);
-            }
-        });
-
-
         if(isWeekend(timeTick)) {
             moveTimeTickFromWeekend(timeTick);
         } else {
@@ -337,7 +348,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
              */
             startOperations(timeTick);
         }
-
     }
 
     protected void startOperations(LocalDateTime timeTick) {
@@ -345,7 +355,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         OperationResult choose;
 
         while (true) {
-            choose = record.getRecord(waitingOperations, timeTick);
+            choose = record.getRecord(timeTick);
             if (Objects.isNull(choose)) {
                 break;
             }
@@ -354,14 +364,13 @@ public abstract class AbstractAlgorithm implements Algorithm {
             if (choose.getPrevOperationId() == 0) {
                 choose.getProductResult().setStartTime(timeTick);
             }
-            LocalDateTime endTime = addOperationTimeToTimeline(timeTick, this.allOperations.get(choose.getOperationId()).getDuration());
+            LocalDateTime endTime = addOperationTimeToTimeline(timeTick, choose.getDuration());
             choose.setEndTime(endTime);
 
             Equipment equipment = allEquipment.get(choose.getEquipmentId());
             equipment.addOperation(choose);
             equipment.setUsing(true);
 
-            this.waitingOperations.remove(choose);
             this.ongoingOperations.add(choose);
         }
     }
@@ -371,9 +380,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected void releaseEquipmentAndNextOperation(OperationResult ongoingOperation, LocalDateTime timeTick) {
 
-        if(ongoingOperation.getNextOperation() != null) {
-            this.waitingOperations.add(ongoingOperation.getNextOperation());
-        } else {
+        if(ongoingOperation.getNextOperation() == null) {
             ongoingOperation.getProductResult().setEndTime(timeTick);
         }
         this.ongoingOperations.remove(ongoingOperation);
@@ -384,54 +391,5 @@ public abstract class AbstractAlgorithm implements Algorithm {
     protected long chooseAlternativeness(long concreteProductId, Product product) {
         return this.alternativeElector.chooseTechProcess(product);
     }
-
-    /**
-     * Добавляем операции заказа, у которого наступило время раннего начала, в список операций
-     * Добавляем в объект результата объекты результатов заказа, деталей и операций
-     */
-    protected void addNewOrderOperations(Order order) {
-
-        ArrayList<ProductResult> productResults = new ArrayList<>();
-        OrderResult orderResult = new OrderResult(order.getId(), null, null, productResults);
-        orderResult.setResult(this.result);
-        order.getProducts().forEach(product -> {
-
-            for (int i = 0; i < product.getCount(); i++) {
-
-                /**
-                 * Выбираем техпроцесс
-                 */
-                long techProcessId = chooseAlternativeness(this.concreteProductId, product);
-                LinkedList<Operation> operations = product.getTechProcessByTechProcessId(techProcessId).getOperations();
-
-                LinkedList<OperationResult> operationResults = new LinkedList<>();
-                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(), techProcessId, null, null, operationResults, orderResult);
-                OperationResult prevOperation = null;
-                for (int j = 0; j < operations.size(); j++) {
-                    Operation operation = operations.get(j);
-                    OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(),
-                            operation.getNextOperationId(), operation.getRequiredEquipment(),
-                            0, null, null, productResult);
-
-                    if(prevOperation != null) {
-                        prevOperation.setNextOperation(operationResult);
-                    }
-                    prevOperation = operationResult;
-
-                    if(j == 0) {
-                        this.waitingOperations.add(operationResult);
-                    }
-                    operationResults.add(operationResult);
-                }
-
-
-
-                productResults.add(productResult);
-            }
-        });
-
-        this.result.getOrderResults().add(orderResult);
-    }
-
 
 }

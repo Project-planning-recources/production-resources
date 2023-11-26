@@ -12,7 +12,7 @@ import java.util.Objects;
  * <b>Класс для Алгоритма</b>
  * <b>Результат работы для операции конкретной детали</b>
  */
-public class OperationResult {
+public class OperationResult implements Comparable<OperationResult>{
 
     /**
      * ID операции
@@ -42,6 +42,11 @@ public class OperationResult {
     private long equipmentId;
 
     /**
+     * Длительность в секундах
+     */
+    private int duration;
+
+    /**
      * Время и дата начала выполнения операции
      */
     private LocalDateTime startTime;
@@ -58,20 +63,39 @@ public class OperationResult {
 
     private OperationResult nextOperation;
 
+    private OperationPriorities operationPriorities;
+
     public OperationResult() {
 
     }
 
     public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentGroupId,
-                           long equipmentId, LocalDateTime startTime, LocalDateTime endTime, ProductResult productResult) {
+                           long equipmentId, int duration, LocalDateTime startTime, LocalDateTime endTime,
+                           ProductResult productResult) {
         this.operationId = operationId;
         this.prevOperationId = prevOperationId;
         this.nextOperationId = nextOperationId;
         this.equipmentGroupId = equipmentGroupId;
         this.equipmentId = equipmentId;
+        this.duration = duration;
         this.startTime = startTime;
         this.endTime = endTime;
         this.productResult = productResult;
+    }
+
+    public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentGroupId,
+                           long equipmentId, int duration, LocalDateTime startTime, LocalDateTime endTime,
+                           ProductResult productResult, OperationPriorities priorities) {
+        this.operationId = operationId;
+        this.prevOperationId = prevOperationId;
+        this.nextOperationId = nextOperationId;
+        this.equipmentGroupId = equipmentGroupId;
+        this.equipmentId = equipmentId;
+        this.duration = duration;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.productResult = productResult;
+        this.operationPriorities = priorities;
     }
 
     public long getOperationId() {
@@ -102,6 +126,10 @@ public class OperationResult {
         return endTime;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
     public void setEquipmentId(long equipmentId) {
         this.equipmentId = equipmentId;
     }
@@ -124,6 +152,10 @@ public class OperationResult {
 
     public OperationResult getNextOperation() {
         return nextOperation;
+    }
+
+    public OperationPriorities getOperationPriorities() {
+        return operationPriorities;
     }
 
     @Override
@@ -149,5 +181,34 @@ public class OperationResult {
     @Override
     public int hashCode() {
         return Objects.hash(operationId, productResult);
+    }
+
+    @Override
+    public int compareTo(OperationResult o) {
+        if (this.operationPriorities.getStartTime().isBefore(o.getOperationPriorities().getStartTime())) {
+            return -1;
+        } else if (this.operationPriorities.getStartTime().isAfter(o.getOperationPriorities().getStartTime())) {
+            return 1;
+        } else if (this.operationPriorities.getStartTime().equals(o.getOperationPriorities().getStartTime())) {
+            if (this.operationPriorities.getOrderInTechProcess() < o.getOperationPriorities().getOrderInTechProcess()) {
+                return -1;
+            } else if (this.operationPriorities.getOrderInTechProcess() > o.getOperationPriorities().getOrderInTechProcess()) {
+                return 1;
+            } else if (this.operationPriorities.getOrderInTechProcess() == o.getOperationPriorities().getOrderInTechProcess()) {
+                if (this.operationPriorities.getDeadline().isBefore(o.getOperationPriorities().getDeadline())) {
+                    return -1;
+                } else if (this.operationPriorities.getDeadline().isAfter(o.getOperationPriorities().getDeadline())) {
+                    return 1;
+                }
+                else if (this.operationPriorities.getDeadline().equals(o.getOperationPriorities().getDeadline())) {
+                    if (this.operationPriorities.getAddingOrder() < o.getOperationPriorities().getAddingOrder()) {
+                        return -1;
+                    } else if (this.operationPriorities.getAddingOrder() > o.getOperationPriorities().getAddingOrder()) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
     }
 }
