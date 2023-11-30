@@ -23,14 +23,14 @@ public class CompositeRecord implements Record {
 
     @Override
     public OperationResult getRecord(LocalDateTime timeTick) {
-        OperationResult result = findAvaliableOperationOnEquipmentByTimeTick(timeTick);
+        OperationResult result = findAvailableOperationOnEquipmentByTimeTick(timeTick);
         if (Objects.nonNull(result)) {
             this.operationAvlTree.remove(result);
         }
         return result;
     }
 
-    private OperationResult findAvaliableOperationOnEquipmentByTimeTick(LocalDateTime timeTick) {
+    private OperationResult findAvailableOperationOnEquipmentByTimeTick(LocalDateTime timeTick) {
         if(operationAvlTree.getSize() == 0) {
             return null;
         }
@@ -38,22 +38,25 @@ public class CompositeRecord implements Record {
         long size = 0;
         while(true) {
             size++;
-            EquipmentGroup requiredGroup = equipmentGroups.get(result.getEquipmentGroupId());
-            Equipment chosenEquipment = requiredGroup.getEquipment()
-                    .stream()
-                    .filter(equipment -> !equipment.isBusy(timeTick))
-                    .findFirst()
-                    .orElse(null);
-            if (Objects.nonNull(chosenEquipment)) {
-                result.setEquipmentId(chosenEquipment.getId());
+            if (Objects.isNull(result.getPrevOperation()) ||
+                    Objects.nonNull(result.getPrevOperation()) && result.getPrevOperation().isDone()) {
+                EquipmentGroup requiredGroup = equipmentGroups.get(result.getEquipmentGroupId());
+                Equipment chosenEquipment = requiredGroup.getEquipment()
+                        .stream()
+                        .filter(equipment -> !equipment.isBusy(timeTick))
+                        .findFirst()
+                        .orElse(null);
+                if (Objects.nonNull(chosenEquipment)) {
+                    result.setEquipmentId(chosenEquipment.getId());
+                    break;
+                }
+            }
+
+            if (size == operationAvlTree.getSize()) {
+                result = null;
                 break;
             } else {
-                if (size == operationAvlTree.getSize()) {
-                    result = null;
-                    break;
-                } else {
-                    result = operationAvlTree.findGreater(result).getKey();
-                }
+                result = operationAvlTree.findGreater(result).getKey();
             }
         }
 

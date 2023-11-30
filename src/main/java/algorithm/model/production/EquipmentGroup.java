@@ -61,24 +61,4 @@ public class EquipmentGroup implements Serializable {
         return equipment;
     }
 
-    public Integer getFreeCount() {
-        int counter = 0;
-        for (Equipment e :
-                equipment) {
-            if (!e.isUsing()) {
-                counter++;
-            }
-        }
-        return counter;
-    }
-
-    public boolean thereAreFree() {
-        for (Equipment e :
-                equipment) {
-            if (!e.isUsing()) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

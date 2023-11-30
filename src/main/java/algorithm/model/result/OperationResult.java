@@ -1,9 +1,5 @@
 package algorithm.model.result;
 
-import parse.adapter.DateAdapter;
-
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -42,11 +38,6 @@ public class OperationResult implements Comparable<OperationResult>{
     private long equipmentId;
 
     /**
-     * Длительность в секундах
-     */
-    private int duration;
-
-    /**
      * Время и дата начала выполнения операции
      */
     private LocalDateTime startTime;
@@ -61,6 +52,10 @@ public class OperationResult implements Comparable<OperationResult>{
      */
     private ProductResult productResult;
 
+    private boolean done;
+
+    private OperationResult prevOperation;
+
     private OperationResult nextOperation;
 
     private OperationPriorities operationPriorities;
@@ -70,32 +65,32 @@ public class OperationResult implements Comparable<OperationResult>{
     }
 
     public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentGroupId,
-                           long equipmentId, int duration, LocalDateTime startTime, LocalDateTime endTime,
+                           long equipmentId, LocalDateTime startTime, LocalDateTime endTime,
                            ProductResult productResult) {
         this.operationId = operationId;
         this.prevOperationId = prevOperationId;
         this.nextOperationId = nextOperationId;
         this.equipmentGroupId = equipmentGroupId;
         this.equipmentId = equipmentId;
-        this.duration = duration;
         this.startTime = startTime;
         this.endTime = endTime;
         this.productResult = productResult;
+        this.done = false;
     }
 
     public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentGroupId,
-                           long equipmentId, int duration, LocalDateTime startTime, LocalDateTime endTime,
+                           long equipmentId, LocalDateTime startTime, LocalDateTime endTime,
                            ProductResult productResult, OperationPriorities priorities) {
         this.operationId = operationId;
         this.prevOperationId = prevOperationId;
         this.nextOperationId = nextOperationId;
         this.equipmentGroupId = equipmentGroupId;
         this.equipmentId = equipmentId;
-        this.duration = duration;
         this.startTime = startTime;
         this.endTime = endTime;
         this.productResult = productResult;
         this.operationPriorities = priorities;
+        this.done = false;
     }
 
     public long getOperationId() {
@@ -126,10 +121,6 @@ public class OperationResult implements Comparable<OperationResult>{
         return endTime;
     }
 
-    public int getDuration() {
-        return duration;
-    }
-
     public void setEquipmentId(long equipmentId) {
         this.equipmentId = equipmentId;
     }
@@ -156,6 +147,22 @@ public class OperationResult implements Comparable<OperationResult>{
 
     public OperationPriorities getOperationPriorities() {
         return operationPriorities;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    public OperationResult getPrevOperation() {
+        return prevOperation;
+    }
+
+    public void setPrevOperation(OperationResult prevOperation) {
+        this.prevOperation = prevOperation;
     }
 
     @Override
@@ -195,16 +202,22 @@ public class OperationResult implements Comparable<OperationResult>{
             } else if (this.operationPriorities.getOrderInTechProcess() > o.getOperationPriorities().getOrderInTechProcess()) {
                 return 1;
             } else if (this.operationPriorities.getOrderInTechProcess() == o.getOperationPriorities().getOrderInTechProcess()) {
-                if (this.operationPriorities.getDeadline().isBefore(o.getOperationPriorities().getDeadline())) {
+                if (this.operationPriorities.getDuration() < o.getOperationPriorities().getDuration()) {
                     return -1;
-                } else if (this.operationPriorities.getDeadline().isAfter(o.getOperationPriorities().getDeadline())) {
+                } else if (this.operationPriorities.getDuration() > o.getOperationPriorities().getDuration()) {
                     return 1;
-                }
-                else if (this.operationPriorities.getDeadline().equals(o.getOperationPriorities().getDeadline())) {
-                    if (this.operationPriorities.getAddingOrder() < o.getOperationPriorities().getAddingOrder()) {
+                } else if (this.operationPriorities.getDuration() == o.getOperationPriorities().getDuration()) {
+                    if (this.operationPriorities.getDeadline().isBefore(o.getOperationPriorities().getDeadline())) {
                         return -1;
-                    } else if (this.operationPriorities.getAddingOrder() > o.getOperationPriorities().getAddingOrder()) {
+                    } else if (this.operationPriorities.getDeadline().isAfter(o.getOperationPriorities().getDeadline())) {
                         return 1;
+                    }
+                    else if (this.operationPriorities.getDeadline().equals(o.getOperationPriorities().getDeadline())) {
+                        if (this.operationPriorities.getAddingOrder() < o.getOperationPriorities().getAddingOrder()) {
+                            return -1;
+                        } else if (this.operationPriorities.getAddingOrder() > o.getOperationPriorities().getAddingOrder()) {
+                            return 1;
+                        }
                     }
                 }
             }

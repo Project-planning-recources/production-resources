@@ -60,26 +60,6 @@ public class Production implements Serializable {
         return false;
     }
 
-    public HashMap<Long, Integer> getFreeCountEquipment() {
-        HashMap<Long, Integer> freeCountEquipment = new HashMap<>();
-
-        equipmentGroups.forEach(equipmentGroup -> {
-            freeCountEquipment.put(equipmentGroup.getId(), equipmentGroup.getFreeCount());
-        });
-
-        return freeCountEquipment;
-    }
-
-    public boolean isOperationCanBePerformed(Long requirement) throws Exception {
-        for (EquipmentGroup equipmentGroup :
-                equipmentGroups) {
-            if(equipmentGroup.getId() == requirement) {
-                return equipmentGroup.thereAreFree();
-            }
-        }
-        throw new Exception("Wrong equipment group id");
-    }
-
     public Schedule getSchedule() {
         return schedule;
     }

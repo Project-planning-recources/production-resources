@@ -5,7 +5,6 @@ import algorithm.model.order.Product;
 import algorithm.model.order.TechProcess;
 import algorithm.model.result.*;
 import algorithm.operationchooser.OperationChooser;
-import algorithm.model.order.Operation;
 import algorithm.model.order.Order;
 import algorithm.model.production.Equipment;
 import algorithm.model.production.Production;
@@ -22,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class AbstractAlgorithm implements Algorithm {
 
@@ -61,9 +61,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
     protected Result result;
 
     protected HashMap<Long, Equipment> allEquipment;
-
-    private ArrayList<OperationResult> ongoingOperations;
-
     private long concreteProductId = 1;
 
     public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
@@ -78,13 +75,12 @@ public abstract class AbstractAlgorithm implements Algorithm {
         // todo: Использовать время начала
         this.startTime = startTime;
 
-        this.ongoingOperations = new ArrayList<>();
         initResult();
         initEquipmentHashMap();
         initTimeline();
         this.operationChooser = OperationChooserFactory.getOperationChooser(operationChooser, this);
         this.alternativeElector = AlternativeElectorFactory.getAlternativeElector(alternativeElector, this);
-        this.record = new CompositeRecord(production.getEquipmentGroups(), initOperationsHashMap());
+        this.record = new CompositeRecord(production.getEquipmentGroups(), initOperationsAvlTree());
     }
 
     @Override
@@ -133,7 +129,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         this.result.setAllEndTime(lastResult);
     }
 
-    protected AvlTree<OperationResult> initOperationsHashMap() {
+    protected AvlTree<OperationResult> initOperationsAvlTree() {
         AvlTree<OperationResult> operationAvlTree = new AvlTreeImpl<>(OperationResult::compareTo);
 
         ArrayList<OrderResult> orderResults = new ArrayList<>();
@@ -146,29 +142,33 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
             order.getProducts().forEach(product -> {
 
-                long techProcessId = chooseAlternativeness(this.concreteProductId, product);
-                TechProcess techProcess = product.getTechProcessByTechProcessId(techProcessId);
-                LinkedList<OperationResult> operationResults = new LinkedList<>();
-                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(),
-                        techProcessId, null, null, operationResults, orderResult);
+                for (int i = 0; i < product.getCount(); i++) {
+                    long techProcessId = chooseAlternativeness(this.concreteProductId, product);
+                    TechProcess techProcess = product.getTechProcessByTechProcessId(techProcessId);
+                    LinkedList<OperationResult> operationResults = new LinkedList<>();
+                    ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(),
+                            techProcessId, null, null, operationResults, orderResult);
 
-                AtomicLong orderInTechProcess = new AtomicLong(1);
+                    AtomicLong orderInTechProcess = new AtomicLong(1);
 
-                techProcess.getOperations().forEach(operation -> {
+                    AtomicReference<OperationResult> prevOperation = new AtomicReference<>();
+                    techProcess.getOperations().forEach(operation -> {
 
-                    OperationPriorities priorities = new OperationPriorities(operation.getId(), order.getStartTime(),
-                            orderInTechProcess.get(), order.getDeadline(), addingOrder.get());
-                    OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(),
-                            operation.getNextOperationId(), operation.getRequiredEquipment(),
-                            0, operation.getDuration(), null, null, productResult, priorities);
-                    operationResults.add(operationResult);
-                    operationAvlTree.insert(operationResult);
-                    orderInTechProcess.getAndIncrement();
-                    addingOrder.getAndIncrement();
+                        OperationPriorities priorities = new OperationPriorities(operation.getId(), operation.getDuration(),
+                                order.getStartTime(), orderInTechProcess.get(), order.getDeadline(), addingOrder.get());
+                        OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(),
+                                operation.getNextOperationId(), operation.getRequiredEquipment(),
+                                0, null, null, productResult, priorities);
+                        operationResult.setPrevOperation(prevOperation.get());
+                        operationResults.add(operationResult);
+                        operationAvlTree.insert(operationResult);
+                        orderInTechProcess.getAndIncrement();
+                        addingOrder.getAndIncrement();
+                        prevOperation.set(operationResult);
+                    });
 
-                });
-
-                productResults.add(productResult);
+                    productResults.add(productResult);
+                }
             });
 
             orderResults.add(orderResult);
@@ -330,20 +330,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
             moveTimeTickFromWeekend(timeTick);
         } else {
             /**
-             * Обрабатываем операции, которые завершились в данный момент
-             */
-            ArrayList<OperationResult> finishOperations = new ArrayList<>();
-            this.ongoingOperations.forEach(ongoingOperation -> {
-                if(ongoingOperation.getEndTime().isEqual(timeTick)) {
-                    finishOperations.add(ongoingOperation);
-                }
-            });
-            finishOperations.forEach(finishOperation -> {
-                releaseEquipmentAndNextOperation(finishOperation, timeTick);
-            });
-
-
-            /**
              * Начинаем выполнять новые операции, если это возможно
              */
             startOperations(timeTick);
@@ -361,31 +347,22 @@ public abstract class AbstractAlgorithm implements Algorithm {
             }
 
             choose.setStartTime(timeTick);
+            LocalDateTime endTime = addOperationTimeToTimeline(timeTick, choose.getOperationPriorities().getDuration());
+            choose.setEndTime(endTime);
+            choose.setDone(true);
+
             if (choose.getPrevOperationId() == 0) {
                 choose.getProductResult().setStartTime(timeTick);
+                choose.getProductResult().setEndTime(endTime);
             }
-            LocalDateTime endTime = addOperationTimeToTimeline(timeTick, choose.getDuration());
-            choose.setEndTime(endTime);
 
             Equipment equipment = allEquipment.get(choose.getEquipmentId());
             equipment.addOperation(choose);
-            equipment.setUsing(true);
 
-            this.ongoingOperations.add(choose);
+            if(choose.getNextOperationId() == 0) {
+                choose.getProductResult().setEndTime(endTime);
+            }
         }
-    }
-
-    /**
-     * Если операция завершилась, освобождаем оборудование и начинаем следующую, если такая есть
-     */
-    protected void releaseEquipmentAndNextOperation(OperationResult ongoingOperation, LocalDateTime timeTick) {
-
-        if(ongoingOperation.getNextOperation() == null) {
-            ongoingOperation.getProductResult().setEndTime(timeTick);
-        }
-        this.ongoingOperations.remove(ongoingOperation);
-        this.allEquipment.get(ongoingOperation.getEquipmentId()).setUsing(false);
-
     }
 
     protected long chooseAlternativeness(long concreteProductId, Product product) {
