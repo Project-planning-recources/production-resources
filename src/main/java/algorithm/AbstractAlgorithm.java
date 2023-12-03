@@ -11,15 +11,19 @@ import algorithm.model.production.Production;
 import algorithm.model.production.WorkingDay;
 import algorithm.parallel.CompositeRecord;
 import algorithm.parallel.Record;
+import algorithm.parallel.threads.TreeFillingThread;
 import org.apache.directory.server.core.avltree.AvlTree;
 import org.apache.directory.server.core.avltree.AvlTreeImpl;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
+import util.WaitingCounter;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -64,7 +68,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
     private long concreteProductId = 1;
 
     public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
-                             String operationChooser, String alternativeElector) {
+                             String operationChooser, String alternativeElector, int threadNumber) {
         this.production = new Production(inputProduction);
         ArrayList<Order> orders = new ArrayList<>();
         inputOrders.forEach(inputOrder -> {
@@ -80,7 +84,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         initTimeline();
         this.operationChooser = OperationChooserFactory.getOperationChooser(operationChooser, this);
         this.alternativeElector = AlternativeElectorFactory.getAlternativeElector(alternativeElector, this);
-        this.record = new CompositeRecord(production.getEquipmentGroups(), initOperationsAvlTree());
+        this.record = new CompositeRecord(production.getEquipmentGroups(), initOperationsAvlTree(threadNumber));
     }
 
     @Override
@@ -129,11 +133,11 @@ public abstract class AbstractAlgorithm implements Algorithm {
         this.result.setAllEndTime(lastResult);
     }
 
-    protected AvlTree<OperationResult> initOperationsAvlTree() {
-        AvlTree<OperationResult> operationAvlTree = new AvlTreeImpl<>(OperationResult::compareTo);
+    protected  List<AvlTree<OperationResult>> initOperationsAvlTree(int threadNum) {
+        List<OperationResult> allOperations = new ArrayList<>();
 
         ArrayList<OrderResult> orderResults = new ArrayList<>();
-        AtomicLong addingOrder = new AtomicLong(1);
+        AtomicLong addingOrder = new AtomicLong(0);
         this.orders.forEach(order -> {
 
             ArrayList<ProductResult> productResults = new ArrayList<>();
@@ -152,6 +156,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                     AtomicLong orderInTechProcess = new AtomicLong(1);
 
                     AtomicReference<OperationResult> prevOperation = new AtomicReference<>();
+
                     techProcess.getOperations().forEach(operation -> {
 
                         OperationPriorities priorities = new OperationPriorities(operation.getId(), operation.getDuration(),
@@ -161,7 +166,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                                 0, null, null, productResult, priorities);
                         operationResult.setPrevOperation(prevOperation.get());
                         operationResults.add(operationResult);
-                        operationAvlTree.insert(operationResult);
+                        allOperations.add(operationResult);
                         orderInTechProcess.getAndIncrement();
                         addingOrder.getAndIncrement();
                         prevOperation.set(operationResult);
@@ -174,8 +179,22 @@ public abstract class AbstractAlgorithm implements Algorithm {
             orderResults.add(orderResult);
         });
 
+        List<AvlTree<OperationResult>> trees = new ArrayList<>();
+        List<TreeFillingThread> threads = new ArrayList<>();
+        for (int i = 0; i < threadNum; i++) {
+            int start = i == 0 ? 0 : (allOperations.size() * i) / threadNum;
+            int end = i == threadNum - 1 ? allOperations.size() : (allOperations.size() * (i + 1)) / threadNum;
+            TreeFillingThread treeFillingThread = new TreeFillingThread(allOperations.subList(start, end),
+                    new AvlTreeImpl<>(OperationResult::compareTo));
+
+            threads.add(treeFillingThread);
+            trees.add(treeFillingThread.getAvlTree());
+        }
+        threads.forEach(TreeFillingThread::start);
+        WaitingCounter.waitingCounter(threads);
+
         this.result.getOrderResults().addAll(orderResults);
-        return operationAvlTree;
+        return trees;
     }
 
     protected void initEquipmentHashMap () {

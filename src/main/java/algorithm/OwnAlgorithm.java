@@ -25,7 +25,7 @@ public class OwnAlgorithm extends AbstractAlgorithm {
     }
 
     public OwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String operationChooser, ArrayList<Integer> alternativeness) {
-        super(inputProduction, inputOrders, startTime, operationChooser, null);
+        super(inputProduction, inputOrders, startTime, operationChooser, null, 1);
         this.alternativeness = alternativeness;
     }
 

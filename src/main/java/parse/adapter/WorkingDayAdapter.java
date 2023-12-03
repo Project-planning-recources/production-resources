@@ -71,8 +71,28 @@ public class WorkingDayAdapter extends XmlAdapter<WorkingDayAdapter.AdaptedWorki
         @XmlAttribute(name = "time_period")
         private String timePeriod;
 
+        public AdaptedWorkingDay() {
+
+        }
+
         public AdaptedWorkingDay(String dayNumber, String timePeriod) {
             this.dayNumber = dayNumber;
+            this.timePeriod = timePeriod;
+        }
+
+        public String getDayNumber() {
+            return dayNumber;
+        }
+
+        public void setDayNumber(String dayNumber) {
+            this.dayNumber = dayNumber;
+        }
+
+        public String getTimePeriod() {
+            return timePeriod;
+        }
+
+        public void setTimePeriod(String timePeriod) {
             this.timePeriod = timePeriod;
         }
     }

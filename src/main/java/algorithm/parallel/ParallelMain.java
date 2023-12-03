@@ -35,7 +35,7 @@ public class ParallelMain extends Thread {
     public void run() {
         System.out.println("=====MAIN IS RUNNING=====");
 
-        BaseAlgorithm baseAlgorithm = new BaseAlgorithm(this.inputProduction, this.inputOrders, this.startTime);
+        BaseAlgorithm baseAlgorithm = new BaseAlgorithm(this.inputProduction, this.inputOrders, this.startTime, 1);
         try {
             OutputResult firstStart = baseAlgorithm.start();
 

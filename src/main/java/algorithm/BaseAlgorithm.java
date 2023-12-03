@@ -12,8 +12,11 @@ import java.util.ArrayList;
  */
 public class BaseAlgorithm extends AbstractAlgorithm {
 
-    public BaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) {
-        super(inputProduction, inputOrders, startTime, "FirstElement", "Random");
+    public BaseAlgorithm(InputProduction inputProduction,
+                         ArrayList<InputOrder> inputOrders,
+                         LocalDateTime startTime,
+                         int threadNum) {
+        super(inputProduction, inputOrders, startTime, "FirstElement", "Random", threadNum);
     }
 
 }

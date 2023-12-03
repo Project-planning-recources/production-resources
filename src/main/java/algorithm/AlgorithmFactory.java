@@ -14,7 +14,7 @@ public class AlgorithmFactory {
     private AlgorithmFactory() {}
 
     public static Algorithm getNewBaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) throws Exception {
-        return new BaseAlgorithm(inputProduction, inputOrders, startTime);
+        return new BaseAlgorithm(inputProduction, inputOrders, startTime, 1);
     }
 
     public static Algorithm getNewOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int threadsNum) throws Exception {
