@@ -78,14 +78,12 @@ public class ParallelTester {
         int threadsNum = 4;
         int startGen = 10;
         int budgetGen = 100;
-        int startsAlg = 50;
+        int startsAlg = 1;
         int basisSize = 5;
 
         try (FileWriter writer = new FileWriter("parallel.csv", false)) {
-            writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
-                    "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;" +
-                    "Количество произведенных операций последовательного;Среднее суммарное количество дней просрочки последовательного;Средний критерий последовательного;Среднее время исполнения в секундах последовательного;" +
-                    "Количество произведенных операций параллельного1;Среднее суммарное количество дней просрочки параллельного1;Средний критерий параллельного1;Среднее время исполнения в секундах параллельного1\n");
+            writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
+                    "Среднее время исполнения в секундах последовательного;Среднее время исполнения в секундах параллельного1\n");
 
             for (int i = 0; i < basisSize; i++) {
                 InputProduction production = READER.readProductionFile("ParallelBasis/" + (i + 1) + "_production.xml");
@@ -107,17 +105,27 @@ public class ParallelTester {
                             Data.getAverageDetailsCount(orders.getOrders()) + ";" +
                             Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
                             equipmentCount + ";" +
-                            alternativenessCount.min + ";" +
-                            alternativenessCount.max + ";" +
                             alternativenessCount.average + ";" +
-                            ((double) consistent.performOperationsCount / startsAlg) + ";" +
-                            ((double) consistent.averageOverdueDays / startsAlg) + ";" +
-                            (consistent.averageCriterion / startsAlg) + ";" +
                             ((double) consistent.averageTime / startsAlg) + ";" +
-                            ((double) parallel1.performOperationsCount / startsAlg) + ";" +
-                            ((double) parallel1.averageOverdueDays / startsAlg) + ";" +
-                            (parallel1.averageCriterion / startsAlg) + ";" +
                             ((double) parallel1.averageTime / startsAlg) + "\n");
+
+//                    writer.write((i + 1) + ";" +
+//                            orders.getOrders().size() + ";" +
+//                            Data.getDetailTypesCount(orders.getOrders()) + ";" +
+//                            Data.getAverageDetailsCount(orders.getOrders()) + ";" +
+//                            Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
+//                            equipmentCount + ";" +
+//                            alternativenessCount.min + ";" +
+//                            alternativenessCount.max + ";" +
+//                            alternativenessCount.average + ";" +
+//                            ((double) consistent.performOperationsCount / startsAlg) + ";" +
+//                            ((double) consistent.averageOverdueDays / startsAlg) + ";" +
+//                            (consistent.averageCriterion / startsAlg) + ";" +
+//                            ((double) consistent.averageTime / startsAlg) + ";" +
+//                            ((double) parallel1.performOperationsCount / startsAlg) + ";" +
+//                            ((double) parallel1.averageOverdueDays / startsAlg) + ";" +
+//                            (parallel1.averageCriterion / startsAlg) + ";" +
+//                            ((double) parallel1.averageTime / startsAlg) + "\n");
                 } else {
                     throw new Exception(i + ": Заказы не соответствуют производству");
                 }
