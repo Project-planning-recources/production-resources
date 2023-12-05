@@ -39,16 +39,7 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
 
     @Override
     public OutputResult start() throws Exception {
-        HashMap<Long, Integer> alt = new HashMap<>();
 
-
-        this.orders.forEach(order -> {
-            order.getProducts().forEach(product -> {
-                product.getTechProcesses().forEach(techProcess -> {
-                    alt.put(Hash.hash(order.getId(), product.getId(), techProcess.getId()), 1);
-                });
-            });
-        });
 
 
         for (int i = 0; i < this.startVariatorCount; i++) {
@@ -66,12 +57,16 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
 
         }
 
-        while (this.variation.size() < this.variatorBudget) {
-            generateAndAddNewVariants();
-
+        for (int i = this.startVariatorCount; i <= this.variatorBudget;) {
             loading();
+            int addCount = generateAndAddNewVariants();
+            i += addCount;
         }
 
+        return returnRecord();
+    }
+
+    protected OutputResult returnRecord() throws Exception {
         Pair<HashMap<Long, Integer>, Double> recordPair = null;
         double recordCriterion = Double.MAX_VALUE;
 
@@ -81,7 +76,6 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
                 recordPair = variationPair;
                 recordCriterion = variationPair.getValue();
             }
-//            System.out.println(variationPair.getValue() + " " + recordCriterion);
         }
 
         if (recordPair == null) {
@@ -94,7 +88,7 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
 
 
     protected void loading() {
-        System.out.println("Calculating " + (this.variation.size() - 1) + "/" + this.variatorBudget);
+        System.out.println("Вычисление " + (this.variation.size() - 1) + "/" + this.variatorBudget);
     }
 
     protected double getCriterionForVariant(HashMap<Long, Integer> variant) throws Exception {
@@ -130,9 +124,18 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
         return variant;
     }
 
-    protected void generateAndAddNewVariants() throws Exception {
+    protected boolean putPairIfAbsent(long pairsHash) {
+        if (!this.variantPairs.containsKey(pairsHash)) {
+            this.variantPairs.put(pairsHash, true);
+            return true;
+        }
+        return false;
+    }
+
+    protected int generateAndAddNewVariants() throws Exception {
 
         boolean generationFlag = true;
+        int addCount = 0;
 
         while (generationFlag) {
             HashMap<Long, Integer> firstVariant = null;
@@ -142,8 +145,8 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
             double criterionForFirstVariant = 0;
             double criterionForSecondVariant = 0;
 
-            boolean flag = true;
-            while (flag) {
+            boolean pairsFlag = true;
+            while (pairsFlag) {
 
                 Pair<HashMap<Long, Integer>, Double> firstPair = this.variation.get(Random.randomInt(this.variation.size()));
                 firstVariant = firstPair.getKey();
@@ -156,10 +159,8 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
 
                 pairsHash = Hash.hash((long) firstVariant.hashCode(), (long) secondVariant.hashCode());
 //                System.out.println(firstVariant + " " + secondVariant + pairsHash);
-                if (!this.variantPairs.containsKey(pairsHash)) {
-                    flag = false;
-                    this.variantPairs.put(pairsHash, true);
-                }
+
+                pairsFlag = !putPairIfAbsent(pairsHash);
             }
 
 //        System.out.println(firstVariant);
@@ -168,12 +169,10 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
 
             HashMap<Long, Integer> betweenVariant = null;
             HashMap<Long, Integer> beyondVariant = null;
-
             if (criterionForFirstVariant < criterionForSecondVariant) {
 //            System.out.println("1 < 2");
                 betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.5);
                 beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 1.2);
-
 //                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.8);
 //                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 1.2);
             } else if (criterionForFirstVariant > criterionForSecondVariant) {
@@ -188,23 +187,28 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
             }
 
 
-            int addCount = 0;
-            if (checkVariantAvailability(betweenVariant)) {
-                double criterionForBetween = getCriterionForVariant(betweenVariant);
-                this.variation.add(new Pair<>(betweenVariant, criterionForBetween));
+            if(addVariantIfAbsent(betweenVariant)) {
                 addCount++;
             }
 
-
-            if (beyondVariant != null && checkVariantAvailability(beyondVariant)) {
-                double criterionForBeyond = getCriterionForVariant(beyondVariant);
-                this.variation.add(new Pair<>(beyondVariant, criterionForBeyond));
+            if(beyondVariant != null && addVariantIfAbsent(beyondVariant)) {
                 addCount++;
             }
+
             if (addCount != 0) {
                 generationFlag = false;
             }
         }
+        return addCount;
+    }
+
+    protected boolean addVariantIfAbsent(HashMap<Long, Integer> variant) throws Exception {
+        if(checkVariantAvailability(variant)) {
+            double criterionForVariant = getCriterionForVariant(variant);
+            this.variation.add(new Pair<>(variant, criterionForVariant));
+            return true;
+        }
+        return false;
     }
 
 
@@ -226,7 +230,7 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
                         alphaVariant.put(hash, 0.0);
                         negativeBudget -= value;
                     } else {
-                        positiveValues.add(new Pair(hash, value));
+                        positiveValues.add(new Pair<>(hash, value));
                     }
 
                 }
@@ -272,8 +276,8 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
         return readyAlphaVariant;
     }
 
-    protected Boolean checkVariantAvailability(HashMap<Long, Integer> variant) {
 
+    protected Boolean checkNegativeAndDeal(HashMap<Long, Integer> variant) {
         for (Order order : this.orders) {
             for (Product product : order.getProducts()) {
                 int deal = product.getCount();
@@ -291,14 +295,19 @@ public class AlphaAlgorithm extends AbstractAlphaAlgorithm {
                 }
             }
         }
+        return true;
+    }
 
+    protected Boolean checkExistence(HashMap<Long, Integer> variant) {
         for (Pair<HashMap<Long, Integer>, Double> v : this.variation) {
             if (v.getKey().equals(variant)) {
 //                System.out.println("||||||||||||Такой уже есть");
                 return false;
             }
         }
-
         return true;
+    }
+    protected Boolean checkVariantAvailability(HashMap<Long, Integer> variant) {
+        return checkNegativeAndDeal(variant) && checkExistence(variant);
     }
 }

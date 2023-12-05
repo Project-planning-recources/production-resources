@@ -4,6 +4,7 @@ package util;
 import algorithm.Algorithm;
 import algorithm.AlphaAlgorithm;
 import algorithm.BaseAlgorithm;
+import algorithm.parallel.ParallelAlphaAlgorithm1;
 import generator.GeneratedData;
 import generator.Generator;
 import generator.GeneratorJsonReader;
@@ -19,8 +20,6 @@ import testing.RealityTester;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
 /**
  * Класс для любых тестов и проверок
@@ -42,14 +41,31 @@ public class Trash {
 
         System.out.println("=====START=====");
 
-        int dataCount = 1;
+//        int dataCount = 1;
 
 //        checkGenerator();
 
 //        generate(dataCount);
-        checkOwnAlgorithm();
+//        checkOwnAlgorithm();
+        parallelTest();
 
         System.out.println("=====FINISH=====");
+
+    }
+
+    public static void parallelTest() throws Exception {
+        int threadsNum = 4;
+        int startGen = 10;
+        int budgetGen = 100;
+        int startsAlg = 1;
+        int basisSize = 5;
+
+        InputProduction production = READER.readProductionFile("ParallelBasis/1_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("ParallelBasis/1_orders.xml");
+
+        ParallelAlphaAlgorithm1 parallelAlphaAlgorithm1 = new ParallelAlphaAlgorithm1(production, orderFile.getOrders(), null, startGen, budgetGen, threadsNum);
+        parallelAlphaAlgorithm1.start();
+
 
     }
 
