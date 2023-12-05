@@ -1,7 +1,7 @@
 package algorithm.parallel;
 
-import algorithm.AbstractAlphaAlgorithm;
-import algorithm.OwnAlgorithm;
+import algorithm.AbstractVariatorAlgorithm;
+import algorithm.candidates.CandidatesOwnAlgorithm;
 import algorithm.alternativeness.FromMapAlternativeElector;
 import algorithm.model.order.Order;
 import algorithm.model.production.Production;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-public class ParallelAlphaAlgorithm1 extends AbstractAlphaAlgorithm {
+public class ParallelVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
 
     private int threadsNum;
 
@@ -25,22 +25,9 @@ public class ParallelAlphaAlgorithm1 extends AbstractAlphaAlgorithm {
 
     private boolean startAlphaGeneration = false;
 
-    public ParallelAlphaAlgorithm1(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget, int threadsNum) {
-
-        this.production = new Production(inputProduction);
-        ArrayList<Order> orders = new ArrayList<>();
-        inputOrders.forEach(inputOrder -> {
-            orders.add(new Order(inputOrder));
-        });
-        this.orders = orders;
-
-        this.startTime = startTime;
+    public ParallelVariatorAlgorithm1(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget, int threadsNum) {
+        super(inputProduction, inputOrders, startTime, variatorBudget);
         this.startVariatorCount = startVariatorCount;
-        this.variatorBudget = variatorBudget;
-
-        this.variation = new ArrayList<>();
-        this.variantPairs = new HashMap<>();
-
 
         this.threadsNum = threadsNum;
         Semaphore variationSemaphore = new Semaphore(1);
@@ -106,6 +93,6 @@ public class ParallelAlphaAlgorithm1 extends AbstractAlphaAlgorithm {
             throw new Exception("Unreachable code");
         }
 
-        return new OwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(recordPair.getKey()), recordPair.getKey()).start();
+        return new CandidatesOwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(recordPair.getKey()), recordPair.getKey()).start();
     }
 }

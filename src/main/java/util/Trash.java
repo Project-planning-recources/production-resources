@@ -3,8 +3,8 @@ package util;
 
 import algorithm.Algorithm;
 import algorithm.AlphaAlgorithm;
-import algorithm.BaseAlgorithm;
-import algorithm.parallel.ParallelAlphaAlgorithm1;
+import algorithm.BackpackAlgorithm;
+import algorithm.candidates.CandidatesBaseAlgorithm;
 import generator.GeneratedData;
 import generator.Generator;
 import generator.GeneratorJsonReader;
@@ -47,27 +47,37 @@ public class Trash {
 
 //        generate(dataCount);
 //        checkOwnAlgorithm();
-        parallelTest();
 
+        testBackpack();
         System.out.println("=====FINISH=====");
 
     }
 
-    public static void parallelTest() throws Exception {
-        int threadsNum = 4;
-        int startGen = 10;
-        int budgetGen = 100;
-        int startsAlg = 1;
-        int basisSize = 5;
+    private static void testBackpack() {
+        InputProduction production = READER.readProductionFile("Basis/5_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/5_orders.xml");
+        Algorithm algorithm = new BackpackAlgorithm(production, orderFile.getOrders(), null, 100);
 
-        InputProduction production = READER.readProductionFile("ParallelBasis/1_production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("ParallelBasis/1_orders.xml");
+        OutputResult result = null;
+        try {
+            result = algorithm.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        ParallelAlphaAlgorithm1 parallelAlphaAlgorithm1 = new ParallelAlphaAlgorithm1(production, orderFile.getOrders(), null, startGen, budgetGen, threadsNum);
-        parallelAlphaAlgorithm1.start();
+        System.out.println("Testing...");
 
+        if(RealityTester.test(production, orderFile, result)) {
+            WRITER.writeResultFile("backpackResult.xml", result);
+            System.out.println("Creterion: " + Criterion.getCriterion(orderFile, result));
+            System.out.println("Overdue: " + Data.getAverageOverdueDays(orderFile.getOrders(), result));
+            System.out.println("Done!");
+        } else {
+            System.out.println("Bad2!");
+        }
 
     }
+
 
     public static ArrayList<GeneratedData> generate(int dataCount) {
         ArrayList<GeneratedData> generatedData = Generator.generateData(dataCount, GENERATOR_PARAMETERS);
@@ -87,8 +97,8 @@ public class Trash {
 
     public static void checkOwnAlgorithm() throws Exception {
 
-        InputProduction production = READER.readProductionFile("production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("orders.xml");
+        InputProduction production = READER.readProductionFile("Basis/5_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/5_orders.xml");
 
         Algorithm algorithm = new AlphaAlgorithm(production, orderFile.getOrders(), null, 10, 50);
 
@@ -102,7 +112,7 @@ public class Trash {
         System.out.println("Testing...");
 
         if(RealityTester.test(production, orderFile, result)) {
-            WRITER.writeResultFile("result.xml", result);
+            WRITER.writeResultFile("alphaResult.xml", result);
             System.out.println("Creterion: " + Criterion.getCriterion(orderFile, result));
             System.out.println("Overdue: " + Data.getAverageOverdueDays(orderFile.getOrders(), result));
             System.out.println("Done!");
@@ -122,10 +132,10 @@ public class Trash {
                 writer.writeProductionFile("production.xml", generatedData.get(0).getInputProduction());
                 writer.writeOrderInformationFile("orders.xml", generatedData.get(0).getInputOrderInformation());
 
-                Algorithm base = new BaseAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), LocalDateTime.of(2023, 10, 20, 0, 0));
+                Algorithm alg = new CandidatesBaseAlgorithm(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation().getOrders(), LocalDateTime.of(2023, 10, 20, 0, 0));
                 OutputResult result = null;
                 try {
-                    result = base.start();
+                    result = alg.start();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

@@ -109,6 +109,17 @@ public class Production implements Serializable {
         throw new Exception("No equipment for operation");
     }
 
+    public Long getEquipmentGroupIdByEquipmentId(Long equipmentId) {
+        for (EquipmentGroup equipmentGroup : this.equipmentGroups) {
+            for (Equipment equipment : equipmentGroup.getEquipment()) {
+                if (equipmentId == equipment.getId()) {
+                    return equipmentGroup.getId();
+                }
+            }
+        }
+        throw new RuntimeException("Unreachable code in <public Long getEquipmentGroupIdByEquipmentId(Long equipmentId)>");
+    }
+
     @Override
     public String toString() {
         return "Production{" +

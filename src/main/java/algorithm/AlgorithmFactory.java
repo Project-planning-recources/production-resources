@@ -1,5 +1,6 @@
 package algorithm;
 
+import algorithm.candidates.CandidatesBaseAlgorithm;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 
@@ -14,7 +15,7 @@ public class AlgorithmFactory {
     private AlgorithmFactory() {}
 
     public static Algorithm getNewBaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) throws Exception {
-        return new BaseAlgorithm(inputProduction, inputOrders, startTime);
+        return new CandidatesBaseAlgorithm(inputProduction, inputOrders, startTime);
     }
 
     public static Algorithm getNewOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget) throws Exception {

@@ -46,17 +46,21 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected AlternativeElector alternativeElector;
 
+    protected HashMap<Long, Equipment> allEquipment;
+
     /**
      * Лист с операциями, которые можем начать выполнять в текущий момент
      * (Операции без предшественников и с прошедшим временем раннего начала)
      */
-    protected ArrayList<OperationResult> waitingOperations;
+
 
     /**
      * Таймлайн (список тактирования) для тактирования по времени. Содержит в себе времена,
      * в которые мы производим опросы оборудования. По данному таймлайну выполняется алгоритм
      */
     protected LinkedList<LocalDateTime> timeline;
+
+    protected long concreteProductId = 1;
 
 
     public AbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime,
@@ -80,13 +84,12 @@ public abstract class AbstractAlgorithm implements Algorithm {
         initAlgorithm(operationChooser, alternativeElector);
     }
 
+
+
     protected void initAlgorithm(OperationChooser operationChooser, AlternativeElector alternativeElector) {
-        this.ongoingOperations = new ArrayList<>();
-        this.waitingOperations = new ArrayList<>();
-        initOperationsHashMap();
+        initResult();
         initEquipmentHashMap();
         initTimeline();
-        initResult();
         this.operationChooser = operationChooser;
         this.alternativeElector = alternativeElector;
     }
@@ -146,23 +149,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
         this.result.setAllEndTime(lastResult);
     }
 
-    protected HashMap<Long, Operation> allOperations;
 
-    protected void initOperationsHashMap () {
-        this.allOperations = new HashMap<>();
 
-        this.orders.forEach(order -> {
-            order.getProducts().forEach(product -> {
-                product.getTechProcesses().forEach(techProcess -> {
-                    techProcess.getOperations().forEach(operation -> {
-                        allOperations.put(operation.getId(), operation);
-                    });
-                });
-            });
-        });
-    }
 
-    protected HashMap<Long, Equipment> allEquipment;
+
 
     protected void initEquipmentHashMap () {
         this.allEquipment = new HashMap<>();
@@ -313,104 +303,21 @@ public abstract class AbstractAlgorithm implements Algorithm {
     }
 
 
-    private ArrayList<OperationResult> ongoingOperations;
+
 
     /**
      * В данной функции обрабатываем один такт времени
      */
-    protected void tickOfTime(LocalDateTime timeTick) throws Exception {
-        /**
-         * Добавляем операции заказа, для которого наступило время раннего начала
-         */
-        this.orders.forEach(order -> {
-            if(order.getStartTime().isEqual(timeTick)) {
-                addNewOrderOperations(order);
-            }
-        });
+    protected abstract void tickOfTime(LocalDateTime timeTick) throws Exception;
 
-
-        if(isWeekend(timeTick)) {
-            moveTimeTickFromWeekend(timeTick);
-        } else {
-            /**
-             * Обрабатываем операции, которые завершились в данный момент
-             */
-            ArrayList<OperationResult> finishOperations = new ArrayList<>();
-            this.ongoingOperations.forEach(ongoingOperation -> {
-                if(ongoingOperation.getEndTime().isEqual(timeTick)) {
-                    finishOperations.add(ongoingOperation);
-                }
-            });
-            finishOperations.forEach(finishOperation -> {
-                releaseEquipmentAndNextOperation(finishOperation, timeTick);
-            });
-
-
-            /**
-             * Начинаем выполнять новые операции, если это возможно
-             */
-            startOperations(timeTick);
-        }
-
-    }
-
-    protected void startOperations(LocalDateTime timeTick) throws Exception {
-        ArrayList<OperationResult> candidates = new ArrayList<>();
-        this.waitingOperations.forEach(waitingOperation -> {
-            try {
-                if(this.production.isOperationCanBePerformed(waitingOperation.getEquipmentGroupId())) {
-                    candidates.add(waitingOperation);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-        while(!candidates.isEmpty()) {
-            OperationResult choose = operationChooser.choose(candidates);
-
-            choose.setStartTime(timeTick);
-            if(choose.getPrevOperationId() == 0) {
-                choose.getProductResult().setStartTime(timeTick);
-            }
-            LocalDateTime endTime = addOperationTimeToTimeline(timeTick, choose.getDuration());
-            choose.setEndTime(endTime);
-
-            Equipment equipment = production.getEquipmentForOperation(choose);
-            equipment.setUsing(true);
-            choose.setEquipmentId(equipment.getId());
-
-            this.waitingOperations.remove(choose);
-            this.ongoingOperations.add(choose);
-
-            candidates.clear();
-            this.waitingOperations.forEach(waitingOperation -> {
-                try {
-                    if(this.production.isOperationCanBePerformed(waitingOperation.getEquipmentGroupId())) {
-                        candidates.add(waitingOperation);
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }
-    }
+    protected abstract void startOperations(LocalDateTime timeTick);
 
     /**
      * Если операция завершилась, освобождаем оборудование и начинаем следующую, если такая есть
      */
-    protected void releaseEquipmentAndNextOperation(OperationResult ongoingOperation, LocalDateTime timeTick) {
 
-        if(ongoingOperation.getNextOperation() != null) {
-            this.waitingOperations.add(ongoingOperation.getNextOperation());
-        } else {
-            ongoingOperation.getProductResult().setEndTime(timeTick);
-        }
-        this.ongoingOperations.remove(ongoingOperation);
-        this.allEquipment.get(ongoingOperation.getEquipmentId()).setUsing(false);
 
-    }
 
-    private long concreteProductId = 1;
 
 //    protected long chooseAlternativeness(long concreteProductId, Product product) {
 //        return this.alternativeElector.chooseTechProcess(product);
@@ -419,51 +326,9 @@ public abstract class AbstractAlgorithm implements Algorithm {
      * Добавляем операции заказа, у которого наступило время раннего начала, в список операций
      * Добавляем в объект результата объекты результатов заказа, деталей и операций
      */
-    protected void addNewOrderOperations(Order order) {
 
-        ArrayList<ProductResult> productResults = new ArrayList<>();
-        OrderResult orderResult = new OrderResult(order.getId(), null, null, productResults);
-        orderResult.setResult(this.result);
-        order.getProducts().forEach(product -> {
+    protected abstract void addNewOrderOperations(Order order);
 
-            for (int i = 0; i < product.getCount(); i++) {
-
-                /**
-                 * Выбираем техпроцесс
-                 */
-                long techProcessId = this.alternativeElector.chooseTechProcess(product);
-                LinkedList<Operation> operations = product.getTechProcessByTechProcessId(techProcessId).getOperations();
-
-                LinkedList<OperationResult> operationResults = new LinkedList<>();
-                ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(), techProcessId,
-                        null, null, operationResults, orderResult);
-                OperationResult prevOperation = null;
-                for (int j = 0; j < operations.size(); j++) {
-                    Operation operation = operations.get(j);
-                    OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(),
-                            operation.getNextOperationId(), operation.getDuration(), operation.getRequiredEquipment(),
-                            0, null, null, productResult);
-
-                    if(prevOperation != null) {
-                        prevOperation.setNextOperation(operationResult);
-                    }
-                    prevOperation = operationResult;
-
-                    if(j == 0) {
-                        this.waitingOperations.add(operationResult);
-                    }
-                    operationResults.add(operationResult);
-                }
-
-
-
-                productResults.add(productResult);
-            }
-        });
-
-
-        this.result.getOrderResults().add(orderResult);
-    }
 
 
 }

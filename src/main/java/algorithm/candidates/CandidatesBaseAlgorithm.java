@@ -1,4 +1,4 @@
-package algorithm;
+package algorithm.candidates;
 
 import algorithm.alternativeness.RandomAlternativeElector;
 import algorithm.operationchooser.FirstElementChooser;
@@ -12,9 +12,9 @@ import java.util.ArrayList;
  * <b>Базовый алгоритм</b>
  * <p>По умолчанию в нём альтернативности выбираются рандомно</p>
  */
-public class BaseAlgorithm extends AbstractAlgorithm {
+public class CandidatesBaseAlgorithm extends CandidatesAbstractAlgorithm {
 
-    public BaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) {
+    public CandidatesBaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) {
         super(inputProduction, inputOrders, startTime, new FirstElementChooser(), new RandomAlternativeElector());
     }
 

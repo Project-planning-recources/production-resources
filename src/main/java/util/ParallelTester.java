@@ -1,13 +1,10 @@
 package util;
 
 import algorithm.Algorithm;
-import algorithm.AlgorithmFactory;
 import algorithm.AlphaAlgorithm;
-import algorithm.parallel.ParallelAlphaAlgorithm1;
+import algorithm.parallel.ParallelVariatorAlgorithm1;
 import parse.input.XMLReader;
 import parse.input.order.InputOrderInformation;
-import parse.input.order.InputProduct;
-import parse.input.order.InputTechProcess;
 import parse.input.production.InputProduction;
 import parse.output.XMLWriter;
 import parse.output.result.OutputResult;
@@ -53,7 +50,7 @@ public class ParallelTester {
                 time = (System.currentTimeMillis() - startTime) / 1000;
             } else {
                 long startTime = System.currentTimeMillis();
-                algorithm = new ParallelAlphaAlgorithm1(production, orders.getOrders(), null, startGen, budgetGen, threadsNum);
+                algorithm = new ParallelVariatorAlgorithm1(production, orders.getOrders(), null, startGen, budgetGen, threadsNum);
                 result = algorithm.start();
                 time = (System.currentTimeMillis() - startTime) / 1000;
             }
@@ -86,8 +83,8 @@ public class ParallelTester {
                     "Среднее время исполнения в секундах последовательного;Среднее время исполнения в секундах параллельного1\n");
 
             for (int i = 0; i < basisSize; i++) {
-                InputProduction production = READER.readProductionFile("ParallelBasis/" + (i + 1) + "_production.xml");
-                InputOrderInformation orders = READER.readOrderFile( "ParallelBasis/" + (i + 1) + "_orders.xml");
+                InputProduction production = READER.readProductionFile("Basis/" + (i + 1) + "_production.xml");
+                InputOrderInformation orders = READER.readOrderFile( "Basis/" + (i + 1) + "_orders.xml");
 
                 if (PossibilityTester.test(production, orders)) {
 
