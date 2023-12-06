@@ -1,8 +1,8 @@
 package util;
 
 import algorithm.Algorithm;
-import algorithm.AlphaAlgorithm;
-import algorithm.parallel.ParallelVariatorAlgorithm1;
+import algorithm.AlphaVariatorAlgorithm;
+import algorithm.parallel.ParallelAlphaVariatorAlgorithm1;
 import parse.input.XMLReader;
 import parse.input.order.InputOrderInformation;
 import parse.input.production.InputProduction;
@@ -45,12 +45,12 @@ public class ParallelTester {
 
             if(threadsNum == 1) {
                 long startTime = System.currentTimeMillis();
-                algorithm = new AlphaAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
+                algorithm = new AlphaVariatorAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
                 result = algorithm.start();
                 time = (System.currentTimeMillis() - startTime) / 1000;
             } else {
                 long startTime = System.currentTimeMillis();
-                algorithm = new ParallelVariatorAlgorithm1(production, orders.getOrders(), null, startGen, budgetGen, threadsNum);
+                algorithm = new ParallelAlphaVariatorAlgorithm1(production, orders.getOrders(), null, startGen, budgetGen, threadsNum);
                 result = algorithm.start();
                 time = (System.currentTimeMillis() - startTime) / 1000;
             }

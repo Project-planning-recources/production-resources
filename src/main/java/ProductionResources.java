@@ -136,7 +136,7 @@ public class ProductionResources {
                                 System.out.println(i + ":" + j + ": Запущен...");
 
                                 long startTime = System.currentTimeMillis();
-                                AlphaAlgorithm ownAlgorithm = new AlphaAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
+                                AlphaVariatorAlgorithm ownAlgorithm = new AlphaVariatorAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
                                 OutputResult ownResult = ownAlgorithm.start();
 
                                 if (RealityTester.test(production, orders, ownResult)) {

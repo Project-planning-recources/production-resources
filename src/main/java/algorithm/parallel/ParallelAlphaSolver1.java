@@ -1,7 +1,7 @@
 package algorithm.parallel;
 
 import algorithm.Algorithm;
-import algorithm.AlphaAlgorithm;
+import algorithm.AlphaVariatorAlgorithm;
 import algorithm.candidates.CandidatesOwnAlgorithm;
 import algorithm.alternativeness.FromMapAlternativeElector;
 import algorithm.operationchooser.FirstElementChooser;
@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-public class ParallelSolver1 extends AlphaAlgorithm implements Runnable {
+public class ParallelAlphaSolver1 extends AlphaVariatorAlgorithm implements Runnable {
 
-    private ParallelVariatorAlgorithm1 main;
+    private ParallelAlphaVariatorAlgorithm1 main;
     private boolean startGenerationFinished = false;
     private boolean budgetGenerationFinished = false;
     private Semaphore variationSemaphore;
@@ -28,9 +28,9 @@ public class ParallelSolver1 extends AlphaAlgorithm implements Runnable {
     private int calculated = 0;
 
 
-    public ParallelSolver1(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget,
-                           ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, HashMap<Long, Boolean> variantPairs,
-                           ParallelVariatorAlgorithm1 main, Semaphore variationSemaphore, Semaphore pairsSemaphore) {
+    public ParallelAlphaSolver1(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget,
+                                ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, HashMap<Long, Boolean> variantPairs,
+                                ParallelAlphaVariatorAlgorithm1 main, Semaphore variationSemaphore, Semaphore pairsSemaphore) {
         super(inputProduction, inputOrders, startTime, startVariatorCount, variatorBudget);
 
         this.variation = variation;
@@ -73,6 +73,10 @@ public class ParallelSolver1 extends AlphaAlgorithm implements Runnable {
         }
     }
 
+    protected Algorithm getAlgorithm(HashMap<Long, Integer> variant) {
+        return new CandidatesOwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant), variant);
+    }
+
     @Override
     protected boolean addVariantIfAbsent(HashMap<Long, Integer> variant) throws Exception {
         if(checkNegativeAndDeal(variant)) {
@@ -84,7 +88,7 @@ public class ParallelSolver1 extends AlphaAlgorithm implements Runnable {
                 variationSemaphore.release();
 //                System.out.println(Thread.currentThread().getName() + " освободил ресурс." + variation.size());
 
-                Algorithm algorithm = new CandidatesOwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant), variant);
+                Algorithm algorithm = getAlgorithm(variant);
                 OutputResult result = algorithm.start();
                 addCriterionForVariant(variant, Criterion.getCriterion(this.orders, result));
                 return true;

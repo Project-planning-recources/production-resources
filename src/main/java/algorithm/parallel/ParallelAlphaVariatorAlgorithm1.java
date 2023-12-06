@@ -3,8 +3,6 @@ package algorithm.parallel;
 import algorithm.AbstractVariatorAlgorithm;
 import algorithm.candidates.CandidatesOwnAlgorithm;
 import algorithm.alternativeness.FromMapAlternativeElector;
-import algorithm.model.order.Order;
-import algorithm.model.production.Production;
 import algorithm.operationchooser.FirstElementChooser;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
@@ -16,16 +14,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-public class ParallelVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
+public class ParallelAlphaVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
 
     private int threadsNum;
 
-    private ArrayList<ParallelSolver1> solvers;
+    private ArrayList<ParallelAlphaSolver1> solvers;
     private ArrayList<Thread> threads;
 
     private boolean startAlphaGeneration = false;
 
-    public ParallelVariatorAlgorithm1(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget, int threadsNum) {
+    public ParallelAlphaVariatorAlgorithm1(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget, int threadsNum) {
         super(inputProduction, inputOrders, startTime, variatorBudget);
         this.startVariatorCount = startVariatorCount;
 
@@ -42,7 +40,7 @@ public class ParallelVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
 
 
         for (int i = 1; i <= threadsNum; i++) {
-            ParallelSolver1 solver = new ParallelSolver1(inputProduction, inputOrders, startTime,
+            ParallelAlphaSolver1 solver = new ParallelAlphaSolver1(inputProduction, inputOrders, startTime,
                     startGuaranteed + (startDistribute-- > 0 ? 1 : 0),
                     budgetGuaranteed + (budgetDistribute-- > 0 ? 1 : 0),
                     this.variation, this.variantPairs, this, variationSemaphore, pairsSemaphore);
@@ -62,7 +60,7 @@ public class ParallelVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
 
         this.threads.forEach(Thread::start);
 
-        for (ParallelSolver1 solver :
+        for (ParallelAlphaSolver1 solver :
                 this.solvers) {
             while(!solver.isStartGenerationFinished()) {
                 Thread.sleep(100);
@@ -71,7 +69,7 @@ public class ParallelVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
 
         startAlphaGeneration = true;
 
-        for (ParallelSolver1 solver :
+        for (ParallelAlphaSolver1 solver :
                 this.solvers) {
             while(!solver.isBudgetGenerationFinished()) {
                 Thread.sleep(100);

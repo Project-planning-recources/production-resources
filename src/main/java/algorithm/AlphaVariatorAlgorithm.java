@@ -5,7 +5,6 @@ import algorithm.candidates.CandidatesOwnAlgorithm;
 import algorithm.model.order.Order;
 import algorithm.model.order.Product;
 import algorithm.model.order.TechProcess;
-import algorithm.model.production.Production;
 import algorithm.operationchooser.FirstElementChooser;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
@@ -17,13 +16,12 @@ import util.Random;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
-public class AlphaAlgorithm extends AbstractVariatorAlgorithm {
+public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
 
     protected int startVariatorCount;
-    public AlphaAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget) {
+    public AlphaVariatorAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget) {
         super(inputProduction, inputOrders, startTime, variatorBudget);
         this.startVariatorCount = startVariatorCount;
     }
