@@ -2,26 +2,21 @@ package algorithm.backpack;
 
 import algorithm.AbstractVariatorAlgorithm;
 import algorithm.FrontAlgorithmFactory;
-import algorithm.alternativeness.FromMapAlternativeElector;
+import algorithm.candidates.CandidatesBaseAlgorithm;
 import algorithm.candidates.CandidatesOwnAlgorithm;
 import algorithm.model.order.Operation;
 import algorithm.model.order.Order;
 import algorithm.model.order.Product;
 import algorithm.model.order.TechProcess;
-import algorithm.operationchooser.FirstElementChooser;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputProductResult;
 import parse.output.result.OutputResult;
-import testing.RealityTester;
 import util.Hash;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
 
@@ -41,7 +36,8 @@ public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
     public OutputResult start() throws Exception {
 
 
-        return null;
+        //todo: реализовать ранцевый алгоритм, убрать затычку
+        return new CandidatesBaseAlgorithm(production, orders, startTime).start();
     }
 
     protected void initProductionPower() {
@@ -64,7 +60,7 @@ public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
         });
 
         if (checkVariantAvailability(equalVariant)) {
-            CandidatesOwnAlgorithm algorithm = (CandidatesOwnAlgorithm) FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, equalVariant, this.frontAlgorithmType, this.frontThreadsCount);
+            CandidatesOwnAlgorithm algorithm = (CandidatesOwnAlgorithm) FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, equalVariant, this.frontAlgorithmType, this.frontThreadsCount);
             try {
                 OutputResult result = algorithm.start();
                 HashMap<Long, Operation> operationsHashMap = algorithm.getOperationsHashMap();

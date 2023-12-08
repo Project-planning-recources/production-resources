@@ -90,7 +90,7 @@ public class ParallelTester {
                 if (PossibilityTester.test(production, orders)) {
 
 
-                    Data.AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
+                    AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
                     long equipmentCount = Data.getEquipmentCount(production);
 
                     DataFromCalculation consistent = calculation(i, production, orders, "candidates", 1, startGen, budgetGen, 1, startsAlg);

@@ -2,6 +2,8 @@ import algorithm.*;
 import algorithm.alpha.AlphaVariatorAlgorithm;
 import algorithm.candidates.CandidatesBaseAlgorithm;
 import algorithm.candidates.CandidatesOwnAlgorithm;
+import algorithm.model.order.Order;
+import algorithm.model.production.Production;
 import generator.GeneratedData;
 import generator.Generator;
 import generator.GeneratorJsonReader;
@@ -15,12 +17,14 @@ import testing.ComparisonTester;
 import testing.GeneratorTester;
 import testing.PossibilityTester;
 import testing.RealityTester;
+import util.AlternativenessCount;
 import util.Criterion;
 import util.Data;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +54,17 @@ public class ProductionResources {
      *             <p>    Следующие аргументы для POSS: <имя файла производства>.xml <имя файла заказов>.xml</p>
      *             <p>    Следующие аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml</p>
      *             <p>    Следующие аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml </p>
-     *             <p>    Следующие аргументы для BASIS: <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей> <имя файла результатов>.xml <количество запусков алгоритма></p>
+     *             <p>    Следующие аргументы для BASIS: <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK) <Название папки с данными производства и заказов>
+     *                 <Количество пар производство-заказы> <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей>
+     *                     <имя файла результатов>.xml <количество запусков алгоритма> <количество потоков></p>
+     *             <p>        Следующие аргументы для BASE:</p> <Название папки с данными производства и заказов> <Количество пар производство-заказы>
+     *                 <имя файла результатов>.xml <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>
+     *             <p>        Следующие аргументы для OWN_ALPHA:<Название папки с данными производства и заказов> <Количество пар производство-заказы>
+     *                 <Бюджет генератора альтернативностей> <имя файла результатов>.xml
+     *                 <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+     *             <p>        Следующие аргументы для OWN_BACKPACK: <Название папки с данными производства и заказов> <Количество пар производство-заказы>
+     *                 <Стартовое количество распределений альтернативностей> <Бюджет генератора альтернативностей> <имя файла результатов>.xml
+     *                 <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
      *             <p>    COMP_RESULT_TABLES - сравнить таблицы с результатами работы двух алгоритмов</p>
      *             <p>        Следующие аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv</p>
      *             <br>
@@ -109,6 +123,127 @@ public class ProductionResources {
         } else if (argv.length > 0 && "test".equalsIgnoreCase(argv[0]) && checkForTest(argv)) {
             if ("basis".equalsIgnoreCase(argv[1])) {
                 System.out.println(Arrays.toString(argv));
+                if("base".equalsIgnoreCase(argv[2])) {
+                    int count = Integer.parseInt(argv[4]);
+                    int startsAlg = Integer.parseInt(argv[6]);
+                    int frontThreadsCount = Integer.parseInt(argv[8]);
+
+                    try (FileWriter writer = new FileWriter(argv[5], false)) {
+                        writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
+                                "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Количество произведенных операций;Среднее суммарное количество дней просрочки;Средний критерий;Среднее время исполнения в секундах\n");
+
+                        for (int i = 0; i < count; i++) {
+                            InputProduction inputProduction = READER.readProductionFile(argv[3] + "/" + (i + 1) + "_production.xml");
+                            InputOrderInformation inputOrderInformation = READER.readOrderFile(argv[3] + "/" + (i + 1) + "_orders.xml");
+
+                            if (PossibilityTester.test(inputProduction, inputOrderInformation)) {
+                                AlternativenessCount alternativenessCount = Data.getAlternativenessCount(inputOrderInformation.getOrders());
+                                long equipmentCount = Data.getEquipmentCount(inputProduction);
+
+                                long performOperationsCount = 0;
+                                long averageOverdueDays = 0;
+                                double averageCriterion = 0;
+                                long averageTime = 0;
+
+                                for (int j = 0; j < startsAlg; j++) {
+
+                                    System.out.println(i + ":" + j + ": Запущен...");
+
+                                    ArrayList<Order> orders = new ArrayList<>();
+                                    inputOrderInformation.getOrders().forEach(inputOrder -> {
+                                        orders.add(new Order(inputOrder));
+                                    });
+                                    //Следующие аргументы для BASE:</p> <Название папки с данными производства и заказов> <Количество пар производство-заказы>
+                                    //     *                 <имя файла результатов>.xml <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>
+                                    long startTime = System.currentTimeMillis();
+                                    Algorithm algorithm = FrontAlgorithmFactory.getBaseFrontAlgorithm(new Production(inputProduction), orders, null, argv[7], frontThreadsCount);
+                                    OutputResult result = algorithm.start();
+
+                                    if (RealityTester.test(inputProduction, inputOrderInformation, result)) {
+                                        long endTime = System.currentTimeMillis();
+
+                                        performOperationsCount += Data.getPerformOperationsCount(result);
+                                        averageOverdueDays += Data.getAverageOverdueDays(inputOrderInformation.getOrders(), result);
+                                        averageCriterion += Criterion.getCriterion(inputOrderInformation, result);
+                                        averageTime += (endTime - startTime) / 1000;
+
+                                        System.out.println(i + ":" + j + ": Завершён...");
+                                    } else {
+                                        throw new Exception(i + ":" + j + ": Результат алгоритма не соответствует заказам");
+                                    }
+                                }
+
+                                writeIntoTable(startsAlg, writer, i, inputOrderInformation, alternativenessCount, equipmentCount, performOperationsCount, averageOverdueDays, averageCriterion, averageTime);
+                            } else {
+                                throw new Exception(i + ": Заказы не соответствуют производству");
+                            }
+                        }
+                        System.out.println("Работа завершена.");
+                    }
+                } else if("own_alpha".equalsIgnoreCase(argv[2])) {
+                    int count = Integer.parseInt(argv[4]);
+                    int startGen = Integer.parseInt(argv[4]);
+                    int budgetGen = Integer.parseInt(argv[4]);
+                    int startsAlg = Integer.parseInt(argv[6]);
+                    int frontThreadsCount = Integer.parseInt(argv[8]);
+
+                    try (FileWriter writer = new FileWriter(argv[5], false)) {
+                        writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
+                                "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Количество произведенных операций;Среднее суммарное количество дней просрочки;Средний критерий;Среднее время исполнения в секундах\n");
+
+                        for (int i = 0; i < count; i++) {
+                            InputProduction inputProduction = READER.readProductionFile(argv[3] + "/" + (i + 1) + "_production.xml");
+                            InputOrderInformation inputOrderInformation = READER.readOrderFile(argv[3] + "/" + (i + 1) + "_orders.xml");
+
+                            if (PossibilityTester.test(inputProduction, inputOrderInformation)) {
+                                AlternativenessCount alternativenessCount = Data.getAlternativenessCount(inputOrderInformation.getOrders());
+                                long equipmentCount = Data.getEquipmentCount(inputProduction);
+
+                                long performOperationsCount = 0;
+                                long averageOverdueDays = 0;
+                                double averageCriterion = 0;
+                                long averageTime = 0;
+
+                                for (int j = 0; j < startsAlg; j++) {
+
+                                    System.out.println(i + ":" + j + ": Запущен...");
+
+                                    ArrayList<Order> orders = new ArrayList<>();
+                                    inputOrderInformation.getOrders().forEach(inputOrder -> {
+                                        orders.add(new Order(inputOrder));
+                                    });
+                                    //Следующие аргументы для BASE:</p> <Название папки с данными производства и заказов> <Количество пар производство-заказы>
+                                    //     *                 <имя файла результатов>.xml <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>
+                                    long startTime = System.currentTimeMillis();
+                                    Algorithm algorithm = FrontAlgorithmFactory.getBaseFrontAlgorithm(new Production(inputProduction), orders, null, argv[7], frontThreadsCount);
+                                    OutputResult result = algorithm.start();
+
+                                    if (RealityTester.test(inputProduction, inputOrderInformation, result)) {
+                                        long endTime = System.currentTimeMillis();
+
+                                        performOperationsCount += Data.getPerformOperationsCount(result);
+                                        averageOverdueDays += Data.getAverageOverdueDays(inputOrderInformation.getOrders(), result);
+                                        averageCriterion += Criterion.getCriterion(inputOrderInformation, result);
+                                        averageTime += (endTime - startTime) / 1000;
+
+                                        System.out.println(i + ":" + j + ": Завершён...");
+                                    } else {
+                                        throw new Exception(i + ":" + j + ": Результат алгоритма не соответствует заказам");
+                                    }
+                                }
+
+                                writeIntoTable(startsAlg, writer, i, inputOrderInformation, alternativenessCount, equipmentCount, performOperationsCount, averageOverdueDays, averageCriterion, averageTime);
+                            } else {
+                                throw new Exception(i + ": Заказы не соответствуют производству");
+                            }
+                        }
+                        System.out.println("Работа завершена.");
+                    }
+                } else if("own_backpack".equalsIgnoreCase(argv[2])) {
+
+                } else {
+                    System.out.println("Неверный список аргументов после BASIS. Используйте \"help\" чтобы увидеть список доступных команд.");
+                }
                 int count = Integer.parseInt(argv[3]);
                 int startGen = Integer.parseInt(argv[4]);
                 int budgetGen = Integer.parseInt(argv[5]);
@@ -119,15 +254,15 @@ public class ProductionResources {
                             "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Количество произведенных операций;Среднее суммарное количество дней просрочки;Средний критерий;Среднее время исполнения в секундах\n");
 
                     for (int i = 0; i < count; i++) {
-                        InputProduction production = READER.readProductionFile(argv[2] + "/" + (i + 1) + "_production.xml");
-                        InputOrderInformation orders = READER.readOrderFile(argv[2] + "/" + (i + 1) + "_orders.xml");
+                        InputProduction inputProduction = READER.readProductionFile(argv[2] + "/" + (i + 1) + "_production.xml");
+                        InputOrderInformation inputOrderInformation = READER.readOrderFile(argv[2] + "/" + (i + 1) + "_orders.xml");
 
-                        if (PossibilityTester.test(production, orders)) {
+                        if (PossibilityTester.test(inputProduction, inputOrderInformation)) {
 //                            BaseAlgorithm baseAlgorithm = new BaseAlgorithm(production, orders.getOrders(), null);
 //                            OutputResult baseResult = baseAlgorithm.start();
 
-                            Data.AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
-                            long equipmentCount = Data.getEquipmentCount(production);
+                            AlternativenessCount alternativenessCount = Data.getAlternativenessCount(inputOrderInformation.getOrders());
+                            long equipmentCount = Data.getEquipmentCount(inputProduction);
 
                             long performOperationsCount = 0;
                             long averageOverdueDays = 0;
@@ -139,36 +274,24 @@ public class ProductionResources {
                                 System.out.println(i + ":" + j + ": Запущен...");
 
                                 long startTime = System.currentTimeMillis();
-                                AlphaVariatorAlgorithm ownAlgorithm = new AlphaVariatorAlgorithm(production, orders.getOrders(), null, "candidates", 1,  startGen, budgetGen);
-                                OutputResult ownResult = ownAlgorithm.start();
+                                AlphaVariatorAlgorithm ownAlgorithm = new AlphaVariatorAlgorithm(inputProduction, inputOrderInformation.getOrders(), null, "candidates", 1, startGen, budgetGen);
+                                OutputResult result = ownAlgorithm.start();
 
-                                if (RealityTester.test(production, orders, ownResult)) {
+                                if (RealityTester.test(inputProduction, inputOrderInformation, result)) {
                                     long endTime = System.currentTimeMillis();
 
-                                    performOperationsCount += Data.getPerformOperationsCount(ownResult);
-                                    averageOverdueDays += Data.getAverageOverdueDays(orders.getOrders(), ownResult);
-                                    averageCriterion += Criterion.getCriterion(orders, ownResult);
+                                    performOperationsCount += Data.getPerformOperationsCount(result);
+                                    averageOverdueDays += Data.getAverageOverdueDays(inputOrderInformation.getOrders(), result);
+                                    averageCriterion += Criterion.getCriterion(inputOrderInformation, result);
                                     averageTime += (endTime - startTime) / 1000;
 
                                     System.out.println(i + ":" + j + ": Завершён...");
                                 } else {
-                                    throw new Exception(i + ":" + j + ": Результат собственного алгоритма не соответствует заказам");
+                                    throw new Exception(i + ":" + j + ": Результат алгоритма не соответствует заказам");
                                 }
                             }
 
-                            writer.write((i + 1) + ";" +
-                                    orders.getOrders().size() + ";" +
-                                    Data.getDetailTypesCount(orders.getOrders()) + ";" +
-                                    Data.getAverageDetailsCount(orders.getOrders()) + ";" +
-                                    Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
-                                    equipmentCount + ";" +
-                                    alternativenessCount.min + ";" +
-                                    alternativenessCount.max + ";" +
-                                    alternativenessCount.average + ";" +
-                                    ((double) performOperationsCount / startsAlg) + ";" +
-                                    ((double) averageOverdueDays / startsAlg) + ";" +
-                                    (averageCriterion / startsAlg) + ";" +
-                                    ((double) averageTime / startsAlg) + "\n");
+                            writeIntoTable(startsAlg, writer, i, inputOrderInformation, alternativenessCount, equipmentCount, performOperationsCount, averageOverdueDays, averageCriterion, averageTime);
                         } else {
                             throw new Exception(i + ": Заказы не соответствуют производству");
                         }
@@ -213,7 +336,7 @@ public class ProductionResources {
                 try (BufferedReader reader2 = new BufferedReader(new FileReader(argv[2]))) {
                     List<String> results2 = reader2.lines().collect(Collectors.toList());
 
-                    if(results1.size() == results2.size()) {
+                    if (results1.size() == results2.size()) {
                         try (FileWriter writer = new FileWriter(argv[3], false)) {
                             writer.write("№;Имя файла с лучшим результатом по времени просрочки;Обгон по времени просрочки;Имя файла с лучшим результатом по критерию;Обгон по критерию\n");
 
@@ -225,22 +348,22 @@ public class ProductionResources {
                                 double criterion1 = Double.parseDouble(split1[8]);
                                 double criterion2 = Double.parseDouble(split2[8]);
 
-                                if(days1 < days2) {
+                                if (days1 < days2) {
                                     writer.write(i + ";" +
                                             argv[1] + ";" +
                                             (days2 - days1) + ";");
-                                } else if(days1 > days2) {
+                                } else if (days1 > days2) {
                                     writer.write(i + ";" +
                                             argv[2] + ";" +
                                             (days1 - days2) + ";");
                                 } else {
-                                    writer.write((i+1) + ";Одинаково;0;");
+                                    writer.write((i + 1) + ";Одинаково;0;");
                                 }
 
-                                if(criterion1 < criterion2) {
+                                if (criterion1 < criterion2) {
                                     writer.write(argv[1] + ";" +
                                             (criterion2 - criterion1) + "\n");
-                                } else if(criterion1 > criterion2) {
+                                } else if (criterion1 > criterion2) {
                                     writer.write(argv[2] + ";" +
                                             (criterion1 - criterion2) + "\n");
                                 } else {
@@ -257,9 +380,25 @@ public class ProductionResources {
 
         } else if (argv.length > 0 && "help".equalsIgnoreCase(argv[0])) {
             help();
-        }  else {
+        } else {
             System.out.println("Неверный список аргументов. Используйте \"help\" чтобы увидеть список доступных команд.");
         }
+    }
+
+    private static void writeIntoTable(int startsAlg, FileWriter writer, int i, InputOrderInformation inputOrderInformation, AlternativenessCount alternativenessCount, long equipmentCount, double performOperationsCount, double averageOverdueDays, double averageCriterion, double averageTime) throws IOException {
+        writer.write((i + 1) + ";" +
+                inputOrderInformation.getOrders().size() + ";" +
+                Data.getDetailTypesCount(inputOrderInformation.getOrders()) + ";" +
+                Data.getAverageDetailsCount(inputOrderInformation.getOrders()) + ";" +
+                Data.getAverageOperationsCountOnDetail(inputOrderInformation.getOrders()) + ";" +
+                equipmentCount + ";" +
+                alternativenessCount.min + ";" +
+                alternativenessCount.max + ";" +
+                alternativenessCount.average + ";" +
+                (performOperationsCount / startsAlg) + ";" +
+                (averageOverdueDays / startsAlg) + ";" +
+                (averageCriterion / startsAlg) + ";" +
+                (averageTime / startsAlg) + "\n");
     }
 
     private static boolean checkForAlg(String[] argv) {
@@ -296,6 +435,8 @@ public class ProductionResources {
     }
 
     private static boolean checkForTest(String[] argv) {
+        System.out.println(argv.length);
+        System.out.println(Arrays.toString(argv));
         if (argv.length >= 2) {
             if ("poss".equalsIgnoreCase(argv[1]) && argv.length >= 4) {
                 return true;
@@ -304,22 +445,42 @@ public class ProductionResources {
             } else if ("comp".equalsIgnoreCase(argv[1]) && argv.length >= 6) {
                 return true;
             } else {
-                if ("basis".equalsIgnoreCase(argv[1]) && argv.length >= 8) {
-                    Integer count = null;
-                    Integer startGen = null;
-                    Integer budget = null;
-                    Integer algStarts = null;
-                    try {
-                        count = Integer.parseInt(argv[3]);
-                        startGen = Integer.parseInt(argv[4]);
-                        budget = Integer.parseInt(argv[5]);
-                        algStarts = Integer.parseInt(argv[7]);
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
-                    return count > 0 && startGen > 0 && budget > startGen && algStarts > 0;
-                }
+                if ("basis".equalsIgnoreCase(argv[1]) && argv.length >= 9) {
+                    if ("base".equalsIgnoreCase(argv[2]) && argv.length == 9) {
+                        System.out.println("hi");
+                        Integer count = null;
+                        Integer algStarts = null;
+                        Integer frontThreadsCount = null;
+                        try {
+                            count = Integer.parseInt(argv[4]);
+                            algStarts = Integer.parseInt(argv[6]);
+                            frontThreadsCount = Integer.parseInt(argv[8]);
+                        } catch (NumberFormatException e) {
+                            return false;
+                        }
+                        return count > 0 && algStarts > 0 && frontThreadsCount > 0;
+                    } else if ("own_alpha".equalsIgnoreCase(argv[2]) && argv.length == 12) {
+                        Integer count = null;
+                        Integer startsGen = null;
+                        Integer budget = null;
+                        Integer algStarts = null;
+                        Integer threadsCount = null;
+                        Integer frontThreadsCount = null;
+                        try {
+                            count = Integer.parseInt(argv[4]);
+                            startsGen = Integer.parseInt(argv[5]);
+                            budget = Integer.parseInt(argv[6]);
+                            algStarts = Integer.parseInt(argv[8]);
+                            threadsCount = Integer.parseInt(argv[9]);
+                            frontThreadsCount = Integer.parseInt(argv[11]);
+                        } catch (NumberFormatException e) {
+                            return false;
+                        }
+                        return count > 0 && startsGen > 0 && budget > startsGen && algStarts > 0 && threadsCount > 0 && frontThreadsCount > 0;
+                    } else if("own_backpack".equalsIgnoreCase(argv[2]) && argv.length == 11) {
 
+                    }
+                }
             }
         }
         return false;

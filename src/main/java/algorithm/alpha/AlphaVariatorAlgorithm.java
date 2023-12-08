@@ -3,12 +3,9 @@ package algorithm.alpha;
 import algorithm.AbstractVariatorAlgorithm;
 import algorithm.Algorithm;
 import algorithm.FrontAlgorithmFactory;
-import algorithm.alternativeness.FromMapAlternativeElector;
-import algorithm.candidates.CandidatesOwnAlgorithm;
 import algorithm.model.order.Order;
 import algorithm.model.order.Product;
 import algorithm.model.order.TechProcess;
-import algorithm.operationchooser.FirstElementChooser;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -42,7 +39,7 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
             HashMap<Long, Integer> variant = generateRandomAlternativesDistribution();
             if (checkVariantAvailability(variant)) {
 
-                Algorithm algorithm = FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
+                Algorithm algorithm = FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
                 OutputResult result = algorithm.start();
 
                 this.variation.add(new Pair<>(variant, Criterion.getCriterion(this.orders, result)));
@@ -78,7 +75,7 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
             throw new Exception("Unreachable code");
         }
 
-        return FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, recordPair.getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
+        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, recordPair.getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
     }
 
 
@@ -88,7 +85,7 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
     }
 
     protected double getCriterionForVariant(HashMap<Long, Integer> variant) throws Exception {
-        Algorithm algorithm = FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
+        Algorithm algorithm = FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
         OutputResult result = algorithm.start();
 
         return Criterion.getCriterion(this.orders, result);

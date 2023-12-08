@@ -93,6 +93,6 @@ public class AlphaVariatorAlgorithm1Parallel extends AbstractVariatorAlgorithm {
             throw new Exception("Unreachable code");
         }
 
-        return FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, recordPair.getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
+        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, recordPair.getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
     }
 }

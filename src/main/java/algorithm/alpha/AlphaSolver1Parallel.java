@@ -77,7 +77,7 @@ public class AlphaSolver1Parallel extends AlphaVariatorAlgorithm implements Runn
     }
 
     protected Algorithm getAlgorithm(HashMap<Long, Integer> variant) {
-        return FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
+        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
     }
 
     @Override
