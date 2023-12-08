@@ -1,9 +1,7 @@
-package algorithm.parallel;
+package algorithm.alpha;
 
 import algorithm.AbstractVariatorAlgorithm;
-import algorithm.candidates.CandidatesOwnAlgorithm;
-import algorithm.alternativeness.FromMapAlternativeElector;
-import algorithm.operationchooser.FirstElementChooser;
+import algorithm.FrontAlgorithmFactory;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -14,19 +12,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-public class ParallelAlphaVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
+public class AlphaVariatorAlgorithm1Parallel extends AbstractVariatorAlgorithm {
 
+    private String frontAlgorithmType;
+
+    private int frontThreadsCount;
     private int threadsNum;
 
-    private ArrayList<ParallelAlphaSolver1> solvers;
+    private ArrayList<AlphaSolver1Parallel> solvers;
     private ArrayList<Thread> threads;
 
     private boolean startAlphaGeneration = false;
 
-    public ParallelAlphaVariatorAlgorithm1(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget, int threadsNum) {
+    public AlphaVariatorAlgorithm1Parallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String frontAlgorithmType, int frontThreadsCount, int startVariatorCount, int variatorBudget, int threadsNum) {
         super(inputProduction, inputOrders, startTime, variatorBudget);
+        this.frontAlgorithmType = frontAlgorithmType;
+        this.frontThreadsCount = frontThreadsCount;
         this.startVariatorCount = startVariatorCount;
-
         this.threadsNum = threadsNum;
         Semaphore variationSemaphore = new Semaphore(1);
         Semaphore pairsSemaphore = new Semaphore(1);
@@ -40,7 +42,7 @@ public class ParallelAlphaVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
 
 
         for (int i = 1; i <= threadsNum; i++) {
-            ParallelAlphaSolver1 solver = new ParallelAlphaSolver1(inputProduction, inputOrders, startTime,
+            AlphaSolver1Parallel solver = new AlphaSolver1Parallel(inputProduction, inputOrders, startTime, this.frontAlgorithmType, this.frontThreadsCount,
                     startGuaranteed + (startDistribute-- > 0 ? 1 : 0),
                     budgetGuaranteed + (budgetDistribute-- > 0 ? 1 : 0),
                     this.variation, this.variantPairs, this, variationSemaphore, pairsSemaphore);
@@ -60,7 +62,7 @@ public class ParallelAlphaVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
 
         this.threads.forEach(Thread::start);
 
-        for (ParallelAlphaSolver1 solver :
+        for (AlphaSolver1Parallel solver :
                 this.solvers) {
             while(!solver.isStartGenerationFinished()) {
                 Thread.sleep(100);
@@ -69,7 +71,7 @@ public class ParallelAlphaVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
 
         startAlphaGeneration = true;
 
-        for (ParallelAlphaSolver1 solver :
+        for (AlphaSolver1Parallel solver :
                 this.solvers) {
             while(!solver.isBudgetGenerationFinished()) {
                 Thread.sleep(100);
@@ -91,6 +93,6 @@ public class ParallelAlphaVariatorAlgorithm1 extends AbstractVariatorAlgorithm {
             throw new Exception("Unreachable code");
         }
 
-        return new CandidatesOwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(recordPair.getKey()), recordPair.getKey()).start();
+        return FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, recordPair.getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
     }
 }

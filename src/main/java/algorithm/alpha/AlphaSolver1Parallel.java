@@ -1,10 +1,7 @@
-package algorithm.parallel;
+package algorithm.alpha;
 
 import algorithm.Algorithm;
-import algorithm.AlphaVariatorAlgorithm;
-import algorithm.candidates.CandidatesOwnAlgorithm;
-import algorithm.alternativeness.FromMapAlternativeElector;
-import algorithm.operationchooser.FirstElementChooser;
+import algorithm.FrontAlgorithmFactory;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -16,9 +13,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-public class ParallelAlphaSolver1 extends AlphaVariatorAlgorithm implements Runnable {
+public class AlphaSolver1Parallel extends AlphaVariatorAlgorithm implements Runnable {
 
-    private ParallelAlphaVariatorAlgorithm1 main;
+    private AlphaVariatorAlgorithm1Parallel main;
     private boolean startGenerationFinished = false;
     private boolean budgetGenerationFinished = false;
     private Semaphore variationSemaphore;
@@ -27,17 +24,23 @@ public class ParallelAlphaSolver1 extends AlphaVariatorAlgorithm implements Runn
 
     private int calculated = 0;
 
+    private String frontAlgorithmType;
 
-    public ParallelAlphaSolver1(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget,
+    private int frontThreadsCount;
+
+
+    public AlphaSolver1Parallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String frontAlgorithmType, int frontThreadsCount, int startVariatorCount, int variatorBudget,
                                 ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, HashMap<Long, Boolean> variantPairs,
-                                ParallelAlphaVariatorAlgorithm1 main, Semaphore variationSemaphore, Semaphore pairsSemaphore) {
-        super(inputProduction, inputOrders, startTime, startVariatorCount, variatorBudget);
+                                AlphaVariatorAlgorithm1Parallel main, Semaphore variationSemaphore, Semaphore pairsSemaphore) {
+        super(inputProduction, inputOrders, startTime, frontAlgorithmType, frontThreadsCount, startVariatorCount, variatorBudget);
 
         this.variation = variation;
         this.variantPairs = variantPairs;
         this.main = main;
         this.variationSemaphore = variationSemaphore;
         this.pairsSemaphore = pairsSemaphore;
+        this.frontAlgorithmType = frontAlgorithmType;
+        this.frontThreadsCount = frontThreadsCount;
     }
 
 
@@ -74,7 +77,7 @@ public class ParallelAlphaSolver1 extends AlphaVariatorAlgorithm implements Runn
     }
 
     protected Algorithm getAlgorithm(HashMap<Long, Integer> variant) {
-        return new CandidatesOwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant), variant);
+        return FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
     }
 
     @Override

@@ -1,5 +1,8 @@
-package algorithm;
+package algorithm.alpha;
 
+import algorithm.AbstractVariatorAlgorithm;
+import algorithm.Algorithm;
+import algorithm.FrontAlgorithmFactory;
 import algorithm.alternativeness.FromMapAlternativeElector;
 import algorithm.candidates.CandidatesOwnAlgorithm;
 import algorithm.model.order.Order;
@@ -20,9 +23,13 @@ import java.util.HashMap;
 
 public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
 
+    protected String frontAlgorithmType;
+    protected int frontThreadsCount;
     protected int startVariatorCount;
-    public AlphaVariatorAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int startVariatorCount, int variatorBudget) {
+    public AlphaVariatorAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String frontAlgorithmType, int frontThreadsCount, int startVariatorCount, int variatorBudget) {
         super(inputProduction, inputOrders, startTime, variatorBudget);
+        this.frontAlgorithmType = frontAlgorithmType;
+        this.frontThreadsCount = frontThreadsCount;
         this.startVariatorCount = startVariatorCount;
     }
 
@@ -35,7 +42,7 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
             HashMap<Long, Integer> variant = generateRandomAlternativesDistribution();
             if (checkVariantAvailability(variant)) {
 
-                Algorithm algorithm = new CandidatesOwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant), variant);
+                Algorithm algorithm = FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
                 OutputResult result = algorithm.start();
 
                 this.variation.add(new Pair<>(variant, Criterion.getCriterion(this.orders, result)));
@@ -71,7 +78,7 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
             throw new Exception("Unreachable code");
         }
 
-        return new CandidatesOwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(recordPair.getKey()), recordPair.getKey()).start();
+        return FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, recordPair.getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
     }
 
 
@@ -81,7 +88,7 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
     }
 
     protected double getCriterionForVariant(HashMap<Long, Integer> variant) throws Exception {
-        Algorithm algorithm = new CandidatesOwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant), variant);
+        Algorithm algorithm = FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
         OutputResult result = algorithm.start();
 
         return Criterion.getCriterion(this.orders, result);

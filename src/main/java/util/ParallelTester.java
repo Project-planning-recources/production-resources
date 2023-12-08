@@ -1,8 +1,8 @@
 package util;
 
 import algorithm.Algorithm;
-import algorithm.AlphaVariatorAlgorithm;
-import algorithm.parallel.ParallelAlphaVariatorAlgorithm1;
+import algorithm.alpha.AlphaVariatorAlgorithm;
+import algorithm.alpha.AlphaVariatorAlgorithm1Parallel;
 import parse.input.XMLReader;
 import parse.input.order.InputOrderInformation;
 import parse.input.production.InputProduction;
@@ -33,7 +33,7 @@ public class ParallelTester {
         }
     }
 
-    public static DataFromCalculation calculation(int i, InputProduction production, InputOrderInformation orders, int startGen, int budgetGen, int threadsNum, int startsAlg) throws Exception {
+    public static DataFromCalculation calculation(int i, InputProduction production, InputOrderInformation orders, String frontAlgorithmType, int frontThreadsCount, int startGen, int budgetGen, int threadsCount, int startsAlg) throws Exception {
         DataFromCalculation dataFromCalculation = new DataFromCalculation(0, 0, 0,0);
         for (int j = 0; j < startsAlg; j++) {
 
@@ -43,14 +43,14 @@ public class ParallelTester {
             OutputResult result = null;
             long time = 0;
 
-            if(threadsNum == 1) {
+            if(threadsCount == 1) {
                 long startTime = System.currentTimeMillis();
-                algorithm = new AlphaVariatorAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
+                algorithm = new AlphaVariatorAlgorithm(production, orders.getOrders(), null, frontAlgorithmType, frontThreadsCount, startGen, budgetGen);
                 result = algorithm.start();
                 time = (System.currentTimeMillis() - startTime) / 1000;
             } else {
                 long startTime = System.currentTimeMillis();
-                algorithm = new ParallelAlphaVariatorAlgorithm1(production, orders.getOrders(), null, startGen, budgetGen, threadsNum);
+                algorithm = new AlphaVariatorAlgorithm1Parallel(production, orders.getOrders(), null, frontAlgorithmType, frontThreadsCount, startGen, budgetGen, threadsCount);
                 result = algorithm.start();
                 time = (System.currentTimeMillis() - startTime) / 1000;
             }
@@ -72,7 +72,8 @@ public class ParallelTester {
     }
     public static void main(String[] args) {
 
-        int threadsNum = 4;
+        int threadsCount = 4;
+        int frontThreadsCount = 4;
         int startGen = 10;
         int budgetGen = 100;
         int startsAlg = 1;
@@ -92,8 +93,8 @@ public class ParallelTester {
                     Data.AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
                     long equipmentCount = Data.getEquipmentCount(production);
 
-                    DataFromCalculation consistent = calculation(i, production, orders, startGen, budgetGen, 1, startsAlg);
-                    DataFromCalculation parallel1 = calculation(i, production, orders, startGen, budgetGen, threadsNum, startsAlg);
+                    DataFromCalculation consistent = calculation(i, production, orders, "candidates", 1, startGen, budgetGen, 1, startsAlg);
+                    DataFromCalculation parallel1 = calculation(i, production, orders, "candidates", 1, startGen, budgetGen, threadsCount, startsAlg);
 
 
                     writer.write((i + 1) + ";" +

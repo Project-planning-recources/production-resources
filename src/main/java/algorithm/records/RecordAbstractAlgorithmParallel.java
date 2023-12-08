@@ -11,13 +11,17 @@ import parse.input.production.InputProduction;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class RecordAbstractAlgorithmParallel extends AbstractAlgorithm {
-    public RecordAbstractAlgorithmParallel(Production production, ArrayList<Order> orders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector) {
+public abstract class RecordAbstractAlgorithmParallel extends AbstractAlgorithm {
+
+    protected int threadCount;
+    public RecordAbstractAlgorithmParallel(Production production, ArrayList<Order> orders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector, int threadCount) {
         super(production, orders, startTime, operationChooser, alternativeElector);
+        this.threadCount = threadCount;
     }
 
-    public RecordAbstractAlgorithmParallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector) {
+    public RecordAbstractAlgorithmParallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector,  int threadCount) {
         super(inputProduction, inputOrders, startTime, operationChooser, alternativeElector);
+        this.threadCount = threadCount;
     }
 
     @Override

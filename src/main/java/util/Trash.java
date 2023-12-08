@@ -2,8 +2,8 @@ package util;
 
 
 import algorithm.Algorithm;
-import algorithm.AlphaVariatorAlgorithm;
-import algorithm.BackpackAlgorithm;
+import algorithm.alpha.AlphaVariatorAlgorithm;
+import algorithm.backpack.BackpackAlgorithm;
 import algorithm.candidates.CandidatesBaseAlgorithm;
 import generator.GeneratedData;
 import generator.Generator;
@@ -56,7 +56,7 @@ public class Trash {
     private static void testBackpack() {
         InputProduction production = READER.readProductionFile("Basis/5_production.xml");
         InputOrderInformation orderFile = READER.readOrderFile("Basis/5_orders.xml");
-        Algorithm algorithm = new BackpackAlgorithm(production, orderFile.getOrders(), null, 100);
+        Algorithm algorithm = new BackpackAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 100);
 
         OutputResult result = null;
         try {
@@ -100,7 +100,7 @@ public class Trash {
         InputProduction production = READER.readProductionFile("Basis/5_production.xml");
         InputOrderInformation orderFile = READER.readOrderFile("Basis/5_orders.xml");
 
-        Algorithm algorithm = new AlphaVariatorAlgorithm(production, orderFile.getOrders(), null, 10, 50);
+        Algorithm algorithm = new AlphaVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10, 50);
 
         OutputResult result = null;
         try {

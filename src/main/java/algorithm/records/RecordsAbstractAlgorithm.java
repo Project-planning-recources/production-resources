@@ -11,8 +11,7 @@ import parse.input.production.InputProduction;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class RecordsAbstractAlgorithm extends AbstractAlgorithm {
-    //todo: записать сюда работу с кандидатами
+public abstract class RecordsAbstractAlgorithm extends AbstractAlgorithm {
     public RecordsAbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector) {
         super(production, orders, startTime, operationChooser, alternativeElector);
     }

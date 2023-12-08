@@ -1,5 +1,7 @@
-package algorithm;
+package algorithm.backpack;
 
+import algorithm.AbstractVariatorAlgorithm;
+import algorithm.FrontAlgorithmFactory;
 import algorithm.alternativeness.FromMapAlternativeElector;
 import algorithm.candidates.CandidatesOwnAlgorithm;
 import algorithm.model.order.Operation;
@@ -23,11 +25,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
 
+    protected String frontAlgorithmType;
+
+    protected int frontThreadsCount;
     protected HashMap<Long, Integer> productionPower;
 
-    public BackpackAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int variatorBudget) {
+    public BackpackAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String frontAlgorithmType, int frontThreadsCount, int variatorBudget) {
         super(inputProduction, inputOrders, startTime, variatorBudget);
-
+        this.frontAlgorithmType = frontAlgorithmType;
+        this.frontThreadsCount = frontThreadsCount;
         initProductionPower();
     }
 
@@ -58,7 +64,7 @@ public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
         });
 
         if (checkVariantAvailability(equalVariant)) {
-            CandidatesOwnAlgorithm algorithm = new CandidatesOwnAlgorithm(this.production, this.orders, this.startTime, new FirstElementChooser(), new FromMapAlternativeElector(equalVariant), equalVariant);
+            CandidatesOwnAlgorithm algorithm = (CandidatesOwnAlgorithm) FrontAlgorithmFactory.getFrontAlgorithm(this.production, this.orders, this.startTime, equalVariant, this.frontAlgorithmType, this.frontThreadsCount);
             try {
                 OutputResult result = algorithm.start();
                 HashMap<Long, Operation> operationsHashMap = algorithm.getOperationsHashMap();

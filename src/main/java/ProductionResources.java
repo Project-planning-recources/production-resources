@@ -1,4 +1,7 @@
 import algorithm.*;
+import algorithm.alpha.AlphaVariatorAlgorithm;
+import algorithm.candidates.CandidatesBaseAlgorithm;
+import algorithm.candidates.CandidatesOwnAlgorithm;
 import generator.GeneratedData;
 import generator.Generator;
 import generator.GeneratorJsonReader;
@@ -65,7 +68,7 @@ public class ProductionResources {
             } else {
                 Algorithm algorithm = null;
                 if ("base".equalsIgnoreCase(argv[1])) {
-                    algorithm = AlgorithmFactory.getNewBaseAlgorithm(production, orders.getOrders(), null);
+                    algorithm = new CandidatesBaseAlgorithm(production, orders.getOrders(), null);
                     OutputResult result = algorithm.start();
                     if (RealityTester.test(production, orders, result)) {
                         WRITER.writeResultFile(argv[4], result);
@@ -74,7 +77,7 @@ public class ProductionResources {
                     }
                 } else if ("own".equalsIgnoreCase(argv[1])) {
                     System.out.println("1");
-                    algorithm = AlgorithmFactory.getNewOwnAlgorithm(production, orders.getOrders(), null, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]));
+                    algorithm = new AlphaVariatorAlgorithm(production, orders.getOrders(), null, "candidates", 1, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]));
                     System.out.println("2");
                     OutputResult result = algorithm.start();
                     System.out.println("3");
@@ -136,7 +139,7 @@ public class ProductionResources {
                                 System.out.println(i + ":" + j + ": Запущен...");
 
                                 long startTime = System.currentTimeMillis();
-                                AlphaVariatorAlgorithm ownAlgorithm = new AlphaVariatorAlgorithm(production, orders.getOrders(), null, startGen, budgetGen);
+                                AlphaVariatorAlgorithm ownAlgorithm = new AlphaVariatorAlgorithm(production, orders.getOrders(), null, "candidates", 1,  startGen, budgetGen);
                                 OutputResult ownResult = ownAlgorithm.start();
 
                                 if (RealityTester.test(production, orders, ownResult)) {
