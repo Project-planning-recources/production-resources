@@ -54,8 +54,8 @@ public class Trash {
     }
 
     private static void testBackpack() {
-        InputProduction production = READER.readProductionFile("Basis/5_production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("Basis/5_orders.xml");
+        InputProduction production = READER.readProductionFile("Basis/1_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/1_orders.xml");
         Algorithm algorithm = new BackpackAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 100);
 
         OutputResult result = null;

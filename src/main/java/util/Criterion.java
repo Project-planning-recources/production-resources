@@ -1,6 +1,9 @@
 package util;
 
 import algorithm.model.order.Order;
+import algorithm.model.order.Product;
+import algorithm.model.order.TechProcess;
+import algorithm.model.production.Production;
 import parse.input.order.InputOrder;
 import parse.input.order.InputOrderInformation;
 import parse.output.result.OutputOrderResult;
@@ -10,9 +13,36 @@ import parse.output.result.OutputResult;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Criterion {
     private Criterion() {}
+
+    public static double getBackpackCriterion(ArrayList<Order> orders, HashMap<Long, Long> productionPower, HashMap<Long, HashMap<Long, Integer>> techProcessPower, HashMap<Long, Integer> variant) {
+        double criterion = 0;
+        HashMap<Long, Long> overspanding = new HashMap<>(productionPower);
+        for (Order order : orders) {
+            for (Product product : order.getProducts()) {
+                for (TechProcess techProcess : product.getTechProcesses()) {
+                    long hash = Hash.hash(order.getId(), product.getId(), techProcess.getId());
+                    int count = variant.get(hash);
+                    HashMap<Long, Integer> equipPower = techProcessPower.get(hash);
+
+                    equipPower.forEach((eId, power) -> {
+                        overspanding.replace(eId, overspanding.get(eId) - (long) count * power);
+                    });
+
+                    System.out.println(order.getId() + " " + product.getId() + " " + techProcess.getId() + " " + (count * equipPower.get((long)1)));
+                }
+            }
+        }
+        for (Map.Entry<Long, Long> entry : overspanding.entrySet()) {
+            if(entry.getValue() < 0) {
+                criterion += (double) (-1 * entry.getValue()) / productionPower.get(entry.getKey());
+            }
+        }
+        return criterion;
+    }
 
     public static double getCriterion(InputOrderInformation ordersInformation, OutputResult result) {
         double criterion = 0;
