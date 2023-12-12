@@ -4,6 +4,7 @@ import algorithm.model.order.Order;
 import algorithm.model.order.Product;
 import algorithm.model.order.TechProcess;
 import algorithm.model.production.Production;
+import com.ctc.wstx.exc.WstxOutputException;
 import parse.input.order.InputOrder;
 import parse.input.order.InputOrderInformation;
 import parse.output.result.OutputOrderResult;
@@ -27,12 +28,9 @@ public class Criterion {
                     long hash = Hash.hash(order.getId(), product.getId(), techProcess.getId());
                     int count = variant.get(hash);
                     HashMap<Long, Integer> equipPower = techProcessPower.get(hash);
-
                     equipPower.forEach((eId, power) -> {
                         overspanding.replace(eId, overspanding.get(eId) - (long) count * power);
                     });
-
-                    System.out.println(order.getId() + " " + product.getId() + " " + techProcess.getId() + " " + (count * equipPower.get((long)1)));
                 }
             }
         }

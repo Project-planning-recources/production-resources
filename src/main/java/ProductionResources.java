@@ -63,8 +63,8 @@ public class ProductionResources {
      *                 <Бюджет генератора альтернативностей> <имя файла результатов>.xml
      *                 <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
      *             <p>               Следующие аргументы для OWN_BACKPACK: <Название папки с данными производства и заказов> <Количество пар производство-заказы>
-     *                 <Бюджет генератора альтернативностей> <имя файла результатов>.xml
-     *                 <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+     *                 <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей> <имя файла результатов>.xml
+     *                 <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
      *             <p>    COMP_RESULT_TABLES - сравнить таблицы с результатами работы двух алгоритмов</p>
      *             <p>        Следующие аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv</p>
      *             <br>
@@ -243,8 +243,8 @@ public class ProductionResources {
                 } else if("own_backpack".equalsIgnoreCase(argv[2])) {
                     int count = Integer.parseInt(argv[4]);
                     int budgetGen = Integer.parseInt(argv[5]);
-                    int startsAlg = Integer.parseInt(argv[7]);
-                    int threadsCount = Integer.parseInt(argv[8]);
+                    int repeatBudget = Integer.parseInt(argv[6]);
+                    int startsAlg = Integer.parseInt(argv[8]);
                     int frontThreadsCount = Integer.parseInt(argv[10]);
 
                     try (FileWriter writer = new FileWriter(argv[6], false)) {
@@ -273,7 +273,7 @@ public class ProductionResources {
                                         orders.add(new Order(inputOrder));
                                     });
                                     long startTime = System.currentTimeMillis();
-                                    Algorithm algorithm = new BackpackAlgorithm(inputProduction, inputOrderInformation.getOrders(), null, argv[9], frontThreadsCount, budgetGen);
+                                    Algorithm algorithm = new BackpackAlgorithm(inputProduction, inputOrderInformation.getOrders(), null, argv[9], frontThreadsCount, budgetGen, repeatBudget);
                                     OutputResult result = algorithm.start();
 
                                     if (RealityTester.test(inputProduction, inputOrderInformation, result)) {
@@ -482,8 +482,8 @@ public class ProductionResources {
                     } else if("own_backpack".equalsIgnoreCase(argv[2]) && argv.length == 11) {
                         Integer count = null;
                         Integer budget = null;
+                        Integer repeatBudget = null;
                         Integer algStarts = null;
-                        Integer threadsCount = null;
                         Integer frontThreadsCount = null;
                         if(!"candidates".equalsIgnoreCase(argv[9]) && !"record".equalsIgnoreCase(argv[9])) {
                             return false;
@@ -491,13 +491,13 @@ public class ProductionResources {
                         try {
                             count = Integer.parseInt(argv[4]);
                             budget = Integer.parseInt(argv[5]);
-                            algStarts = Integer.parseInt(argv[7]);
-                            threadsCount = Integer.parseInt(argv[8]);
+                            repeatBudget = Integer.parseInt(argv[6]);
+                            algStarts = Integer.parseInt(argv[8]);
                             frontThreadsCount = Integer.parseInt(argv[10]);
                         } catch (NumberFormatException e) {
                             return false;
                         }
-                        return count > 0 && budget > 0 && algStarts > 0 && threadsCount > 0 && frontThreadsCount > 0;
+                        return count > 0 && budget > 0 && repeatBudget > 0 && algStarts > 0 && frontThreadsCount > 0;
                     }
                 }
             }
@@ -516,7 +516,7 @@ public class ProductionResources {
         System.out.println("        Аргументы для BASIS:  <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK)");
         System.out.println("            Аргументы для BASE:  <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK)");
         System.out.println("            Аргументы для OWN_ALPHA:  <Название папки с данными производства и заказов> <Количество пар производство-заказы><Бюджет генератора альтернативностей> <имя файла результатов>.xml <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>");
-        System.out.println("            Аргументы для OWN_BACKPACK:  <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Бюджет генератора альтернативностей> <имя файла результатов>.xml <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>");
+        System.out.println("            Аргументы для OWN_BACKPACK:  <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей> <имя файла результатов>.xml <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>");
         System.out.println("    Аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv");
     }
 }

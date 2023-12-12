@@ -79,6 +79,25 @@ public abstract class AbstractVariatorAlgorithm implements Algorithm {
         return variant;
     }
 
+    protected Pair<HashMap<Long, Integer>, Double>  returnRecordVariant(ArrayList<Pair<HashMap<Long, Integer>, Double>> variation) throws Exception {
+        Pair<HashMap<Long, Integer>, Double> recordPair = null;
+        double recordCriterion = Double.MAX_VALUE;
+
+
+        for (Pair<HashMap<Long, Integer>, Double> variantPair : variation) {
+            if (variantPair.getValue() < recordCriterion) {
+                recordPair = variantPair;
+                recordCriterion = variantPair.getValue();
+            }
+        }
+
+        if (recordPair == null) {
+            throw new Exception("Unreachable code");
+        }
+
+        return recordPair;
+    }
+
     protected Boolean checkNegativeAndDeal(HashMap<Long, Integer> variant) {
         for (Order order : this.orders) {
             for (Product product : order.getProducts()) {

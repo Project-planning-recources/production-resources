@@ -56,29 +56,8 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
             i += addCount;
         }
 
-        return returnRecord();
+        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, returnRecordVariant(this.variation).getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
     }
-
-    protected OutputResult returnRecord() throws Exception {
-        Pair<HashMap<Long, Integer>, Double> recordPair = null;
-        double recordCriterion = Double.MAX_VALUE;
-
-
-        for (Pair<HashMap<Long, Integer>, Double> variationPair : this.variation) {
-            if (variationPair.getValue() < recordCriterion) {
-                recordPair = variationPair;
-                recordCriterion = variationPair.getValue();
-            }
-        }
-
-        if (recordPair == null) {
-            throw new Exception("Unreachable code");
-        }
-
-        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, recordPair.getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
-    }
-
-
 
     protected void loading() {
         System.out.println("Вычисление " + (this.variation.size() - 1) + "/" + this.variatorBudget);
