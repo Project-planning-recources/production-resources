@@ -45,8 +45,8 @@ public class Trash {
 
 //        checkGenerator();
 
-//        generate(dataCount);
-//        checkOwnAlgorithm();
+//        generate(1);
+        checkOwnAlgorithm();
 
         testBackpack();
         System.out.println("=====FINISH=====");
@@ -54,9 +54,9 @@ public class Trash {
     }
 
     private static void testBackpack() {
-        InputProduction production = READER.readProductionFile("Basis/4_production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("Basis/4_orders.xml");
-        Algorithm algorithm = new BackpackAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 1000, 10);
+        InputProduction production = READER.readProductionFile("Basis/7_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/7_orders.xml");
+        Algorithm algorithm = new BackpackAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10000, 5);
 
         OutputResult result = null;
         try {
@@ -97,8 +97,8 @@ public class Trash {
 
     public static void checkOwnAlgorithm() throws Exception {
 
-        InputProduction production = READER.readProductionFile("Basis/5_production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("Basis/5_orders.xml");
+        InputProduction production = READER.readProductionFile("Basis/7_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/7_orders.xml");
 
         Algorithm algorithm = new AlphaVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10, 50);
 

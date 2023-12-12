@@ -81,7 +81,7 @@ public class ParallelTester {
 
         try (FileWriter writer = new FileWriter("parallel.csv", false)) {
             writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
-                    "Среднее время исполнения в секундах последовательного;Среднее время исполнения в секундах параллельного1\n");
+                    "Время последовательного с кандидатами;Время последовательного с рекордом;Время последовательного с параллельным рекордом;Время параллельного с последовательным рекордом;Время параллельного с параллельным рекордом\n");
 
             for (int i = 0; i < basisSize; i++) {
                 InputProduction production = READER.readProductionFile("Basis/" + (i + 1) + "_production.xml");
@@ -93,8 +93,11 @@ public class ParallelTester {
                     AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
                     long equipmentCount = Data.getEquipmentCount(production);
 
-                    DataFromCalculation consistent = calculation(i, production, orders, "candidates", 1, startGen, budgetGen, 1, startsAlg);
-                    DataFromCalculation parallel1 = calculation(i, production, orders, "candidates", 1, startGen, budgetGen, threadsCount, startsAlg);
+                    DataFromCalculation consistentCandidates = calculation(i, production, orders, "candidates", 1, startGen, budgetGen, 1, startsAlg);
+                    DataFromCalculation consistentVariatorConsistentRecords = calculation(i, production, orders, "record", 1, startGen, budgetGen, 1, startsAlg);
+                    DataFromCalculation consistentVariatorParallelRecords = calculation(i, production, orders, "record", 2, startGen, budgetGen, 1, startsAlg);
+                    DataFromCalculation parallelVariatorConsistentRecord = calculation(i, production, orders, "candidates", 1, startGen, budgetGen, threadsCount, startsAlg);
+                    DataFromCalculation parallelVariatorParallelRecord = calculation(i, production, orders, "candidates", 2, startGen, budgetGen, threadsCount, startsAlg);
 
 
                     writer.write((i + 1) + ";" +
@@ -104,26 +107,11 @@ public class ParallelTester {
                             Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
                             equipmentCount + ";" +
                             alternativenessCount.average + ";" +
-                            ((double) consistent.averageTime / startsAlg) + ";" +
-                            ((double) parallel1.averageTime / startsAlg) + "\n");
-
-//                    writer.write((i + 1) + ";" +
-//                            orders.getOrders().size() + ";" +
-//                            Data.getDetailTypesCount(orders.getOrders()) + ";" +
-//                            Data.getAverageDetailsCount(orders.getOrders()) + ";" +
-//                            Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
-//                            equipmentCount + ";" +
-//                            alternativenessCount.min + ";" +
-//                            alternativenessCount.max + ";" +
-//                            alternativenessCount.average + ";" +
-//                            ((double) consistent.performOperationsCount / startsAlg) + ";" +
-//                            ((double) consistent.averageOverdueDays / startsAlg) + ";" +
-//                            (consistent.averageCriterion / startsAlg) + ";" +
-//                            ((double) consistent.averageTime / startsAlg) + ";" +
-//                            ((double) parallel1.performOperationsCount / startsAlg) + ";" +
-//                            ((double) parallel1.averageOverdueDays / startsAlg) + ";" +
-//                            (parallel1.averageCriterion / startsAlg) + ";" +
-//                            ((double) parallel1.averageTime / startsAlg) + "\n");
+                            ((double) consistentCandidates.averageTime / startsAlg) + ";" +
+                            ((double) consistentVariatorConsistentRecords.averageTime / startsAlg) + ";" +
+                            ((double) consistentVariatorParallelRecords.averageTime / startsAlg) + ";" +
+                            ((double) parallelVariatorConsistentRecord.averageTime / startsAlg) + ";" +
+                            ((double) parallelVariatorParallelRecord.averageTime / startsAlg) + "\n");
                 } else {
                     throw new Exception(i + ": Заказы не соответствуют производству");
                 }
