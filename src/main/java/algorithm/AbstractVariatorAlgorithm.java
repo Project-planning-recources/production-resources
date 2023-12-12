@@ -79,7 +79,7 @@ public abstract class AbstractVariatorAlgorithm implements Algorithm {
         return variant;
     }
 
-    protected Pair<HashMap<Long, Integer>, Double>  returnRecordVariant(ArrayList<Pair<HashMap<Long, Integer>, Double>> variation) throws Exception {
+    protected Pair<HashMap<Long, Integer>, Double> returnRecordVariantPair(ArrayList<Pair<HashMap<Long, Integer>, Double>> variation) throws Exception {
         Pair<HashMap<Long, Integer>, Double> recordPair = null;
         double recordCriterion = Double.MAX_VALUE;
 

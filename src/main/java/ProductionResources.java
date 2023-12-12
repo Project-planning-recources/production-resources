@@ -247,7 +247,7 @@ public class ProductionResources {
                     int startsAlg = Integer.parseInt(argv[8]);
                     int frontThreadsCount = Integer.parseInt(argv[10]);
 
-                    try (FileWriter writer = new FileWriter(argv[6], false)) {
+                    try (FileWriter writer = new FileWriter(argv[7], false)) {
                         writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Минимальное число альтернатив на деталь;" +
                                 "Максимальное число альтернатив на деталь;Среднее число альтернатив на деталь;Количество произведенных операций;Среднее суммарное количество дней просрочки;Средний критерий;Среднее время исполнения в секундах\n");
 

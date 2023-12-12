@@ -46,17 +46,17 @@ public class Trash {
 //        checkGenerator();
 
 //        generate(dataCount);
-        checkOwnAlgorithm();
+//        checkOwnAlgorithm();
 
-//        testBackpack();
+        testBackpack();
         System.out.println("=====FINISH=====");
 
     }
 
     private static void testBackpack() {
-        InputProduction production = READER.readProductionFile("Basis/1_production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("Basis/1_orders.xml");
-        Algorithm algorithm = new BackpackAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 100, 3);
+        InputProduction production = READER.readProductionFile("Basis/4_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/4_orders.xml");
+        Algorithm algorithm = new BackpackAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 1000, 10);
 
         OutputResult result = null;
         try {

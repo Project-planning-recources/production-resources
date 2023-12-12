@@ -1,7 +1,6 @@
 package algorithm.backpack;
 
 import algorithm.AbstractVariatorAlgorithm;
-import algorithm.Algorithm;
 import algorithm.FrontAlgorithmFactory;
 import algorithm.candidates.CandidatesBaseAlgorithm;
 import algorithm.candidates.CandidatesOwnAlgorithm;
@@ -23,6 +22,12 @@ import java.util.HashMap;
 
 public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
 
+    static class BackpackException extends RuntimeException{
+        public BackpackException() {
+            super();
+        }
+    }
+
     protected String frontAlgorithmType;
 
     protected int frontThreadsCount;
@@ -38,10 +43,12 @@ public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
         super(inputProduction, inputOrders, startTime, variatorBudget);
         this.frontAlgorithmType = frontAlgorithmType;
         this.frontThreadsCount = frontThreadsCount;
-        this.productionPower = getProductionPower(this.getEqualVariant());
-        this.techProcessPowerRequirement = initTechProcessPowerRequirement();
-        this.repeatBudget = repeatBudget;
         this.backpackVariation = new ArrayList<>();
+        this.techProcessPowerRequirement = initTechProcessPowerRequirement();
+        HashMap<Long, Integer> equalVariant = getEqualVariant();
+        this.productionPower = getProductionPowerAndRememberCriterion(equalVariant);
+        this.repeatBudget = repeatBudget;
+
     }
 
     @Override
@@ -57,22 +64,31 @@ public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
             }
         }
 
-
-
-        Algorithm algorithm = FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, null, this.frontAlgorithmType, this.frontThreadsCount);
-        OutputResult result = algorithm.start();
-//        this.variation.add(new Pair<>(variant, Criterion.getCriterion(this.orders, result)));
-
         for (int i = 0; i < this.repeatBudget; i++) {
-            for (int j = 0; j < this.variatorBudget; j++) {
 
+            backpackVariation.sort((o1, o2) -> {
+                if(o1.getValue() - o2.getValue() > 0) {
+                    return 1;
+                } else if(o1.getValue() - o2.getValue() < 0) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+
+            try {
+                this.productionPower = getProductionPowerAndRememberCriterion(null);
+            } catch (BackpackException e) {
+                break;
+            }
+
+            for (int j = 0; j < this.backpackVariation.size(); j++) {
+                Pair<HashMap<Long, Integer>, Double> pair = this.backpackVariation.get(j);
+                pair.setValue(Criterion.getBackpackCriterion(this.orders, this.productionPower, this.techProcessPowerRequirement, pair.getKey()));
             }
         }
 
-
-        System.out.println(this.variation);
-
-        return new CandidatesBaseAlgorithm(production, orders, startTime).start();
+        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, returnRecordVariantPair(this.variation).getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
     }
 
     protected HashMap<Long, Integer> getEqualVariant() {
@@ -95,48 +111,59 @@ public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
         return equalVariant;
     }
 
-    protected HashMap<Long, Long> getProductionPower(HashMap<Long, Integer> variant) {
+    protected HashMap<Long, Long> getProductionPowerAndRememberCriterion(HashMap<Long, Integer> useVariant) {
         HashMap<Long, Long> productionPower = new HashMap<>();
 
-        if (checkVariantAvailability(variant)) {
-            CandidatesOwnAlgorithm algorithm = (CandidatesOwnAlgorithm) FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
-            try {
-                OutputResult result = algorithm.start();
-                HashMap<Long, Operation> operationsHashMap = algorithm.getOperationsHashMap();
-                result.getOrderResults().forEach(outputOrderResult -> {
-                    LocalDateTime deadline = null;
-                    for (Order order : this.orders) {
-                        if (order.getId() == outputOrderResult.getOrderId()) {
-                            deadline = order.getDeadline();
-                            break;
-                        }
-                    }
-
-                    for (OutputProductResult outputProductResult : outputOrderResult.getProductResults()) {
-                        if (outputProductResult.getEndTime().isBefore(deadline)) {
-                            outputProductResult.getPerformedOperations().forEach(outputOperationResult -> {
-                                int duration = operationsHashMap.get(outputOperationResult.getOperationId()).getDuration();
-                                Long equipmentGroupId = this.production.getEquipmentGroupIdByEquipmentId(outputOperationResult.getEquipmentId());
-                                if (productionPower.containsKey(equipmentGroupId)) {
-                                    productionPower.replace(equipmentGroupId, duration + productionPower.get(equipmentGroupId));
-                                } else {
-                                    productionPower.put(equipmentGroupId, (long) duration);
-                                }
-                            });
-                        }
-                    }
-                });
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        int variantIndex = 0;
+        HashMap<Long, Integer> variant = useVariant;
+        while (true) {
+            if(useVariant != null) {
+                variantIndex--;
+            } else {
+                variant = this.backpackVariation.get(variantIndex).getKey();
             }
+            if (checkVariantAvailability(variant)) {
+                CandidatesOwnAlgorithm algorithm = (CandidatesOwnAlgorithm) FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
+                try {
+                    OutputResult result = algorithm.start();
+                    this.variation.add(new Pair<>(variant, Criterion.getCriterion(this.orders, result)));
+                    HashMap<Long, Operation> operationsHashMap = algorithm.getOperationsHashMap();
+                    result.getOrderResults().forEach(outputOrderResult -> {
+                        LocalDateTime deadline = null;
+                        for (Order order : this.orders) {
+                            if (order.getId() == outputOrderResult.getOrderId()) {
+                                deadline = order.getDeadline();
+                                break;
+                            }
+                        }
 
+                        for (OutputProductResult outputProductResult : outputOrderResult.getProductResults()) {
+                            if (outputProductResult.getEndTime().isBefore(deadline)) {
+                                outputProductResult.getPerformedOperations().forEach(outputOperationResult -> {
+                                    int duration = operationsHashMap.get(outputOperationResult.getOperationId()).getDuration();
+                                    Long equipmentGroupId = this.production.getEquipmentGroupIdByEquipmentId(outputOperationResult.getEquipmentId());
+                                    if (productionPower.containsKey(equipmentGroupId)) {
+                                        productionPower.replace(equipmentGroupId, duration + productionPower.get(equipmentGroupId));
+                                    } else {
+                                        productionPower.put(equipmentGroupId, (long) duration);
+                                    }
+                                });
+                            }
+                        }
+                    });
 
-        } else {
-            throw new RuntimeException("Неправильная генерация варианта с равномерным распределением альтернативностей");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                this.production.getEquipmentGroups().forEach(equipmentGroup -> productionPower.putIfAbsent(equipmentGroup.getId(), 0L));
+                return productionPower;
+            } else {
+                if (variantIndex == this.backpackVariation.size() - 1) {
+                    throw new BackpackException();
+                }
+                variantIndex++;
+            }
         }
-
-        return productionPower;
     }
 
     protected HashMap<Long, HashMap<Long, Integer>> initTechProcessPowerRequirement() {
@@ -158,7 +185,6 @@ public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
                 }
             }
         }
-
         return techProcessPowerRequirement;
     }
 }

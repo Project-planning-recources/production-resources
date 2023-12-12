@@ -56,7 +56,7 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
             i += addCount;
         }
 
-        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, returnRecordVariant(this.variation).getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
+        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, returnRecordVariantPair(this.variation).getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
     }
 
     protected void loading() {
