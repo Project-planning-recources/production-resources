@@ -78,58 +78,64 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
         return false;
     }
 
+    protected ArrayList<Pair<HashMap<Long, Integer>, Double>> getVariantPair() {
+        ArrayList<Pair<HashMap<Long, Integer>, Double>> pairs = new ArrayList<>();
+        HashMap<Long, Integer> firstVariant = null;
+        HashMap<Long, Integer> secondVariant = null;
+
+        long pairsHash = 0;
+        double criterionForFirstVariant = 0;
+        double criterionForSecondVariant = 0;
+
+        boolean pairsFlag = true;
+        while (pairsFlag) {
+
+            Pair<HashMap<Long, Integer>, Double> firstPair = this.variation.get(Random.randomInt(this.variation.size()));
+            firstVariant = firstPair.getKey();
+            criterionForFirstVariant = firstPair.getValue();
+            do {
+                Pair<HashMap<Long, Integer>, Double> secondPair = this.variation.get(Random.randomInt(this.variation.size()));
+                secondVariant = secondPair.getKey();
+                criterionForSecondVariant = secondPair.getValue();
+            } while (firstVariant == secondVariant);
+
+            pairsHash = Hash.hash((long) firstVariant.hashCode(), (long) secondVariant.hashCode());
+//                System.out.println(firstVariant + " " + secondVariant + pairsHash);
+
+            pairsFlag = !putPairIfAbsent(pairsHash);
+        }
+
+        pairs.add(new Pair<>(firstVariant, criterionForFirstVariant));
+        pairs.add(new Pair<>(secondVariant, criterionForSecondVariant));
+
+        return pairs;
+    }
+
     protected int generateAndAddNewVariants() throws Exception {
 
         boolean generationFlag = true;
         int addCount = 0;
 
         while (generationFlag) {
-            HashMap<Long, Integer> firstVariant = null;
-            HashMap<Long, Integer> secondVariant = null;
-
-            long pairsHash = 0;
-            double criterionForFirstVariant = 0;
-            double criterionForSecondVariant = 0;
-
-            boolean pairsFlag = true;
-            while (pairsFlag) {
-
-                Pair<HashMap<Long, Integer>, Double> firstPair = this.variation.get(Random.randomInt(this.variation.size()));
-                firstVariant = firstPair.getKey();
-                criterionForFirstVariant = firstPair.getValue();
-                do {
-                    Pair<HashMap<Long, Integer>, Double> secondPair = this.variation.get(Random.randomInt(this.variation.size()));
-                    secondVariant = secondPair.getKey();
-                    criterionForSecondVariant = secondPair.getValue();
-                } while (firstVariant == secondVariant);
-
-                pairsHash = Hash.hash((long) firstVariant.hashCode(), (long) secondVariant.hashCode());
-//                System.out.println(firstVariant + " " + secondVariant + pairsHash);
-
-                pairsFlag = !putPairIfAbsent(pairsHash);
-            }
-
-//        System.out.println(firstVariant);
-//        System.out.println(secondVariant);
-
+            ArrayList<Pair<HashMap<Long, Integer>, Double>> pair = getVariantPair();
 
             HashMap<Long, Integer> betweenVariant = null;
             HashMap<Long, Integer> beyondVariant = null;
-            if (criterionForFirstVariant < criterionForSecondVariant) {
+            if (pair.get(0).getValue() < pair.get(1).getValue()) {
 //            System.out.println("1 < 2");
-                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.5);
-                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 1.2);
+                betweenVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 0.5);
+                beyondVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 1.2);
 //                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.8);
 //                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 1.2);
-            } else if (criterionForFirstVariant > criterionForSecondVariant) {
+            } else if (pair.get(0).getValue() > pair.get(1).getValue()) {
 //            System.out.println("1 > 2");
-                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.5);
-                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, -0.2);
+                betweenVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 0.5);
+                beyondVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), -0.2);
 
 //                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.2);
 //                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, -0.2);
             } else {
-                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.5);
+                betweenVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 0.5);
             }
 
 
