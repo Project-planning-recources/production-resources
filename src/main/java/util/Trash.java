@@ -3,7 +3,9 @@ package util;
 
 import algorithm.Algorithm;
 import algorithm.alpha.AlphaClusterVariatorAlgorithm;
+import algorithm.alpha.AlphaClusterVariatorAlgorithmParallel;
 import algorithm.alpha.AlphaVariatorAlgorithm;
+import algorithm.alpha.AlphaVariatorAlgorithmParallel;
 import algorithm.backpack.BackpackAlgorithm;
 import algorithm.candidates.CandidatesBaseAlgorithm;
 import generator.GeneratedData;
@@ -51,9 +53,37 @@ public class Trash {
 
 //        testBackpack();
 
-        testOwnClusterAlgorithm();
+//        testOwnClusterAlgorithm();
+
+        testParallelAlgorithm();
         System.out.println("=====FINISH=====");
 
+    }
+
+    public static void testParallelAlgorithm() throws Exception {
+
+        InputProduction production = READER.readProductionFile("Basis/5_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/5_orders.xml");
+
+        Algorithm algorithm = new AlphaClusterVariatorAlgorithmParallel(production, orderFile.getOrders(), null, "candidates", 1, 10, 100, 2);
+
+        OutputResult result = null;
+        try {
+            result = algorithm.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Testing...");
+
+        if(RealityTester.test(production, orderFile, result)) {
+            WRITER.writeResultFile("alphaClusterResult.xml", result);
+            System.out.println("Creterion: " + Criterion.getCriterion(orderFile, result));
+            System.out.println("Overdue: " + Data.getAverageOverdueDays(orderFile.getOrders(), result));
+            System.out.println("Done!");
+        } else {
+            System.out.println("Bad2!");
+        }
     }
 
     public static void testOwnClusterAlgorithm() throws Exception {

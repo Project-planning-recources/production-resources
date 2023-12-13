@@ -100,12 +100,15 @@ public class Production implements Serializable {
             if(equipmentGroup.getId() == choose.getEquipmentGroupId()) {
                 for (Equipment e :
                         equipmentGroup.getEquipment()) {
+
                     if(!e.isUsing()) {
                         return e;
                     }
                 }
             }
         }
+        System.out.println(equipmentGroups);
+        System.out.println(choose);
         throw new Exception("No equipment for operation");
     }
 

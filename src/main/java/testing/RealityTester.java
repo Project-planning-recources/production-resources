@@ -175,7 +175,6 @@ public class RealityTester {
         return true;
     }
 
-    //todo: оптимизировать
     private static List<String> usingSameEquipmentCheck(LinkedList<OutputOperationResult> operationResults,
                                                         HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments) {
         List<String> errorMessage = new ArrayList<>();

@@ -81,4 +81,13 @@ public class EquipmentGroup implements Serializable {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "EquipmentGroup{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", equipment=" + equipment +
+                '}';
+    }
 }

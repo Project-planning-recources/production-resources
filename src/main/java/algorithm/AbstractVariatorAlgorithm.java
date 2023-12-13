@@ -53,6 +53,17 @@ public abstract class AbstractVariatorAlgorithm implements Algorithm {
         this.variantPairs = new HashMap<>();
     }
 
+    public AbstractVariatorAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime, int variatorBudget) {
+        this.production = production;
+        this.orders = orders;
+
+        this.startTime = startTime;
+        this.variatorBudget = variatorBudget;
+
+        this.variation = new ArrayList<>();
+        this.variantPairs = new HashMap<>();
+    }
+
     protected HashMap<Long, Integer> generateRandomAlternativesDistribution() {
         HashMap<Long, Integer> variant = new HashMap<>();
 

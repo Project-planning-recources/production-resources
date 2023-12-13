@@ -57,4 +57,12 @@ public class Equipment implements Serializable {
         isUsing = using;
     }
 
+    @Override
+    public String toString() {
+        return "Equipment{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", isUsing=" + isUsing +
+                '}';
+    }
 }

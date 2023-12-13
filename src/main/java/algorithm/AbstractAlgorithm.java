@@ -71,6 +71,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
         initAlgorithm(operationChooser, alternativeElector);
     }
+
     public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
                              OperationChooser operationChooser, AlternativeElector alternativeElector) {
         this.production = new Production(inputProduction);

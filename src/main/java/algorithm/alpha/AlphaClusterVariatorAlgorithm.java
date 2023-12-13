@@ -32,57 +32,66 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
         this.clusterBelong = new HashMap<>();
     }
 
-    protected void updateClusters() {
-        this.variation.forEach(variantPair -> {
-            if(variantPair.getValue() < this.clusterCentres.get(0)) {
-                this.clusterCentres.set(0, variantPair.getValue());
-            }
-            if(variantPair.getValue() > this.clusterCentres.get(2)) {
-                this.clusterCentres.set(2, variantPair.getValue());
-            }
-        });
-        this.variation.forEach(variantPair -> {
-            if(Math.abs((this.clusterCentres.get(2) - this.clusterCentres.get(1)) - (this.clusterCentres.get(1) - this.clusterCentres.get(0))) >
-               Math.abs((this.clusterCentres.get(2) - variantPair.getValue()) - (variantPair.getValue() - this.clusterCentres.get(0))) ) {
-                this.clusterCentres.set(1, variantPair.getValue());
+    protected static void updateClusters(ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, ArrayList<Double> clusterCentres,
+                                         ArrayList<Integer> clusterSizes, HashMap<HashMap<Long, Integer>, Integer> clusterBelong) {
+        variation.forEach(variantPair -> {
+            if(variantPair.getValue() != -1) {
+                if(variantPair.getValue() < clusterCentres.get(0)) {
+                    clusterCentres.set(0, variantPair.getValue());
+                }
+                if(variantPair.getValue() > clusterCentres.get(2)) {
+                    clusterCentres.set(2, variantPair.getValue());
+                }
             }
         });
-        this.clusterSizes = (ArrayList<Integer>) this.clusterSizes.stream().map(s -> 0).collect(Collectors.toList());
-        this.variation.forEach(variantPair -> {
-            double d0 = variantPair.getValue() - this.clusterCentres.get(0);
-            double d1 = Math.abs(variantPair.getValue() - this.clusterCentres.get(1));
-            double d2 = this.clusterCentres.get(2) - variantPair.getValue();
-            if(!this.clusterBelong.containsKey(variantPair.getKey())) {
-                this.clusterBelong.put(variantPair.getKey(), -1);
-            }
-            if(d0 < d1 && d0 < d2) {
-                this.clusterBelong.replace(variantPair.getKey(), 0);
-                this.clusterSizes.set(0, this.clusterSizes.get(0) + 1);
-            } else if(d1 <= d0 && d1 <= d2) {
-                this.clusterBelong.replace(variantPair.getKey(), 1);
-                this.clusterSizes.set(1, this.clusterSizes.get(1) + 1);
-            } else {
-                this.clusterBelong.replace(variantPair.getKey(), 2);
-                this.clusterSizes.set(2, this.clusterSizes.get(2) + 1);
+        variation.forEach(variantPair -> {
+            if(variantPair.getValue() != -1) {
+                if(Math.abs((clusterCentres.get(2) - clusterCentres.get(1)) - (clusterCentres.get(1) - clusterCentres.get(0))) >
+                        Math.abs((clusterCentres.get(2) - variantPair.getValue()) - (variantPair.getValue() - clusterCentres.get(0))) ) {
+                    clusterCentres.set(1, variantPair.getValue());
+                }
             }
         });
+        for (int i = 0; i < 3; i++) {
+            clusterSizes.set(i, 0);
+        }
+        for (Pair<HashMap<Long, Integer>, Double> variantPair : variation) {
+            if(variantPair.getValue() != -1) {
+                double d0 = variantPair.getValue() - clusterCentres.get(0);
+                double d1 = Math.abs(variantPair.getValue() - clusterCentres.get(1));
+                double d2 = clusterCentres.get(2) - variantPair.getValue();
+                if (!clusterBelong.containsKey(variantPair.getKey())) {
+                    clusterBelong.put(variantPair.getKey(), -1);
+                }
+                if (d0 < d1 && d0 < d2) {
+                    clusterBelong.replace(variantPair.getKey(), 0);
+                    clusterSizes.set(0, clusterSizes.get(0) + 1);
+                } else if (d1 <= d0 && d1 <= d2) {
+                    clusterBelong.replace(variantPair.getKey(), 1);
+                    clusterSizes.set(1, clusterSizes.get(1) + 1);
+                } else {
+                    clusterBelong.replace(variantPair.getKey(), 2);
+                    clusterSizes.set(2, clusterSizes.get(2) + 1);
+                }
+            }
+        }
     }
 
     @Override
     protected void generateAlphaVariants() throws Exception {
         for (int i = this.startVariatorCount; i <= this.variatorBudget;) {
             loading();
-            updateClusters();
+            updateClusters(this.variation, this.clusterCentres, this.clusterSizes, this.clusterBelong);
             int addCount = generateAndAddNewVariants();
             i += addCount;
         }
     }
 
-    protected Pair<HashMap<Long, Integer>, Double> randomChooseVariantAndCriterion(int cluster) {
+    protected static Pair<HashMap<Long, Integer>, Double> randomChooseVariantAndCriterion(int cluster, ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, ArrayList<Integer> clusterSizes, HashMap<HashMap<Long, Integer>, Integer> clusterBelong) {
         Pair<HashMap<Long, Integer>, Double> pair = new Pair<>(null, null);
-        int index = Random.randomInt(this.clusterSizes.get(cluster));
-        for (Pair<HashMap<Long, Integer>, Double> variantPair : this.variation) {
-            if (this.clusterBelong.get(variantPair.getKey()) == cluster) {
+        int index = Random.randomInt(clusterSizes.get(cluster));
+        for (Pair<HashMap<Long, Integer>, Double> variantPair : variation) {
+            if (clusterBelong.containsKey(variantPair.getKey()) && clusterBelong.get(variantPair.getKey()) == cluster) {
                 if(index == 0) {
                     pair.setKey(variantPair.getKey());
                     pair.setValue(variantPair.getValue());
@@ -111,16 +120,18 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
         boolean pairsFlag = true;
         while (pairsFlag) {
 
-            Pair<HashMap<Long, Integer>, Double> pair = randomChooseVariantAndCriterion(0);
+
+
+            Pair<HashMap<Long, Integer>, Double> pair = randomChooseVariantAndCriterion(0, this.variation, this.clusterSizes, this.clusterBelong);
             firstVariant = pair.getKey();
             criterionForFirstVariant = pair.getValue();
             do {
                 if(Random.randomInt(100) <= 66) {
-                    pair = randomChooseVariantAndCriterion(1);
+                    pair = randomChooseVariantAndCriterion(1, this.variation, this.clusterSizes, this.clusterBelong);
                     secondVariant = pair.getKey();
                     criterionForSecondVariant = pair.getValue();
                 } else {
-                    pair = randomChooseVariantAndCriterion(2);
+                    pair = randomChooseVariantAndCriterion(2, this.variation, this.clusterSizes, this.clusterBelong);
                     secondVariant = pair.getKey();
                     criterionForSecondVariant = pair.getValue();
                 }

@@ -53,8 +53,6 @@ public class BackpackAlgorithm extends AbstractVariatorAlgorithm {
 
     @Override
     public OutputResult start() throws Exception {
-        //todo: реализовать ранцевый алгоритм, убрать затычку
-
         for (int i = 0; i < this.variatorBudget; i++) {
             HashMap<Long, Integer> randomVariant = this.generateRandomAlternativesDistribution();
             if(checkVariantAvailability(randomVariant)) {

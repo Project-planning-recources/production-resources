@@ -6,6 +6,7 @@ import algorithm.FrontAlgorithmFactory;
 import algorithm.model.order.Order;
 import algorithm.model.order.Product;
 import algorithm.model.order.TechProcess;
+import algorithm.model.production.Production;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -25,6 +26,13 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
     protected int startVariatorCount;
     public AlphaVariatorAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String frontAlgorithmType, int frontThreadsCount, int startVariatorCount, int variatorBudget) {
         super(inputProduction, inputOrders, startTime, variatorBudget);
+        this.frontAlgorithmType = frontAlgorithmType;
+        this.frontThreadsCount = frontThreadsCount;
+        this.startVariatorCount = startVariatorCount;
+    }
+
+    public AlphaVariatorAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime, String frontAlgorithmType, int frontThreadsCount, int startVariatorCount, int variatorBudget) {
+        super(production, orders, startTime, variatorBudget);
         this.frontAlgorithmType = frontAlgorithmType;
         this.frontThreadsCount = frontThreadsCount;
         this.startVariatorCount = startVariatorCount;
@@ -79,6 +87,7 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
         return false;
     }
 
+
     protected ArrayList<Pair<HashMap<Long, Integer>, Double>> getVariantPair() {
         ArrayList<Pair<HashMap<Long, Integer>, Double>> pairs = new ArrayList<>();
         HashMap<Long, Integer> firstVariant = null;
@@ -91,18 +100,16 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
         boolean pairsFlag = true;
         while (pairsFlag) {
 
-            Pair<HashMap<Long, Integer>, Double> firstPair = this.variation.get(Random.randomInt(this.variation.size()));
-            firstVariant = firstPair.getKey();
-            criterionForFirstVariant = firstPair.getValue();
+            Pair<HashMap<Long, Integer>, Double> pair = this.variation.get(Random.randomInt(this.variation.size()));
+            firstVariant = pair.getKey();
+            criterionForFirstVariant = pair.getValue();
             do {
-                Pair<HashMap<Long, Integer>, Double> secondPair = this.variation.get(Random.randomInt(this.variation.size()));
-                secondVariant = secondPair.getKey();
-                criterionForSecondVariant = secondPair.getValue();
+                pair = this.variation.get(Random.randomInt(this.variation.size()));
+                secondVariant = pair.getKey();
+                criterionForSecondVariant = pair.getValue();
             } while (firstVariant == secondVariant);
 
             pairsHash = Hash.hash((long) firstVariant.hashCode(), (long) secondVariant.hashCode());
-//                System.out.println(firstVariant + " " + secondVariant + pairsHash);
-
             pairsFlag = !putPairIfAbsent(pairsHash);
         }
 

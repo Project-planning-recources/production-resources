@@ -1,9 +1,10 @@
 import algorithm.*;
+import algorithm.alpha.AlphaClusterVariatorAlgorithm;
+import algorithm.alpha.AlphaClusterVariatorAlgorithmParallel;
 import algorithm.alpha.AlphaVariatorAlgorithm;
-import algorithm.alpha.AlphaVariatorAlgorithm1Parallel;
+import algorithm.alpha.AlphaVariatorAlgorithmParallel;
 import algorithm.backpack.BackpackAlgorithm;
 import algorithm.candidates.CandidatesBaseAlgorithm;
-import algorithm.candidates.CandidatesOwnAlgorithm;
 import algorithm.model.order.Order;
 import algorithm.model.production.Production;
 import generator.GeneratedData;
@@ -41,6 +42,7 @@ public class ProductionResources {
     private static final XMLReader READER = new XMLReader();
     private static final XMLWriter WRITER = new XMLWriter();
 
+    //todo: Добавить выбор типа алгоритма в ALG, переписать help и комментарий
     /**
      * Класс для запуска работы системы из консоли:
      * Перед созданием объекта алгоритма запустить со считанными из файла объектами production и orders PossibilityTester
@@ -48,7 +50,7 @@ public class ProductionResources {
      * @param argv - аргументы командной строки:
      *             <p>1 аргумент - Тип работы: ALG / GEN / TEST / COMP_RESULT_TABLES</p>
      *             <p>    ALG - запустить работу алгоритма, записать результаты в файл</p>
-     *             <p>        Следующие аргументы для ALG: <тип алгоритма>(BASE / OWN) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml</p>
+     *             <p>        Следующие аргументы для ALG: <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml</p>
      *             <p>    GEN - запустить генератор файлов производства и заказов, сохранить в файлы</p>
      *             <p>        Следующие аргументы для GEN: <имя файла параметров генератора>.json <количество экземпляров для генерации></p>
      *             <p>    TEST - запустить тестирование на уже существующих данных</p>
@@ -91,7 +93,7 @@ public class ProductionResources {
                     }
                 } else if ("own".equalsIgnoreCase(argv[1])) {
                     System.out.println("1");
-                    algorithm = new AlphaVariatorAlgorithm(production, orders.getOrders(), null, "candidates", 1, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]));
+                    algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "candidates", 1, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]));
                     System.out.println("2");
                     OutputResult result = algorithm.start();
                     System.out.println("3");
@@ -213,9 +215,9 @@ public class ProductionResources {
                                     long startTime = System.currentTimeMillis();
                                     Algorithm algorithm = null;
                                     if(threadsCount == 1) {
-                                        algorithm = new AlphaVariatorAlgorithm(inputProduction, inputOrderInformation.getOrders(), null, argv[10], frontThreadsCount, startGen, budgetGen);
+                                        algorithm = new AlphaClusterVariatorAlgorithm(inputProduction, inputOrderInformation.getOrders(), null, argv[10], frontThreadsCount, startGen, budgetGen);
                                     } else {
-                                        algorithm = new AlphaVariatorAlgorithm1Parallel(inputProduction, inputOrderInformation.getOrders(), null, argv[10], frontThreadsCount, startGen, budgetGen, threadsCount);
+                                        algorithm = new AlphaClusterVariatorAlgorithmParallel(inputProduction, inputOrderInformation.getOrders(), null, argv[10], frontThreadsCount, startGen, budgetGen, threadsCount);
                                     }
                                     OutputResult result = algorithm.start();
 
@@ -406,7 +408,7 @@ public class ProductionResources {
             if ("base".equalsIgnoreCase(argv[1])) {
                 return true;
             }
-            if ("own".equalsIgnoreCase(argv[1])) {
+            if ("own_alpha".equalsIgnoreCase(argv[1])) {
                 if (argv.length == 8) {
                     try {
                         Integer.parseInt(argv[5]);

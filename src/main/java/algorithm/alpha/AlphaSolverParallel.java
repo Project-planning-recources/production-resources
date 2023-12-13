@@ -2,6 +2,8 @@ package algorithm.alpha;
 
 import algorithm.Algorithm;
 import algorithm.FrontAlgorithmFactory;
+import algorithm.model.order.Order;
+import algorithm.model.production.Production;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -13,25 +15,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-public class AlphaSolver1Parallel extends AlphaVariatorAlgorithm implements Runnable {
+public class AlphaSolverParallel extends AlphaVariatorAlgorithm implements Runnable {
 
-    private AlphaVariatorAlgorithm1Parallel main;
-    private boolean startGenerationFinished = false;
-    private boolean budgetGenerationFinished = false;
-    private Semaphore variationSemaphore;
+    protected AlphaVariatorAlgorithmParallel main;
+    protected boolean startGenerationFinished = false;
+    protected boolean budgetGenerationFinished = false;
 
-    private Semaphore pairsSemaphore;
+    protected Semaphore variationSemaphore;
+    protected Semaphore pairsSemaphore;
 
-    private int calculated = 0;
+    protected int calculated = 0;
 
-    private String frontAlgorithmType;
+    protected String frontAlgorithmType;
 
-    private int frontThreadsCount;
+    protected int frontThreadsCount;
 
 
-    public AlphaSolver1Parallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String frontAlgorithmType, int frontThreadsCount, int startVariatorCount, int variatorBudget,
-                                ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, HashMap<Long, Boolean> variantPairs,
-                                AlphaVariatorAlgorithm1Parallel main, Semaphore variationSemaphore, Semaphore pairsSemaphore) {
+    public AlphaSolverParallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String frontAlgorithmType, int frontThreadsCount, int startVariatorCount, int variatorBudget,
+                               ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, HashMap<Long, Boolean> variantPairs,
+                               AlphaVariatorAlgorithmParallel main, Semaphore variationSemaphore, Semaphore pairsSemaphore) {
         super(inputProduction, inputOrders, startTime, frontAlgorithmType, frontThreadsCount, startVariatorCount, variatorBudget);
 
         this.variation = variation;
@@ -83,26 +85,33 @@ public class AlphaSolver1Parallel extends AlphaVariatorAlgorithm implements Runn
     @Override
     protected boolean addVariantIfAbsent(HashMap<Long, Integer> variant) throws Exception {
         if(variant != null && checkNegativeAndDeal(variant)) {
-//            System.out.println(Thread.currentThread().getName() + " запрашивает разрешение." + variation.size());
             variationSemaphore.acquire();
-//            System.out.println(Thread.currentThread().getName() + " заблокировал ресурс." + variation.size());
             if(checkExistence(variant)) {
                 this.variation.add(new Pair<>(variant, -1.0));
                 variationSemaphore.release();
-//                System.out.println(Thread.currentThread().getName() + " освободил ресурс." + variation.size());
+
 
                 Algorithm algorithm = getAlgorithm(variant);
                 OutputResult result = algorithm.start();
                 addCriterionForVariant(variant, Criterion.getCriterion(this.orders, result));
+//                this.variation.add(new Pair<>(variant, Criterion.getCriterion(this.orders, result)));
                 return true;
             } else {
                 variationSemaphore.release();
-//                System.out.println(Thread.currentThread().getName() + " освободил ресурс. checkExistence" + variation.size());
             }
         } else {
-//            System.out.println(Thread.currentThread().getName() + " checkNegativeAndDeal" + variation.size());
         }
         return false;
+    }
+
+    @Override
+    protected void generateAlphaVariants() throws Exception {
+        for (int i = 0; i < this.variatorBudget;) {
+            loading();
+            int addCount = generateAndAddNewVariants();
+            i += addCount;
+            calculated += addCount;
+        }
     }
 
     @Override
@@ -122,12 +131,8 @@ public class AlphaSolver1Parallel extends AlphaVariatorAlgorithm implements Runn
                 Thread.sleep(100);
             }
 
-            for (int i = 0; i < this.variatorBudget;) {
-                loading();
-                int addCount = generateAndAddNewVariants();
-                i += addCount;
-                calculated += addCount;
-            }
+
+            generateAlphaVariants();
 
             this.budgetGenerationFinished = true;
 
@@ -150,58 +155,4 @@ public class AlphaSolver1Parallel extends AlphaVariatorAlgorithm implements Runn
     public boolean isBudgetGenerationFinished() {
         return budgetGenerationFinished;
     }
-
-    //    private InputProduction inputProduction;
-//    private ArrayList<InputOrder> inputOrders;
-//    private LocalDateTime startTime;
-//
-//    private OwnAlgorithm algorithm;
-//    private HashMap<Long, HashMap<Long, HashMap<Long, Integer>>> alternativeness;
-//    private ParallelMain main;
-//
-//    private boolean solving = false;
-//
-//    public ParallelSolver(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) {
-//        this.inputProduction = inputProduction;
-//        this.inputOrders = inputOrders;
-//        this.startTime = startTime;
-//    }
-//
-//    public void setMain(ParallelMain main) {
-//        this.main = main;
-//    }
-//
-//    public boolean setData(HashMap<Long, Integer> variant) {
-//        if (solving) {
-//            return false;
-//        } else {
-//            this.alternativeness = alternativeness;
-////            this.algorithm = new OwnAlgorithm(this.inputProduction, this.inputOrders, this.startTime, "FirstElement", variant);
-//            return true;
-//        }
-//    }
-//
-//    @Override
-//    public void run() {
-//        try {
-//            if(!this.solving && this.alternativeness != null && this.algorithm != null) {
-//                System.out.println("SOLVER " + this.getId() + " IS RUNNING");
-//                this.solving = true;
-//                OutputResult result = this.algorithm.start();
-//
-//                main.addResult(this.alternativeness, result);
-//                this.solving = false;
-//                System.out.println("SOLVER " + this.getId() + " FINISHED");
-//            }
-//
-//
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    public boolean isSolving() {
-//        return solving;
-//    }
 }
