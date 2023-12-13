@@ -82,7 +82,7 @@ public class AlphaSolver1Parallel extends AlphaVariatorAlgorithm implements Runn
 
     @Override
     protected boolean addVariantIfAbsent(HashMap<Long, Integer> variant) throws Exception {
-        if(checkNegativeAndDeal(variant)) {
+        if(variant != null && checkNegativeAndDeal(variant)) {
 //            System.out.println(Thread.currentThread().getName() + " запрашивает разрешение." + variation.size());
             variationSemaphore.acquire();
 //            System.out.println(Thread.currentThread().getName() + " заблокировал ресурс." + variation.size());

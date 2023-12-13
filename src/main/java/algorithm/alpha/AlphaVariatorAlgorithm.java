@@ -33,8 +33,6 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
     @Override
     public OutputResult start() throws Exception {
 
-
-
         for (int i = 0; i < this.startVariatorCount; i++) {
             HashMap<Long, Integer> variant = generateRandomAlternativesDistribution();
             if (checkVariantAvailability(variant)) {
@@ -50,13 +48,16 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
 
         }
 
+        generateAlphaVariants();
+        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, returnRecordVariantPair(this.variation).getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
+    }
+
+    protected void generateAlphaVariants() throws Exception {
         for (int i = this.startVariatorCount; i <= this.variatorBudget;) {
             loading();
             int addCount = generateAndAddNewVariants();
             i += addCount;
         }
-
-        return FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, returnRecordVariantPair(this.variation).getKey(), this.frontAlgorithmType, this.frontThreadsCount).start();
     }
 
     protected void loading() {
@@ -123,28 +124,27 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
             HashMap<Long, Integer> beyondVariant = null;
             if (pair.get(0).getValue() < pair.get(1).getValue()) {
 //            System.out.println("1 < 2");
-                betweenVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 0.5);
                 beyondVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 1.2);
-//                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.8);
-//                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, 1.2);
             } else if (pair.get(0).getValue() > pair.get(1).getValue()) {
 //            System.out.println("1 > 2");
-                betweenVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 0.5);
                 beyondVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), -0.2);
+            }
 
-//                betweenVariant = generateVariantFromTwo(firstVariant, secondVariant, 0.2);
-//                beyondVariant = generateVariantFromTwo(firstVariant, secondVariant, -0.2);
+
+            if(addVariantIfAbsent(beyondVariant)) {
+                addCount++;
             } else {
-                betweenVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 0.5);
-            }
+                if (pair.get(0).getValue() < pair.get(1).getValue()) {
+                    betweenVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 0.8);
+                } else if (pair.get(0).getValue() > pair.get(1).getValue()) {
+                    betweenVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 0.8);
+                } else {
+                    betweenVariant = generateVariantFromTwo(pair.get(0).getKey(), pair.get(1).getKey(), 0.5);
+                }
 
-
-            if(addVariantIfAbsent(betweenVariant)) {
-                addCount++;
-            }
-
-            if(beyondVariant != null && addVariantIfAbsent(beyondVariant)) {
-                addCount++;
+                if(addVariantIfAbsent(betweenVariant)){
+                    addCount++;
+                }
             }
 
             if (addCount != 0) {
@@ -155,7 +155,7 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
     }
 
     protected boolean addVariantIfAbsent(HashMap<Long, Integer> variant) throws Exception {
-        if(checkVariantAvailability(variant)) {
+        if(variant != null && checkVariantAvailability(variant)) {
             double criterionForVariant = getCriterionForVariant(variant);
             this.variation.add(new Pair<>(variant, criterionForVariant));
             return true;

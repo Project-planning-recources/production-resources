@@ -2,6 +2,7 @@ package util;
 
 
 import algorithm.Algorithm;
+import algorithm.alpha.AlphaClusterVariatorAlgorithm;
 import algorithm.alpha.AlphaVariatorAlgorithm;
 import algorithm.backpack.BackpackAlgorithm;
 import algorithm.candidates.CandidatesBaseAlgorithm;
@@ -46,11 +47,39 @@ public class Trash {
 //        checkGenerator();
 
 //        generate(1);
-        checkOwnAlgorithm();
+//        checkOwnAlgorithm();
 
-        testBackpack();
+//        testBackpack();
+
+        testOwnClusterAlgorithm();
         System.out.println("=====FINISH=====");
 
+    }
+
+    public static void testOwnClusterAlgorithm() throws Exception {
+
+        InputProduction production = READER.readProductionFile("Basis/1_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/1_orders.xml");
+
+        Algorithm algorithm = new AlphaClusterVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10, 50);
+
+        OutputResult result = null;
+        try {
+            result = algorithm.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Testing...");
+
+        if(RealityTester.test(production, orderFile, result)) {
+            WRITER.writeResultFile("alphaClusterResult.xml", result);
+            System.out.println("Creterion: " + Criterion.getCriterion(orderFile, result));
+            System.out.println("Overdue: " + Data.getAverageOverdueDays(orderFile.getOrders(), result));
+            System.out.println("Done!");
+        } else {
+            System.out.println("Bad2!");
+        }
     }
 
     private static void testBackpack() {
