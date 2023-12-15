@@ -48,9 +48,17 @@ public class ProductionResources {
      * Перед созданием объекта алгоритма запустить со считанными из файла объектами production и orders PossibilityTester
      *
      * @param argv - аргументы командной строки:
-     *             <p>1 аргумент - Тип работы: ALG / GEN / TEST / COMP_RESULT_TABLES</p>
+     *             <p>Тип работы: ALG / GEN / TEST / COMP_RESULT_TABLES</p>
      *             <p>    ALG - запустить работу алгоритма, записать результаты в файл</p>
-     *             <p>        Следующие аргументы для ALG: <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml</p>
+     *             <p>        Следующие аргументы для ALG: <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK)</p>
+     *             <p>              Следующие аргументы для BASE: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+     *             <p>                  <Тип фронтального алгоритма> <Количество потоков для фронтального алгоритма></p>
+     *             <p>              Следующие аргументы для OWN_ALPHA: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+     *             <p>                 <Стартовое количество генераций альтернативностей> <Бюджет генератора альтернативностей></p>
+     *             <p>                 <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+     *             <p>              Следующие аргументы для OWN_BACKPACK: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+     *             <p>                 <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей></p>
+     *             <p>                 <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
      *             <p>    GEN - запустить генератор файлов производства и заказов, сохранить в файлы</p>
      *             <p>        Следующие аргументы для GEN: <имя файла параметров генератора>.json <количество экземпляров для генерации></p>
      *             <p>    TEST - запустить тестирование на уже существующих данных</p>
@@ -59,49 +67,155 @@ public class ProductionResources {
      *             <p>           Следующие аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml</p>
      *             <p>           Следующие аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml </p>
      *             <p>           Следующие аргументы для BASIS: <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK)
-     *             <p>               Следующие аргументы для BASE:</p> <Название папки с данными производства и заказов>
-     *                 <Количество пар производство-заказы> <имя файла результатов>.xml <количество запусков алгоритма> <Тип фронтального алгоритма> <Количество потоков для фронтального алгоритма></p>
-     *             <p>               Следующие аргументы для OWN_ALPHA:<Название папки с данными производства и заказов> <Количество пар производство-заказы>
-     *                 <Бюджет генератора альтернативностей> <имя файла результатов>.xml
-     *                 <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
-     *             <p>               Следующие аргументы для OWN_BACKPACK: <Название папки с данными производства и заказов> <Количество пар производство-заказы>
-     *                 <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей> <имя файла результатов>.xml
-     *                 <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+     *             <p>               Следующие аргументы для BASE: <Название папки с данными производства и заказов>
+     *             <p> <Количество пар производство-заказы> <имя файла результатов>.xml <количество запусков алгоритма> <Тип фронтального алгоритма> <Количество потоков для фронтального алгоритма></p>
+     *             <p>               Следующие аргументы для OWN_ALPHA:<Название папки с данными производства и заказов> <Количество пар производство-заказы><p/>
+     *             <p> <Стартовое количество генераций альтернативностей> <Бюджет генератора альтернативностей> <имя файла результатов>.xml</p>
+     *             <p><количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+     *             <p>               Следующие аргументы для OWN_BACKPACK: <Название папки с данными производства и заказов> <Количество пар производство-заказы></p>
+     *             <p> <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей> <имя файла результатов>.xml</p>
+     *             <p> <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
      *             <p>    COMP_RESULT_TABLES - сравнить таблицы с результатами работы двух алгоритмов</p>
      *             <p>        Следующие аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv</p>
      *             <br>
-     *             <p>Примеры:</p>
-     *             <p>    java ProductionResources ALG BASE production.xml orders.xml result.xml </p>
-     *             <p>    java ProductionResources TEST REAL production.xml orders.xml result.xml </p>
-     *             <p>    java ProductionResources TEST POSS production.xml orders.xml resultBase.xml resultOwn.xml </p>
      */
     public static void main(String[] argv) throws Exception {
         if (argv.length > 0 && "alg".equalsIgnoreCase(argv[0]) && checkForAlg(argv)) {
-            InputProduction production = READER.readProductionFile(argv[2]);
-            InputOrderInformation orders = READER.readOrderFile(argv[3]);
-            if (!PossibilityTester.test(production, orders)) {
+            InputProduction inputProduction = READER.readProductionFile(argv[2]);
+            InputOrderInformation inputOrderInformation = READER.readOrderFile(argv[3]);
+            if (!PossibilityTester.test(inputProduction, inputOrderInformation)) {
                 System.out.println("Заказы нельзя выполнить на данном производстве.");
             } else {
-                Algorithm algorithm = null;
                 if ("base".equalsIgnoreCase(argv[1])) {
-                    algorithm = new CandidatesBaseAlgorithm(production, orders.getOrders(), null);
-                    OutputResult result = algorithm.start();
-                    if (RealityTester.test(production, orders, result)) {
-                        WRITER.writeResultFile(argv[4], result);
+                    //alg base 1.xml 2.xml res.xml 5 candidates 1
+                    //0     1   2     3     4      5     6      7
+                    //Следующие аргументы для BASE: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+//<Тип фронтального алгоритма> <Количество потоков для фронтального алгоритма></p>
+                    int startsAlg = Integer.parseInt(argv[5]);
+                    int frontThreadsCount = Integer.parseInt(argv[7]);
+
+                    double recordCriterion = Double.MAX_VALUE;
+                    OutputResult recordResult = null;
+
+                    if (PossibilityTester.test(inputProduction, inputOrderInformation)) {
+                        for (int j = 0; j < startsAlg; j++) {
+
+                            System.out.println(j + ": Запущен...");
+
+                            ArrayList<Order> orders = new ArrayList<>();
+                            inputOrderInformation.getOrders().forEach(inputOrder -> {
+                                orders.add(new Order(inputOrder));
+                            });
+                            Algorithm algorithm = FrontAlgorithmFactory.getBaseFrontAlgorithm(new Production(inputProduction), orders, null, argv[6], frontThreadsCount);
+                            OutputResult result = algorithm.start();
+
+                            if (RealityTester.test(inputProduction, inputOrderInformation, result)) {
+                                double criterion = Criterion.getCriterion(orders, result);
+                                if(recordCriterion > criterion) {
+                                    recordCriterion = criterion;
+                                    recordResult = result;
+                                }
+                                System.out.println(j + ": Завершён...");
+                            } else {
+                                throw new Exception(j + ": Результат алгоритма не соответствует заказам");
+                            }
+                        }
+                        WRITER.writeResultFile(argv[4], recordResult);
                     } else {
-                        System.out.println("Неверные результаты.");
+                        throw new Exception("Заказы не соответствуют производству");
                     }
-                } else if ("own".equalsIgnoreCase(argv[1])) {
-                    System.out.println("1");
-                    algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "candidates", 1, Integer.parseInt(argv[5]), Integer.parseInt(argv[6]));
-                    System.out.println("2");
-                    OutputResult result = algorithm.start();
-                    System.out.println("3");
-                    if (RealityTester.test(production, orders, result)) {
-                        WRITER.writeResultFile(argv[4], result);
+                    System.out.println("Работа завершена.");
+                } else if ("own_alpha".equalsIgnoreCase(argv[1])) {
+                    // alg own_alpha 1.xml 2.xml res.xml 5 10 100 4 candidates 1
+                    //  0      1       2     3      4    5  6  7  8    9       10
+//              Следующие аргументы для OWN_ALPHA: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+// <Стартовое количество генераций альтернативностей> <Бюджет генератора альтернативностей></p>
+// <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+
+                    int startsAlg = Integer.parseInt(argv[5]);
+                    int startGen = Integer.parseInt(argv[6]);
+                    int budget = Integer.parseInt(argv[7]);
+                    int variatorThreadsCount = Integer.parseInt(argv[8]);
+                    int frontThreadsCount = Integer.parseInt(argv[10]);
+
+                    double recordCriterion = Double.MAX_VALUE;
+                    OutputResult recordResult = null;
+
+                    if (PossibilityTester.test(inputProduction, inputOrderInformation)) {
+                        for (int j = 0; j < startsAlg; j++) {
+
+                            System.out.println(j + ": Запущен...");
+
+                            ArrayList<Order> orders = new ArrayList<>();
+                            inputOrderInformation.getOrders().forEach(inputOrder -> {
+                                orders.add(new Order(inputOrder));
+                            });
+                            Algorithm algorithm = null;
+                            if(variatorThreadsCount == 1) {
+                                algorithm = new AlphaClusterVariatorAlgorithm(inputProduction, inputOrderInformation.getOrders(), null, argv[9], frontThreadsCount, startGen, budget);
+                            } else {
+                                algorithm = new AlphaClusterVariatorAlgorithmParallel(inputProduction, inputOrderInformation.getOrders(), null, argv[9], frontThreadsCount, startGen, budget, variatorThreadsCount);
+                            }
+                            OutputResult result = algorithm.start();
+
+                            if (RealityTester.test(inputProduction, inputOrderInformation, result)) {
+                                double criterion = Criterion.getCriterion(orders, result);
+                                if(recordCriterion > criterion) {
+                                    recordCriterion = criterion;
+                                    recordResult = result;
+                                }
+                                System.out.println(j + ": Завершён...");
+                            } else {
+                                throw new Exception(j + ": Результат алгоритма не соответствует заказам");
+                            }
+                        }
+                        WRITER.writeResultFile(argv[4], recordResult);
                     } else {
-                        System.out.println("Неверные результаты.");
+                        throw new Exception("Заказы не соответствуют производству");
                     }
+                    System.out.println("Работа завершена.");
+                } else if("own_backpack".equalsIgnoreCase(argv[1])) {
+                    // alg own_backpack 1.xml 2.xml res.xml 5 100 10 candidates 1
+                    // 0       1          2     3      4    5  6  7       8     9
+//Следующие аргументы для OWN_BACKPACK: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+// <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей></p>
+// <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+                    int startsAlg = Integer.parseInt(argv[5]);
+                    int budget = Integer.parseInt(argv[6]);
+                    int repeatCount = Integer.parseInt(argv[7]);
+                    int frontThreadsCount = Integer.parseInt(argv[9]);
+
+                    double recordCriterion = Double.MAX_VALUE;
+                    OutputResult recordResult = null;
+
+                    if (PossibilityTester.test(inputProduction, inputOrderInformation)) {
+                        for (int j = 0; j < startsAlg; j++) {
+
+                            System.out.println(j + ": Запущен...");
+
+                            ArrayList<Order> orders = new ArrayList<>();
+                            inputOrderInformation.getOrders().forEach(inputOrder -> {
+                                orders.add(new Order(inputOrder));
+                            });
+                            Algorithm algorithm = new BackpackAlgorithm(inputProduction, inputOrderInformation.getOrders(), null, argv[8],frontThreadsCount, budget, repeatCount);
+                            OutputResult result = algorithm.start();
+
+                            if (RealityTester.test(inputProduction, inputOrderInformation, result)) {
+                                double criterion = Criterion.getCriterion(orders, result);
+                                if(recordCriterion > criterion) {
+                                    recordCriterion = criterion;
+                                    recordResult = result;
+                                }
+                                System.out.println(j + ": Завершён...");
+                            } else {
+                                throw new Exception(j + ": Результат алгоритма не соответствует заказам");
+                            }
+                        }
+                        WRITER.writeResultFile(argv[4], recordResult);
+                    } else {
+                        throw new Exception("Заказы не соответствуют производству");
+                    }
+                    System.out.println("Работа завершена.");
                 } else {
                     System.out.println("Неверный список аргументов. Используйте \"help\" чтобы увидеть список доступных команд.");
                 }
@@ -404,21 +518,71 @@ public class ProductionResources {
     }
 
     private static boolean checkForAlg(String[] argv) {
-        if (argv.length >= 5) {
-            if ("base".equalsIgnoreCase(argv[1])) {
-                return true;
-            }
-            if ("own_alpha".equalsIgnoreCase(argv[1])) {
-                if (argv.length == 8) {
-                    try {
-                        Integer.parseInt(argv[5]);
-                        Integer.parseInt(argv[6]);
-                        Integer.parseInt(argv[7]);
-                        return true;
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
+        //alg base 1.xml 2.xml res.xml 5 candidates 1
+        //0     1   2     3     4      5     6      7
+        //Следующие аргументы для BASE: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+//<Тип фронтального алгоритма> <Количество потоков для фронтального алгоритма></p>
+        System.out.println(Arrays.toString(argv));
+        if ("alg".equalsIgnoreCase(argv[0])) {
+            if ("base".equalsIgnoreCase(argv[1]) && argv.length == 8) {
+                Integer algStarts = null;
+                Integer frontThreadsCount = null;
+                if(!"candidates".equalsIgnoreCase(argv[6]) && !"record".equalsIgnoreCase(argv[6])) {
+                    return false;
                 }
+                try {
+                    algStarts = Integer.parseInt(argv[5]);
+                    frontThreadsCount = Integer.parseInt(argv[7]);
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+                return algStarts > 0 && frontThreadsCount > 0;
+            } else if ("own_alpha".equalsIgnoreCase(argv[1]) && argv.length == 11) {
+                // alg own_alpha 1.xml 2.xml res.xml 5 10 100 4 candidates 1
+                //  0      1       2     3      4    5  6  7  8    9       10
+//              Следующие аргументы для OWN_ALPHA: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+// <Стартовое количество генераций альтернативностей> <Бюджет генератора альтернативностей></p>
+// <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+                Integer algStarts = null;
+                Integer startsGen = null;
+                Integer budget = null;
+                Integer threadsCount = null;
+                Integer frontThreadsCount = null;
+                if(!"candidates".equalsIgnoreCase(argv[9]) && !"record".equalsIgnoreCase(argv[9])) {
+                    return false;
+                }
+                try {
+                    algStarts = Integer.parseInt(argv[5]);
+                    startsGen = Integer.parseInt(argv[6]);
+                    budget = Integer.parseInt(argv[7]);
+                    threadsCount = Integer.parseInt(argv[8]);
+                    frontThreadsCount = Integer.parseInt(argv[10]);
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+                return startsGen > 0 && budget > startsGen && algStarts > 0 && threadsCount > 0 && frontThreadsCount > 0;
+            } else if("own_backpack".equalsIgnoreCase(argv[1]) && argv.length == 10) {
+                // alg own_backpack 1.xml 2.xml res.xml 5 100 10 candidates 1
+                // 0       1          2     3      4    5  6  7       8     9
+//Следующие аргументы для OWN_BACKPACK: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+// <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей></p>
+// <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+                Integer algStarts = null;
+                Integer budget = null;
+                Integer repeatBudget = null;
+                Integer frontThreadsCount = null;
+                if(!"candidates".equalsIgnoreCase(argv[8]) && !"record".equalsIgnoreCase(argv[8])) {
+                    return false;
+                }
+                try {
+                    algStarts = Integer.parseInt(argv[5]);
+                    budget = Integer.parseInt(argv[6]);
+                    repeatBudget = Integer.parseInt(argv[7]);
+                    frontThreadsCount = Integer.parseInt(argv[9]);
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+                return budget > 0 && repeatBudget > 0 && algStarts > 0 && frontThreadsCount > 0;
             }
         }
         return false;
@@ -437,8 +601,6 @@ public class ProductionResources {
     }
 
     private static boolean checkForTest(String[] argv) {
-        System.out.println(argv.length);
-        System.out.println(Arrays.toString(argv));
         if (argv.length >= 2) {
             if ("poss".equalsIgnoreCase(argv[1]) && argv.length >= 4) {
                 return true;
@@ -507,18 +669,52 @@ public class ProductionResources {
         return false;
     }
 
+
+//    *             <p>Тип работы: ALG / GEN / TEST / COMP_RESULT_TABLES</p>
+//            *             <p>    ALG - запустить работу алгоритма, записать результаты в файл</p>
+//            *             <p>        Следующие аргументы для ALG: <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml</p>
+//            *             <p>              Следующие аргументы для BASE: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+//            *             <p>                  <Тип фронтального алгоритма> <Количество потоков для фронтального алгоритма></p>
+//            *             <p>              Следующие аргументы для OWN_ALPHA: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+//            *             <p>                 <Стартовое количество генераций альтернативностей> <Бюджет генератора альтернативностей></p>
+//            *             <p>                 <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+//            *             <p>              Следующие аргументы для OWN_BACKPACK: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> </p>
+//            *             <p>                 <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей></p>
+//            *             <p>                 <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+//            *             <p>    GEN - запустить генератор файлов производства и заказов, сохранить в файлы</p>
+//            *             <p>        Следующие аргументы для GEN: <имя файла параметров генератора>.json <количество экземпляров для генерации></p>
+//            *             <p>    TEST - запустить тестирование на уже существующих данных</p>
+//            *             <p>        Второй аргумент после TEST - Тип теста: POSS / REAL / COMP / BASIS</p>
+//            *             <p>           Следующие аргументы для POSS: <имя файла производства>.xml <имя файла заказов>.xml</p>
+//            *             <p>           Следующие аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml</p>
+//            *             <p>           Следующие аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml </p>
+//            *             <p>           Следующие аргументы для BASIS: <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK)
+//            *             <p>               Следующие аргументы для BASE: <Название папки с данными производства и заказов>
+//            *             <p> <Количество пар производство-заказы> <имя файла результатов>.xml <количество запусков алгоритма> <Тип фронтального алгоритма> <Количество потоков для фронтального алгоритма></p>
+//            *             <p>               Следующие аргументы для OWN_ALPHA:<Название папки с данными производства и заказов> <Количество пар производство-заказы><p/>
+//            *             <p> <Стартовое количество генераций альтернативностей> <Бюджет генератора альтернативностей> <имя файла результатов>.xml</p>
+//            *             <p><количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+//            *             <p>               Следующие аргументы для OWN_BACKPACK: <Название папки с данными производства и заказов> <Количество пар производство-заказы></p>
+//            *             <p> <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей> <имя файла результатов>.xml</p>
+//            *             <p> <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма></p>
+//            *             <p>    COMP_RESULT_TABLES - сравнить таблицы с результатами работы двух алгоритмов</p>
+//            *             <p>        Следующие аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv</p>
+
     private static void help() {
         System.out.println("1 аргумент - Тип работы: ALG / GEN / TEST / COMP_RESULT_TABLES");
-        System.out.println("    Аргументы для ALG: <тип алгоритма>(BASE / OWN) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml");
-        System.out.println("    Аргументы для GEN: <имя файла параметров генератора>.json <количество экземпляров для генерации>");
-        System.out.println("    Аргументы для TEST: Тип теста: POSS / REAL / COMP / BASIS");
-        System.out.println("        Аргументы для POSS: <имя файла производства>.xml <имя файла заказов>.xml");
-        System.out.println("        Аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml");
-        System.out.println("        Аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml");
-        System.out.println("        Аргументы для BASIS:  <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK)");
-        System.out.println("            Аргументы для BASE:  <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK)");
-        System.out.println("            Аргументы для OWN_ALPHA:  <Название папки с данными производства и заказов> <Количество пар производство-заказы><Бюджет генератора альтернативностей> <имя файла результатов>.xml <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>");
-        System.out.println("            Аргументы для OWN_BACKPACK:  <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей> <имя файла результатов>.xml <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>");
-        System.out.println("    Аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv");
+        System.out.println("    Следующие аргументы для ALG: <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK) <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml");
+        System.out.println("        Следующие аргументы для BASE: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> <Тип фронтального алгоритма> <Количество потоков для фронтального алгоритма>");
+        System.out.println("        Следующие аргументы для OWN_ALPHA: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> <Стартовое количество генераций альтернативностей> <Бюджет генератора альтернативностей> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>");
+        System.out.println("        Следующие аргументы для OWN_BACKPACK: <имя файла производства>.xml <имя файла заказов>.xml <имя выходного файла результатов>.xml <количество запусков алгоритма> <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>");
+        System.out.println("    Следующие аргументы для GEN: <имя файла параметров генератора>.json <количество экземпляров для генерации>");
+        System.out.println("    Следующие аргументы для TEST: Тип теста: POSS / REAL / COMP / BASIS");
+        System.out.println("        Следующие аргументы для POSS: <имя файла производства>.xml <имя файла заказов>.xml");
+        System.out.println("        Следующие аргументы для REAL: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов>.xml");
+        System.out.println("        Следующие аргументы для COMP: <имя файла производства>.xml <имя файла заказов>.xml <имя файла результатов первого>.xml <имя файла результатов второго>.xml");
+        System.out.println("        Следующие аргументы для BASIS:  <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK)");
+        System.out.println("            Следующие аргументы для BASE:  <тип алгоритма>(BASE / OWN_ALPHA / OWN_BACKPACK)");
+        System.out.println("            Следующие аргументы для OWN_ALPHA:  <Название папки с данными производства и заказов> <Количество пар производство-заказы><Бюджет генератора альтернативностей> <имя файла результатов>.xml <количество запусков алгоритма> <количество потоков для вариатора> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>");
+        System.out.println("            Следующие аргументы для OWN_BACKPACK:  <Название папки с данными производства и заказов> <Количество пар производство-заказы> <Бюджет генератора альтернативностей> <Бюджет запусков пересчёта мощностей> <имя файла результатов>.xml <количество запусков алгоритма> <тип фронтального алгоритма> <количество потоков для фронтального алгоритма>");
+        System.out.println("    Следующие аргументы для COMP_RESULT_TABLES: <имя файла с таблицей результатов первого алгоритма>.csv <имя файла с таблицей результатов второго алгоритма>.csv <имя файла с результатами сравнения>.csv");
     }
 }

@@ -179,6 +179,7 @@ public class RealityTester {
                                                         HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments) {
         List<String> errorMessage = new ArrayList<>();
 
+        System.out.println(performedOperationsOnEquipments);
         for(OutputOperationResult operationLeft : operationResults) {
             if(operationLeft.getStartTime() == null || operationLeft.getEndTime() == null) {
                 errorMessage.add("Операция " + operationLeft.getOperationId() + " не имеет время начала и/или конца выполнения");
