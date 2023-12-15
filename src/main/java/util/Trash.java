@@ -48,14 +48,14 @@ public class Trash {
 
 //        checkGenerator();
 
-//        generate(1);
+        generate(1);
 //        checkOwnAlgorithm();
 
 //        testBackpack();
 
 //        testOwnClusterAlgorithm();
 
-        testParallelAlgorithm();
+//        testParallelAlgorithm();
         System.out.println("=====FINISH=====");
 
     }
@@ -88,8 +88,8 @@ public class Trash {
 
     public static void testOwnClusterAlgorithm() throws Exception {
 
-        InputProduction production = READER.readProductionFile("Basis/1_production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("Basis/1_orders.xml");
+        InputProduction production = READER.readProductionFile("Basis/7_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/7_orders.xml");
 
         Algorithm algorithm = new AlphaClusterVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10, 50);
 
@@ -140,6 +140,7 @@ public class Trash {
 
     public static ArrayList<GeneratedData> generate(int dataCount) {
         ArrayList<GeneratedData> generatedData = Generator.generateData(dataCount, GENERATOR_PARAMETERS);
+        System.out.println(GENERATOR_PARAMETERS);
         generatedData.forEach(generatedData1 -> {
             if (GeneratorTester.test(GENERATOR_PARAMETERS, generatedData1) && PossibilityTester.test(generatedData1.getInputProduction(), generatedData1.getInputOrderInformation())) {
                 WRITER.writeProductionFile("production.xml", generatedData1.getInputProduction());

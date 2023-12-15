@@ -7,34 +7,25 @@
             <Day day_of_week="3" time_period="09:00:00-17:00:00"/>
             <Day day_of_week="4" time_period="09:00:00-17:00:00"/>
             <Day day_of_week="5" time_period="09:00:00-17:00:00"/>
-            <Day day_of_week="6" time_period="00:00:00-00:00:00"/>
-            <Day day_of_week="7" time_period="00:00:00-00:00:00"/>
+            <Day day_of_week="6" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="7" time_period="09:00:00-17:00:00"/>
         </Timetable>
     </CalendarInformation>
     <EquipmentInformation>
         <EquipmentGroup id="1" name="Группа 1">
             <Equipment id="11" name="Оборудование 1.11"/>
+            <Equipment id="12" name="Оборудование 1.12"/>
+            <Equipment id="13" name="Оборудование 1.13"/>
+            <Equipment id="14" name="Оборудование 1.14"/>
         </EquipmentGroup>
         <EquipmentGroup id="2" name="Группа 2">
             <Equipment id="21" name="Оборудование 2.21"/>
             <Equipment id="22" name="Оборудование 2.22"/>
             <Equipment id="23" name="Оборудование 2.23"/>
             <Equipment id="24" name="Оборудование 2.24"/>
-        </EquipmentGroup>
-        <EquipmentGroup id="3" name="Группа 3">
-            <Equipment id="31" name="Оборудование 3.31"/>
-            <Equipment id="32" name="Оборудование 3.32"/>
-            <Equipment id="33" name="Оборудование 3.33"/>
-            <Equipment id="34" name="Оборудование 3.34"/>
-        </EquipmentGroup>
-        <EquipmentGroup id="4" name="Группа 4">
-            <Equipment id="41" name="Оборудование 4.41"/>
-            <Equipment id="42" name="Оборудование 4.42"/>
-        </EquipmentGroup>
-        <EquipmentGroup id="5" name="Группа 5">
-            <Equipment id="51" name="Оборудование 5.51"/>
-            <Equipment id="52" name="Оборудование 5.52"/>
-            <Equipment id="53" name="Оборудование 5.53"/>
+            <Equipment id="25" name="Оборудование 2.25"/>
+            <Equipment id="26" name="Оборудование 2.26"/>
+            <Equipment id="27" name="Оборудование 2.27"/>
         </EquipmentGroup>
     </EquipmentInformation>
 </SystemInformation>
