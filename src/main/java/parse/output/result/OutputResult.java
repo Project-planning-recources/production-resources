@@ -43,7 +43,7 @@ public class OutputResult {
     private HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments;
 
     public OutputResult() {
-        System.out.println(2);
+        //todo: заполнить хэшмапу
         performedOperationsOnEquipments = new HashMap<>();
     }
 
