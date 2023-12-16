@@ -72,14 +72,27 @@ public class ParallelTester {
         }
         return dataFromCalculation;
     }
+
+//    todo: Отчёт:
+//     Титульник Отчёт по курсу "Методы и технологии суперкомпьютерных вычислений"
+//     Оглавление
+//     Введение
+//     Постановка задачи
+//     Описание алгоритма
+//     Технология распараллеливания, оценки ускорения, ограничение по масштабированию
+//     Программная реализация, что изменилось по сравнению с последовательным кодом
+//     Тестирование, табличка с тестами
+//     Выводы, соответствие результатов оценкам
+//     Заключение
+
     public static void main(String[] args) {
 
-        int threadsCount = 4;
+        int threadsCount = 2;
         int frontThreadsCount = 2;
         int startGen = 10;
-        int budgetGen = 100;
-        int startsAlg = 3;
-        int basisSize = 5;
+        int budgetGen = 50;
+        int startsAlg = 1;
+        int basisSize = 3;
 
         try (FileWriter writer = new FileWriter("parallel.csv", false)) {
             writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
