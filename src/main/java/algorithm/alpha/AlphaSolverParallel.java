@@ -94,12 +94,10 @@ public class AlphaSolverParallel extends AlphaVariatorAlgorithm implements Runna
                 Algorithm algorithm = getAlgorithm(variant);
                 OutputResult result = algorithm.start();
                 addCriterionForVariant(variant, Criterion.getCriterion(this.orders, result));
-//                this.variation.add(new Pair<>(variant, Criterion.getCriterion(this.orders, result)));
                 return true;
             } else {
                 variationSemaphore.release();
             }
-        } else {
         }
         return false;
     }
@@ -126,24 +124,14 @@ public class AlphaSolverParallel extends AlphaVariatorAlgorithm implements Runna
                 }
             }
             this.startGenerationFinished = true;
-
             while(!main.isStartAlphaGeneration()) {
                 Thread.sleep(100);
             }
-
-
             generateAlphaVariants();
-
             this.budgetGenerationFinished = true;
-
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-
-
-
 
         System.out.println(Thread.currentThread().getName() + "(Id " + Thread.currentThread().getId() + ") finished.");
     }

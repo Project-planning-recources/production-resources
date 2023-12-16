@@ -70,19 +70,15 @@ public class AlphaVariatorAlgorithmParallel extends AbstractVariatorAlgorithm {
 
     @Override
     public OutputResult start() throws Exception {
-
         initThreads();
         this.threads.forEach(Thread::start);
-
         for (AlphaSolverParallel solver :
                 this.solvers) {
             while(!solver.isStartGenerationFinished()) {
                 Thread.sleep(100);
             }
         }
-
         setStartAlphaGeneration();
-
         for (AlphaSolverParallel solver :
                 this.solvers) {
             while(!solver.isBudgetGenerationFinished()) {

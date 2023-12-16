@@ -73,23 +73,76 @@ public class ParallelTester {
         return dataFromCalculation;
     }
 
-//    todo: Отчёт:
-//     Титульник Отчёт по курсу "Методы и технологии суперкомпьютерных вычислений"
-//     Оглавление
-//     Введение
-//     Постановка задачи
-//     Описание алгоритма
-//     Технология распараллеливания, оценки ускорения, ограничение по масштабированию
-//     Программная реализация, что изменилось по сравнению с последовательным кодом
-//     Тестирование, табличка с тестами
-//     Выводы, соответствие результатов оценкам
-//     Заключение
-
     public static void main(String[] args) {
 
-        int threadsCount = 2;
-        int frontThreadsCount = 2;
+//        unionTests();
+
+        variationParallelTests();
+//        frontParallelTests();
+    }
+
+    public static void variationParallelTests() {
         int startGen = 10;
+        int budgetGen = 50;
+        int startsAlg = 3;
+        int basisSize = 8;
+        int threadMax = 16;
+
+        try (FileWriter writer = new FileWriter("variationParallel.csv", false)) {
+            writer.write("№ задачи;Последовательный;2 потока;4 потока;8 потоков;16 потоков\n");
+
+            for (int i = 0; i < basisSize; i++) {
+                InputProduction production = READER.readProductionFile("Basis/" + (i + 1) + "_production.xml");
+                InputOrderInformation orders = READER.readOrderFile( "Basis/" + (i + 1) + "_orders.xml");
+
+                if (PossibilityTester.test(production, orders)) {
+                    writer.write((i+1) + ";");
+                    for (int j = 1; j <= threadMax; j *= 2) {
+                        double time = 0;
+                        for (int k = 0; k < startsAlg; k++) {
+
+                            Algorithm algorithm = null;
+                            OutputResult result = null;
+                            if(j == 1) {
+                                long startTime = System.currentTimeMillis();
+                                algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "candidates", 1, startGen, budgetGen);
+                                algorithm.start();
+                                time += (double)(System.currentTimeMillis() - startTime) / 1000;
+                            } else {
+                                long startTime = System.currentTimeMillis();
+                                algorithm = new AlphaClusterVariatorAlgorithmParallel(production, orders.getOrders(), null, "candidates", 1, startGen, budgetGen, j);
+                                algorithm.start();
+                                time += (double) (System.currentTimeMillis() - startTime) / 1000;
+                            }
+                        }
+                        if(j == threadMax) {
+                            writer.write((time/startsAlg) + "\n");
+                        } else {
+                            writer.write((time/startsAlg) + ";");
+                        }
+                    }
+
+
+                } else {
+                    throw new Exception(i + ": Заказы не соответствуют производству");
+                }
+            }
+            System.out.println("Работа завершена.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void frontParallelTests() {
+
+    }
+
+    public static void unionTests() {
+        int threadsCount = 4;
+        int frontThreadsCount = 2;
+        int startGen = 4;
         int budgetGen = 50;
         int startsAlg = 1;
         int basisSize = 3;

@@ -15,7 +15,8 @@ public class AlphaClusterVariatorAlgorithmParallel extends AlphaVariatorAlgorith
     protected ArrayList<Integer> clusterSizes;
     protected HashMap<HashMap<Long, Integer>, Integer> clusterBelong;
 
-    public AlphaClusterVariatorAlgorithmParallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String frontAlgorithmType, int frontThreadsCount, int startVariatorCount, int variatorBudget, int threadsNum) {
+    public AlphaClusterVariatorAlgorithmParallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, String frontAlgorithmType,
+                                                 int frontThreadsCount, int startVariatorCount, int variatorBudget, int threadsNum) {
         super(inputProduction, inputOrders, startTime, frontAlgorithmType, frontThreadsCount, startVariatorCount, variatorBudget, threadsNum);
 
         this.clusterCentres = new ArrayList<>();

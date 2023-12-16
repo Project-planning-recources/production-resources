@@ -9,8 +9,6 @@ import util.Random;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
 
@@ -87,7 +85,7 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
         }
     }
 
-    protected static Pair<HashMap<Long, Integer>, Double> randomChooseVariantAndCriterion(int cluster, ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, ArrayList<Integer> clusterSizes, HashMap<HashMap<Long, Integer>, Integer> clusterBelong) {
+    protected static Pair<HashMap<Long, Integer>, Double> randomChooseVariantAndCriterionFromCluster(int cluster, ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, ArrayList<Integer> clusterSizes, HashMap<HashMap<Long, Integer>, Integer> clusterBelong) {
         Pair<HashMap<Long, Integer>, Double> pair = new Pair<>(null, null);
         int index = Random.randomInt(clusterSizes.get(cluster));
         for (Pair<HashMap<Long, Integer>, Double> variantPair : variation) {
@@ -119,19 +117,16 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
 
         boolean pairsFlag = true;
         while (pairsFlag) {
-
-
-
-            Pair<HashMap<Long, Integer>, Double> pair = randomChooseVariantAndCriterion(0, this.variation, this.clusterSizes, this.clusterBelong);
+            Pair<HashMap<Long, Integer>, Double> pair = randomChooseVariantAndCriterionFromCluster(0, this.variation, this.clusterSizes, this.clusterBelong);
             firstVariant = pair.getKey();
             criterionForFirstVariant = pair.getValue();
             do {
                 if(Random.randomInt(100) <= 66) {
-                    pair = randomChooseVariantAndCriterion(1, this.variation, this.clusterSizes, this.clusterBelong);
+                    pair = randomChooseVariantAndCriterionFromCluster(1, this.variation, this.clusterSizes, this.clusterBelong);
                     secondVariant = pair.getKey();
                     criterionForSecondVariant = pair.getValue();
                 } else {
-                    pair = randomChooseVariantAndCriterion(2, this.variation, this.clusterSizes, this.clusterBelong);
+                    pair = randomChooseVariantAndCriterionFromCluster(2, this.variation, this.clusterSizes, this.clusterBelong);
                     secondVariant = pair.getKey();
                     criterionForSecondVariant = pair.getValue();
                 }

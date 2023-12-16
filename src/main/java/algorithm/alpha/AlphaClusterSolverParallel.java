@@ -1,7 +1,5 @@
 package algorithm.alpha;
 
-import algorithm.model.order.Order;
-import algorithm.model.production.Production;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import util.Hash;
@@ -66,16 +64,16 @@ public class AlphaClusterSolverParallel extends AlphaSolverParallel {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            Pair<HashMap<Long, Integer>, Double> pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterion(0, this.variation, this.clusterSizes, this.clusterBelong);
+            Pair<HashMap<Long, Integer>, Double> pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterionFromCluster(0, this.variation, this.clusterSizes, this.clusterBelong);
             firstVariant = pair.getKey();
             criterionForFirstVariant = pair.getValue();
             do {
                 if(Random.randomInt(100) <= 66) {
-                    pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterion(1, this.variation, this.clusterSizes, this.clusterBelong);
+                    pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterionFromCluster(1, this.variation, this.clusterSizes, this.clusterBelong);
                     secondVariant = pair.getKey();
                     criterionForSecondVariant = pair.getValue();
                 } else {
-                    pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterion(2, this.variation, this.clusterSizes, this.clusterBelong);
+                    pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterionFromCluster(2, this.variation, this.clusterSizes, this.clusterBelong);
                     secondVariant = pair.getKey();
                     criterionForSecondVariant = pair.getValue();
                 }

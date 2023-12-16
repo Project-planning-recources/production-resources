@@ -48,12 +48,12 @@ public class Trash {
 
 //        checkGenerator();
 
-        generate(1);
+//        generate(1);
 //        checkOwnAlgorithm();
 
 //        testBackpack();
 
-//        testOwnClusterAlgorithm();
+        testOwnClusterAlgorithm();
 
 //        testParallelAlgorithm();
         System.out.println("=====FINISH=====");
@@ -88,8 +88,8 @@ public class Trash {
 
     public static void testOwnClusterAlgorithm() throws Exception {
 
-        InputProduction production = READER.readProductionFile("Basis/7_production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("Basis/7_orders.xml");
+        InputProduction production = READER.readProductionFile("Basis/8_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/8_orders.xml");
 
         Algorithm algorithm = new AlphaClusterVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10, 50);
 
