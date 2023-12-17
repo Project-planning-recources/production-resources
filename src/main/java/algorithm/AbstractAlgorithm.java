@@ -11,19 +11,15 @@ import algorithm.model.production.Production;
 import algorithm.model.production.WorkingDay;
 import algorithm.parallel.CompositeRecord;
 import algorithm.parallel.Record;
-import algorithm.parallel.threads.TreeFillingThread;
 import org.apache.directory.server.core.avltree.AvlTree;
 import org.apache.directory.server.core.avltree.AvlTreeImpl;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
-import util.WaitingCounter;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -34,7 +30,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected Production production;
 
-    protected Record record;
+    protected CompositeRecord record;
 
     /**
      * Все заказы
@@ -79,20 +75,24 @@ public abstract class AbstractAlgorithm implements Algorithm {
         // todo: Использовать время начала
         this.startTime = startTime;
 
-        initResult();
         initEquipmentHashMap();
         initTimeline();
         this.operationChooser = OperationChooserFactory.getOperationChooser(operationChooser, this);
         this.alternativeElector = AlternativeElectorFactory.getAlternativeElector(alternativeElector, this);
-        this.record = new CompositeRecord(production.getEquipmentGroups(), initOperationsAvlTree(threadNumber));
+        ArrayList<AvlTree<OperationResult>> trees = new ArrayList<>();
+        for (int i = 0; i < threadNumber; i++) {
+            trees.add(new AvlTreeImpl<>(OperationResult::compareTo));
+        }
+        this.record = new CompositeRecord(production.getEquipmentGroups(), trees);
+        initResult();
     }
 
     @Override
     public OutputResult start() throws Exception {
         while(!this.timeline.isEmpty()) {
+            //System.out.println("Из AbstractAlgorithm.start");
             LocalDateTime timeTick = this.timeline.pop();
             tickOfTime(timeTick);
-
         }
         setTimeForOrdersAndResult();
 
@@ -133,70 +133,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
         this.result.setAllEndTime(lastResult);
     }
 
-    protected  List<AvlTree<OperationResult>> initOperationsAvlTree(int threadNum) {
-        List<OperationResult> allOperations = new ArrayList<>();
-
-        ArrayList<OrderResult> orderResults = new ArrayList<>();
-        AtomicLong addingOrder = new AtomicLong(0);
-        this.orders.forEach(order -> {
-
-            ArrayList<ProductResult> productResults = new ArrayList<>();
-            OrderResult orderResult = new OrderResult(order.getId(), null, null, productResults);
-            orderResult.setResult(this.result);
-
-            order.getProducts().forEach(product -> {
-
-                for (int i = 0; i < product.getCount(); i++) {
-                    long techProcessId = chooseAlternativeness(this.concreteProductId, product);
-                    TechProcess techProcess = product.getTechProcessByTechProcessId(techProcessId);
-                    LinkedList<OperationResult> operationResults = new LinkedList<>();
-                    ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(),
-                            techProcessId, null, null, operationResults, orderResult);
-
-                    AtomicLong orderInTechProcess = new AtomicLong(1);
-
-                    AtomicReference<OperationResult> prevOperation = new AtomicReference<>();
-
-                    techProcess.getOperations().forEach(operation -> {
-
-                        OperationPriorities priorities = new OperationPriorities(operation.getId(), operation.getDuration(),
-                                order.getStartTime(), orderInTechProcess.get(), order.getDeadline(), addingOrder.get());
-                        OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(),
-                                operation.getNextOperationId(), operation.getRequiredEquipment(),
-                                0, null, null, productResult, priorities);
-                        operationResult.setPrevOperation(prevOperation.get());
-                        operationResults.add(operationResult);
-                        allOperations.add(operationResult);
-                        orderInTechProcess.getAndIncrement();
-                        addingOrder.getAndIncrement();
-                        prevOperation.set(operationResult);
-                    });
-
-                    productResults.add(productResult);
-                }
-            });
-
-            orderResults.add(orderResult);
-        });
-
-        List<AvlTree<OperationResult>> trees = new ArrayList<>();
-        List<TreeFillingThread> threads = new ArrayList<>();
-        for (int i = 0; i < threadNum; i++) {
-            int start = i == 0 ? 0 : (allOperations.size() * i) / threadNum;
-            int end = i == threadNum - 1 ? allOperations.size() : (allOperations.size() * (i + 1)) / threadNum;
-            TreeFillingThread treeFillingThread = new TreeFillingThread(allOperations.subList(start, end),
-                    new AvlTreeImpl<>(OperationResult::compareTo));
-
-            threads.add(treeFillingThread);
-            trees.add(treeFillingThread.getAvlTree());
-        }
-        threads.forEach(TreeFillingThread::start);
-        WaitingCounter.waitingCounter(threads);
-
-        this.result.getOrderResults().addAll(orderResults);
-        return trees;
-    }
-
     protected void initEquipmentHashMap () {
         this.allEquipment = new HashMap<>();
 
@@ -225,6 +161,49 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected void initResult() {
         this.result = new Result(null, null, new ArrayList<>());
+        ArrayList<OrderResult> orderResults = new ArrayList<>();
+        AtomicLong addingOrder = new AtomicLong(0);
+        this.orders.forEach(order -> {
+
+            ArrayList<ProductResult> productResults = new ArrayList<>();
+            OrderResult orderResult = new OrderResult(order.getId(), order.getStartTime(), null, null, productResults);
+            orderResult.setResult(this.result);
+
+            order.getProducts().forEach(product -> {
+
+                for (int i = 0; i < product.getCount(); i++) {
+                    long techProcessId = chooseAlternativeness(this.concreteProductId, product);
+                    TechProcess techProcess = product.getTechProcessByTechProcessId(techProcessId);
+                    LinkedList<OperationResult> operationResults = new LinkedList<>();
+                    ProductResult productResult = new ProductResult(this.concreteProductId++, product.getId(),
+                            techProcessId, null, null, operationResults, orderResult);
+
+                    AtomicLong orderInTechProcess = new AtomicLong(1);
+
+                    AtomicReference<OperationResult> prevOperation = new AtomicReference<>();
+
+                    techProcess.getOperations().forEach(operation -> {
+
+                        OperationPriorities priorities = new OperationPriorities(operation.getId(), operation.getDuration(),
+                                orderInTechProcess.get(), order.getDeadline(), addingOrder.get());
+                        OperationResult operationResult = new OperationResult(operation.getId(), operation.getPrevOperationId(),
+                                operation.getNextOperationId(), operation.getRequiredEquipment(),
+                                0, order.getStartTime(), null, null, productResult, priorities);
+                        operationResult.setPrevOperation(prevOperation.get());
+                        operationResults.add(operationResult);
+                        orderInTechProcess.getAndIncrement();
+                        addingOrder.getAndIncrement();
+                        prevOperation.set(operationResult);
+                    });
+
+                    productResults.add(productResult);
+                }
+            });
+
+            orderResults.add(orderResult);
+        });
+
+        this.result.getOrderResults().addAll(orderResults);
     }
 
     /**
@@ -348,9 +327,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
         if(isWeekend(timeTick)) {
             moveTimeTickFromWeekend(timeTick);
         } else {
-            /**
-             * Начинаем выполнять новые операции, если это возможно
-             */
+
+            List<OperationResult> readyOperations = fillReadyOperationsByTimeTick(timeTick);
+            record.fillTrees(readyOperations, timeTick);
+            //Начинаем выполнять новые операции, если это возможно
             startOperations(timeTick);
         }
     }
@@ -360,6 +340,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         OperationResult choose;
 
         while (true) {
+            //System.out.println("Из AbstractAlgorithm.startOperations");
             choose = record.getRecord(timeTick);
             if (Objects.isNull(choose)) {
                 break;
@@ -372,7 +353,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
             if (choose.getPrevOperationId() == 0) {
                 choose.getProductResult().setStartTime(timeTick);
-                choose.getProductResult().setEndTime(endTime);
             }
 
             Equipment equipment = allEquipment.get(choose.getEquipmentId());
@@ -388,4 +368,19 @@ public abstract class AbstractAlgorithm implements Algorithm {
         return this.alternativeElector.chooseTechProcess(product);
     }
 
+    protected List<OperationResult> fillReadyOperationsByTimeTick(LocalDateTime timeTick) {
+        AvlTree<OperationResult> readyOperations = new AvlTreeImpl<>(OperationResult::compareTo);
+        this.result.getOrderResults()
+                .stream()
+                .filter(order -> !timeTick.isBefore(order.getEarlyStartTime()) && !order.isInProgress())
+                .forEach(order -> {
+            order.getProductResults().forEach(product -> {
+                product.getPerformedOperations().forEach(readyOperations::insert);
+            });
+
+            order.setInProgress(true);
+        });
+
+        return readyOperations.getKeys();
+    }
 }

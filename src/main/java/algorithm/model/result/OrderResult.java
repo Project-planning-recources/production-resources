@@ -20,6 +20,11 @@ public class OrderResult {
     private long orderId;
 
     /**
+     * Время раннего начала выполнения заказа
+     */
+    private LocalDateTime earlyStartTime;
+
+    /**
      * Время и дата начала выполнения заказа
      */
     private LocalDateTime startTime;
@@ -44,19 +49,28 @@ public class OrderResult {
      */
     private Order order;
 
+    private boolean inProgress;
+
     public OrderResult() {
 
     }
 
-    public OrderResult(long orderId, LocalDateTime startTime, LocalDateTime endTime, ArrayList<ProductResult> productResults) {
+    public OrderResult(long orderId, LocalDateTime earlyStartTime,
+                       LocalDateTime startTime, LocalDateTime endTime, ArrayList<ProductResult> productResults) {
         this.orderId = orderId;
+        this.earlyStartTime = earlyStartTime;
         this.startTime = startTime;
         this.endTime = endTime;
         this.productResults = productResults;
+        this.inProgress = false;
     }
 
     public long getOrderId() {
         return orderId;
+    }
+
+    public LocalDateTime getEarlyStartTime() {
+        return earlyStartTime;
     }
 
     public LocalDateTime getStartTime() {
@@ -89,6 +103,14 @@ public class OrderResult {
 
     public void setResult(Result result) {
         this.result = result;
+    }
+
+    public boolean isInProgress() {
+        return inProgress;
+    }
+
+    public void setInProgress(boolean inProgress) {
+        this.inProgress = inProgress;
     }
 
     @Override

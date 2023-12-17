@@ -3,7 +3,6 @@ package algorithm.model.result;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
 /**
  * <b>Класс для Алгоритма</b>
  * <b>Результат работы для операции конкретной детали</b>
@@ -38,6 +37,11 @@ public class OperationResult implements Comparable<OperationResult>{
     private long equipmentId;
 
     /**
+     * Время раннего начала выполнения заказа
+     */
+    private LocalDateTime earlyStartTime;
+
+    /**
      * Время и дата начала выполнения операции
      */
     private LocalDateTime startTime;
@@ -65,13 +69,14 @@ public class OperationResult implements Comparable<OperationResult>{
     }
 
     public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentGroupId,
-                           long equipmentId, LocalDateTime startTime, LocalDateTime endTime,
+                           long equipmentId, LocalDateTime earlyStartTime, LocalDateTime startTime, LocalDateTime endTime,
                            ProductResult productResult) {
         this.operationId = operationId;
         this.prevOperationId = prevOperationId;
         this.nextOperationId = nextOperationId;
         this.equipmentGroupId = equipmentGroupId;
         this.equipmentId = equipmentId;
+        this.earlyStartTime = earlyStartTime;
         this.startTime = startTime;
         this.endTime = endTime;
         this.productResult = productResult;
@@ -79,13 +84,14 @@ public class OperationResult implements Comparable<OperationResult>{
     }
 
     public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentGroupId,
-                           long equipmentId, LocalDateTime startTime, LocalDateTime endTime,
+                           long equipmentId, LocalDateTime earlyStartTime, LocalDateTime startTime, LocalDateTime endTime,
                            ProductResult productResult, OperationPriorities priorities) {
         this.operationId = operationId;
         this.prevOperationId = prevOperationId;
         this.nextOperationId = nextOperationId;
         this.equipmentGroupId = equipmentGroupId;
         this.equipmentId = equipmentId;
+        this.earlyStartTime = earlyStartTime;
         this.startTime = startTime;
         this.endTime = endTime;
         this.productResult = productResult;
@@ -111,6 +117,10 @@ public class OperationResult implements Comparable<OperationResult>{
 
     public long getEquipmentId() {
         return equipmentId;
+    }
+
+    public LocalDateTime getEarlyStartTime() {
+        return earlyStartTime;
     }
 
     public LocalDateTime getStartTime() {
@@ -192,32 +202,29 @@ public class OperationResult implements Comparable<OperationResult>{
 
     @Override
     public int compareTo(OperationResult o) {
-        if (this.operationPriorities.getStartTime().isBefore(o.getOperationPriorities().getStartTime())) {
+        if (Objects.isNull(o)) {
             return -1;
-        } else if (this.operationPriorities.getStartTime().isAfter(o.getOperationPriorities().getStartTime())) {
+        }
+        if (this.operationPriorities.getOrderInTechProcess() < o.getOperationPriorities().getOrderInTechProcess()) {
+            return -1;
+        } else if (this.operationPriorities.getOrderInTechProcess() > o.getOperationPriorities().getOrderInTechProcess()) {
             return 1;
-        } else if (this.operationPriorities.getStartTime().equals(o.getOperationPriorities().getStartTime())) {
-            if (this.operationPriorities.getOrderInTechProcess() < o.getOperationPriorities().getOrderInTechProcess()) {
+        } else if (this.operationPriorities.getOrderInTechProcess() == o.getOperationPriorities().getOrderInTechProcess()) {
+            if (this.operationPriorities.getDuration() < o.getOperationPriorities().getDuration()) {
                 return -1;
-            } else if (this.operationPriorities.getOrderInTechProcess() > o.getOperationPriorities().getOrderInTechProcess()) {
+            } else if (this.operationPriorities.getDuration() > o.getOperationPriorities().getDuration()) {
                 return 1;
-            } else if (this.operationPriorities.getOrderInTechProcess() == o.getOperationPriorities().getOrderInTechProcess()) {
-                if (this.operationPriorities.getDuration() < o.getOperationPriorities().getDuration()) {
+            } else if (this.operationPriorities.getDuration() == o.getOperationPriorities().getDuration()) {
+                if (this.operationPriorities.getDeadline().isBefore(o.getOperationPriorities().getDeadline())) {
                     return -1;
-                } else if (this.operationPriorities.getDuration() > o.getOperationPriorities().getDuration()) {
+                } else if (this.operationPriorities.getDeadline().isAfter(o.getOperationPriorities().getDeadline())) {
                     return 1;
-                } else if (this.operationPriorities.getDuration() == o.getOperationPriorities().getDuration()) {
-                    if (this.operationPriorities.getDeadline().isBefore(o.getOperationPriorities().getDeadline())) {
+                }
+                else if (this.operationPriorities.getDeadline().equals(o.getOperationPriorities().getDeadline())) {
+                    if (this.operationPriorities.getAddingOrder() < o.getOperationPriorities().getAddingOrder()) {
                         return -1;
-                    } else if (this.operationPriorities.getDeadline().isAfter(o.getOperationPriorities().getDeadline())) {
+                    } else if (this.operationPriorities.getAddingOrder() > o.getOperationPriorities().getAddingOrder()) {
                         return 1;
-                    }
-                    else if (this.operationPriorities.getDeadline().equals(o.getOperationPriorities().getDeadline())) {
-                        if (this.operationPriorities.getAddingOrder() < o.getOperationPriorities().getAddingOrder()) {
-                            return -1;
-                        } else if (this.operationPriorities.getAddingOrder() > o.getOperationPriorities().getAddingOrder()) {
-                            return 1;
-                        }
                     }
                 }
             }

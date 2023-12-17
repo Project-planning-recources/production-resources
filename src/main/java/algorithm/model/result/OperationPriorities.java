@@ -10,11 +10,6 @@ public class OperationPriorities {
     private final long operationId;
 
     /**
-     * Время раннего начала выполнения заказа (первый приоритет)
-     */
-    private final LocalDateTime startTime;
-
-    /**
      * Порядок в тех процессе (второй приоритет)
      */
     private final long orderInTechProcess;
@@ -35,11 +30,10 @@ public class OperationPriorities {
      */
     private final long addingOrder;
 
-    public OperationPriorities(long operationId, int duration, LocalDateTime startTime, long orderInTechProcess,
+    public OperationPriorities(long operationId, int duration, long orderInTechProcess,
                                LocalDateTime deadline, long addingOrder) {
         this.operationId = operationId;
         this.duration = duration;
-        this.startTime = startTime;
         this.orderInTechProcess = orderInTechProcess;
         this.deadline = deadline;
         this.addingOrder = addingOrder;
@@ -51,10 +45,6 @@ public class OperationPriorities {
 
     public int getDuration() {
         return duration;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
     }
 
     public long getOrderInTechProcess() {
