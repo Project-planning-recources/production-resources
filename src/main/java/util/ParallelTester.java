@@ -136,7 +136,57 @@ public class ParallelTester {
     }
 
     public static void frontParallelTests() {
+        int startGen = 10;
+        int budgetGen = 50;
+        int startsAlg = 3;
+        int basisSize = 8;
+        int threadMax = 4;
 
+        try (FileWriter writer = new FileWriter("recordParallel.csv", false)) {
+            writer.write("№ задачи;Последовательный;2 потока;4 потока\n");
+
+            for (int i = 0; i < basisSize; i++) {
+                InputProduction production = READER.readProductionFile("Basis/" + (i + 1) + "_production.xml");
+                InputOrderInformation orders = READER.readOrderFile( "Basis/" + (i + 1) + "_orders.xml");
+
+                if (PossibilityTester.test(production, orders)) {
+                    writer.write((i+1) + ";");
+                    for (int j = 1; j <= threadMax; j *= 2) {
+                        double time = 0;
+                        for (int k = 0; k < startsAlg; k++) {
+
+                            Algorithm algorithm = null;
+                            OutputResult result = null;
+                            if(j == 1) {
+                                long startTime = System.currentTimeMillis();
+                                algorithm = null;
+                                algorithm.start();
+                                time += (double)(System.currentTimeMillis() - startTime) / 1000;
+                            } else {
+                                long startTime = System.currentTimeMillis();
+                                algorithm = null;
+                                algorithm.start();
+                                time += (double) (System.currentTimeMillis() - startTime) / 1000;
+                            }
+                        }
+                        if(j == threadMax) {
+                            writer.write((time/startsAlg) + "\n");
+                        } else {
+                            writer.write((time/startsAlg) + ";");
+                        }
+                    }
+
+
+                } else {
+                    throw new Exception(i + ": Заказы не соответствуют производству");
+                }
+            }
+            System.out.println("Работа завершена.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void unionTests() {
