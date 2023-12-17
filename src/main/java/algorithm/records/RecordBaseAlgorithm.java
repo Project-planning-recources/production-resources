@@ -14,10 +14,10 @@ import java.util.ArrayList;
 
 public class RecordBaseAlgorithm extends RecordsAbstractAlgorithm {
     public RecordBaseAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime) {
-        super(production, orders, startTime, new FirstElementChooser(), new RandomAlternativeElector());
+        super(production, orders, startTime, null, new RandomAlternativeElector());
     }
 
     public RecordBaseAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) {
-        super(inputProduction, inputOrders, startTime, new FirstElementChooser(), new RandomAlternativeElector());
+        super(inputProduction, inputOrders, startTime, null, new RandomAlternativeElector());
     }
 }

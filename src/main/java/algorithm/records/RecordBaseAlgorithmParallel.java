@@ -12,10 +12,10 @@ import java.util.ArrayList;
 
 public class RecordBaseAlgorithmParallel extends RecordAbstractAlgorithmParallel {
     public RecordBaseAlgorithmParallel(Production production, ArrayList<Order> orders, LocalDateTime startTime, int threadCount) {
-        super(production, orders, startTime, new FirstElementChooser(), new RandomAlternativeElector(), threadCount);
+        super(production, orders, startTime, null, new RandomAlternativeElector(), threadCount);
     }
 
     public RecordBaseAlgorithmParallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, int threadCount) {
-        super(inputProduction, inputOrders, startTime, new FirstElementChooser(), new RandomAlternativeElector(), threadCount);
+        super(inputProduction, inputOrders, startTime, null, new RandomAlternativeElector(), threadCount);
     }
 }

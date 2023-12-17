@@ -18,12 +18,12 @@ public class RecordOwnAlgorithm extends RecordsAbstractAlgorithm {
 
     protected HashMap<Long, Integer> variant;
     public RecordOwnAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime, HashMap<Long, Integer> variant) {
-        super(production, orders, startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant));
+        super(production, orders, startTime, null, new FromMapAlternativeElector(variant));
         this.variant = variant;
     }
 
     public RecordOwnAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, HashMap<Long, Integer> variant) {
-        super(inputProduction, inputOrders, startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant));
+        super(inputProduction, inputOrders, startTime, null, new FromMapAlternativeElector(variant));
         this.variant = variant;
     }
 

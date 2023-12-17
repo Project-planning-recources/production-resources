@@ -15,12 +15,12 @@ public class RecordOwnAlgorithmParallel extends RecordAbstractAlgorithmParallel 
 
     protected HashMap<Long, Integer> variant;
     public RecordOwnAlgorithmParallel(Production production, ArrayList<Order> orders, LocalDateTime startTime, HashMap<Long, Integer> variant, int threadCount) {
-        super(production, orders, startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant), threadCount);
+        super(production, orders, startTime, null, new FromMapAlternativeElector(variant), threadCount);
         this.variant = variant;
     }
 
     public RecordOwnAlgorithmParallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, HashMap<Long, Integer> variant, int threadCount) {
-        super(inputProduction, inputOrders, startTime, new FirstElementChooser(), new FromMapAlternativeElector(variant), threadCount);
+        super(inputProduction, inputOrders, startTime, null, new FromMapAlternativeElector(variant), threadCount);
         this.variant = variant;
     }
 
