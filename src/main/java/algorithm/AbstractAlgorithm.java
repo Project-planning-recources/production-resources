@@ -63,17 +63,13 @@ public abstract class AbstractAlgorithm implements Algorithm {
     protected long concreteProductId = 1;
 
 
-    public AbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime,
-                             OperationChooser operationChooser, AlternativeElector alternativeElector) {
+    public AbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime) {
         this.production = production;
         this.orders = orders;
         this.startTime = startTime;
-
-        initAlgorithm(operationChooser, alternativeElector);
     }
 
-    public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
-                             OperationChooser operationChooser, AlternativeElector alternativeElector) {
+    public AbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime) {
         this.production = new Production(inputProduction);
         ArrayList<Order> orders = new ArrayList<>();
         inputOrders.forEach(inputOrder -> {
@@ -82,17 +78,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
         this.orders = orders;
         this.startTime = startTime;
 
-        initAlgorithm(operationChooser, alternativeElector);
-    }
-
-
-
-    protected void initAlgorithm(OperationChooser operationChooser, AlternativeElector alternativeElector) {
-        initResult();
-        initEquipmentHashMap();
-        initTimeline();
-        this.operationChooser = operationChooser;
-        this.alternativeElector = alternativeElector;
     }
 
     /**

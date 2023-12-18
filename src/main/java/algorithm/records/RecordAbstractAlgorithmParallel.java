@@ -15,12 +15,12 @@ public abstract class RecordAbstractAlgorithmParallel extends AbstractAlgorithm 
 
     protected int threadCount;
     public RecordAbstractAlgorithmParallel(Production production, ArrayList<Order> orders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector, int threadCount) {
-        super(production, orders, startTime, operationChooser, alternativeElector);
+        super(production, orders, startTime);
         this.threadCount = threadCount;
     }
 
     public RecordAbstractAlgorithmParallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector,  int threadCount) {
-        super(inputProduction, inputOrders, startTime, operationChooser, alternativeElector);
+        super(inputProduction, inputOrders, startTime);
         this.threadCount = threadCount;
     }
 

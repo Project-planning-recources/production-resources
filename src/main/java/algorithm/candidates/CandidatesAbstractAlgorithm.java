@@ -26,11 +26,27 @@ public abstract class CandidatesAbstractAlgorithm extends AbstractAlgorithm {
     protected ArrayList<OperationResult> ongoingOperations;
 
     public CandidatesAbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector) {
-        super(production, orders, startTime, operationChooser, alternativeElector);
+        super(production, orders, startTime);
+        this.operationChooser = operationChooser;
+        this.alternativeElector = alternativeElector;
+        this.ongoingOperations = new ArrayList<>();
+        this.waitingOperations = new ArrayList<>();
+        initOperationsHashMap();
+        initEquipmentHashMap();
+        initTimeline();
+        initResult();
     }
 
     public CandidatesAbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector) {
-        super(inputProduction, inputOrders, startTime, operationChooser, alternativeElector);
+        super(inputProduction, inputOrders, startTime);
+        this.operationChooser = operationChooser;
+        this.alternativeElector = alternativeElector;
+        this.ongoingOperations = new ArrayList<>();
+        this.waitingOperations = new ArrayList<>();
+        initOperationsHashMap();
+        initEquipmentHashMap();
+        initTimeline();
+        initResult();
     }
 
     protected void initOperationsHashMap () {
@@ -49,18 +65,6 @@ public abstract class CandidatesAbstractAlgorithm extends AbstractAlgorithm {
 
     public HashMap<Long, Operation> getOperationsHashMap() {
         return this.allOperations;
-    }
-
-    @Override
-    protected void initAlgorithm(OperationChooser operationChooser, AlternativeElector alternativeElector) {
-        this.ongoingOperations = new ArrayList<>();
-        this.waitingOperations = new ArrayList<>();
-        initOperationsHashMap();
-        initEquipmentHashMap();
-        initTimeline();
-        initResult();
-        this.operationChooser = operationChooser;
-        this.alternativeElector = alternativeElector;
     }
 
     @Override

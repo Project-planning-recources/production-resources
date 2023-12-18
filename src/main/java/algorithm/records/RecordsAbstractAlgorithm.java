@@ -13,11 +13,11 @@ import java.util.ArrayList;
 
 public abstract class RecordsAbstractAlgorithm extends AbstractAlgorithm {
     public RecordsAbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector) {
-        super(production, orders, startTime, operationChooser, alternativeElector);
+        super(production, orders, startTime);
     }
 
     public RecordsAbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector) {
-        super(inputProduction, inputOrders, startTime, operationChooser, alternativeElector);
+        super(inputProduction, inputOrders, startTime);
     }
 
     @Override

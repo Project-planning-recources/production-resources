@@ -88,8 +88,8 @@ public class Trash {
 
     public static void testOwnClusterAlgorithm() throws Exception {
 
-        InputProduction production = READER.readProductionFile("Basis/8_production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("Basis/8_orders.xml");
+        InputProduction production = READER.readProductionFile("Basis/1_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/1_orders.xml");
 
         Algorithm algorithm = new AlphaClusterVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10, 50);
 
