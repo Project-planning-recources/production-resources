@@ -1,16 +1,15 @@
 package algorithm;
 
 import algorithm.alternativeness.AlternativeElector;
-import algorithm.operationchooser.OperationChooser;
-import algorithm.model.order.Operation;
 import algorithm.model.order.Order;
+import algorithm.model.order.Product;
 import algorithm.model.production.Equipment;
 import algorithm.model.production.Production;
 import algorithm.model.production.WorkingDay;
-import algorithm.model.result.OperationResult;
 import algorithm.model.result.OrderResult;
 import algorithm.model.result.ProductResult;
 import algorithm.model.result.Result;
+import algorithm.operationchooser.OperationChooser;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
 import parse.output.result.OutputResult;
@@ -60,6 +59,8 @@ public abstract class AbstractAlgorithm implements Algorithm {
      */
     protected LinkedList<LocalDateTime> timeline;
 
+    protected Result result;
+
     protected long concreteProductId = 1;
 
 
@@ -97,6 +98,9 @@ public abstract class AbstractAlgorithm implements Algorithm {
         }
         setTimeForOrdersAndResult();
 
+        production.getEquipmentGroups().forEach(group -> {
+            group.getEquipment().forEach(equipment -> equipment.setIsBusyTo(null));
+        });
 
         return new OutputResult(this.result);
     }
@@ -135,11 +139,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
         this.result.setAllEndTime(lastResult);
     }
 
-
-
-
-
-
     protected void initEquipmentHashMap () {
         this.allEquipment = new HashMap<>();
 
@@ -161,9 +160,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
             addTimeToTimeline(order.getStartTime());
         });
     }
-
-
-    protected Result result;
 
     /**
      * Создаёт пустой объект результатов
@@ -200,7 +196,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
             }
         }
     }
-
 
     /**
      * Проверяет, рабочее время или выходной
@@ -288,9 +283,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
         return finalTime;
     }
 
-
-
-
     /**
      * В данной функции обрабатываем один такт времени
      */
@@ -302,12 +294,9 @@ public abstract class AbstractAlgorithm implements Algorithm {
      * Если операция завершилась, освобождаем оборудование и начинаем следующую, если такая есть
      */
 
-
-
-
-//    protected long chooseAlternativeness(long concreteProductId, Product product) {
-//        return this.alternativeElector.chooseTechProcess(product);
-//    }
+    protected long chooseAlternativeness(long concreteProductId, Product product) {
+        return this.alternativeElector.chooseTechProcess(product);
+    }
     /**
      * Добавляем операции заказа, у которого наступило время раннего начала, в список операций
      * Добавляем в объект результата объекты результатов заказа, деталей и операций

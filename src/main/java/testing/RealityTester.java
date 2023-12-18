@@ -7,10 +7,7 @@ import parse.output.result.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <b>Тест на соответствие результатов работы алгоритма реальности</b>
@@ -30,6 +27,9 @@ public class RealityTester {
      */
     public static boolean test(InputProduction production, InputOrderInformation orders, OutputResult result) {
         boolean flag = true;
+        HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments = result.getPerformedOperationsOnEquipments();
+        performedOperationsOnEquipments = Objects.isNull(performedOperationsOnEquipments) || performedOperationsOnEquipments.isEmpty() ?
+                result.fillPerformedOperationsOnEquipments() : performedOperationsOnEquipments;
         LinkedList<OutputOperationResult> operationResults = new LinkedList<>();
         for (OutputOrderResult order : result.getOrderResults()) {
             for (OutputProductResult product : order.getProductResults()) {
@@ -82,7 +82,8 @@ public class RealityTester {
             }
         }
 
-        List<String> errorsWithusingSameEquipment = usingSameEquipmentCheck(operationResults, result.getPerformedOperationsOnEquipments());
+
+        List<String> errorsWithusingSameEquipment = usingSameEquipmentCheck(operationResults, performedOperationsOnEquipments);
         if(errorsWithusingSameEquipment.size() != 0) {
             errorsWithusingSameEquipment.forEach(System.out::println);
             flag = false;

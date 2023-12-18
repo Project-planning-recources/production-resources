@@ -43,7 +43,6 @@ public class OutputResult {
     private HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments;
 
     public OutputResult() {
-        //todo: заполнить хэшмапу
         performedOperationsOnEquipments = new HashMap<>();
     }
 
@@ -92,6 +91,23 @@ public class OutputResult {
 
     public HashMap<Long, ArrayList<OutputOperationResult>> getPerformedOperationsOnEquipments() {
         return performedOperationsOnEquipments;
+    }
+
+    public HashMap<Long, ArrayList<OutputOperationResult>> fillPerformedOperationsOnEquipments() {
+        for (OutputOrderResult order : outputOrderResults) {
+            for (OutputProductResult product : order.getProductResults()) {
+                for (OutputOperationResult operation : product.getPerformedOperations()) {
+                    if (performedOperationsOnEquipments.containsKey(operation.getEquipmentId())) {
+                        performedOperationsOnEquipments.get(operation.getEquipmentId()).add(operation);
+                    } else {
+                        ArrayList<OutputOperationResult> operations = new ArrayList<>();
+                        operations.add(operation);
+                        performedOperationsOnEquipments.put(operation.getEquipmentId(), operations);
+                    }
+                }
+            }
+        }
+        return this.performedOperationsOnEquipments;
     }
 
     @Override

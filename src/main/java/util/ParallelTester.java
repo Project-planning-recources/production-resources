@@ -77,8 +77,8 @@ public class ParallelTester {
 
 //        unionTests();
 
-        variationParallelTests();
-//        frontParallelTests();
+//        variationParallelTests();
+        frontParallelTests();
     }
 
     public static void variationParallelTests() {
@@ -136,16 +136,16 @@ public class ParallelTester {
     }
 
     public static void frontParallelTests() {
-        int startGen = 10;
-        int budgetGen = 50;
-        int startsAlg = 3;
+        int startGen = 3;
+        int budgetGen = 10;
+        int startsAlg = 1;
         int basisSize = 8;
         int threadMax = 4;
 
-        try (FileWriter writer = new FileWriter("recordParallel.csv", false)) {
-            writer.write("№ задачи;Последовательный;2 потока;4 потока\n");
+        try (FileWriter writer = new FileWriter("frontParallel.csv", false)) {
+            writer.write("№ задачи;Последовательный;2 потока;4 потока;8 потоков;16 потоков\n");
 
-            for (int i = 0; i < basisSize; i++) {
+            for (int i = 0; i < 1; i++) {
                 InputProduction production = READER.readProductionFile("Basis/" + (i + 1) + "_production.xml");
                 InputOrderInformation orders = READER.readOrderFile( "Basis/" + (i + 1) + "_orders.xml");
 
@@ -159,12 +159,12 @@ public class ParallelTester {
                             OutputResult result = null;
                             if(j == 1) {
                                 long startTime = System.currentTimeMillis();
-                                algorithm = null;
+                                algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "record", 1, startGen, budgetGen);
                                 algorithm.start();
                                 time += (double)(System.currentTimeMillis() - startTime) / 1000;
                             } else {
                                 long startTime = System.currentTimeMillis();
-                                algorithm = null;
+                                algorithm = new AlphaClusterVariatorAlgorithmParallel(production, orders.getOrders(), null, "record", j, startGen, budgetGen, j);
                                 algorithm.start();
                                 time += (double) (System.currentTimeMillis() - startTime) / 1000;
                             }

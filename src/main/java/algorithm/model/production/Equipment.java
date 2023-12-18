@@ -2,8 +2,9 @@ package algorithm.model.production;
 
 import parse.input.production.InputEquipment;
 
-import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * <b>Класс для Алгоритма</b>
@@ -26,8 +27,9 @@ public class Equipment implements Serializable {
      */
     private boolean isUsing;
 
-    public Equipment() {
+    private LocalDateTime isBusyTo;
 
+    public Equipment() {
     }
 
     public Equipment(InputEquipment inputEquipment) {
@@ -55,6 +57,22 @@ public class Equipment implements Serializable {
 
     public void setUsing(boolean using) {
         isUsing = using;
+    }
+
+    public void setIsBusyTo(LocalDateTime isBusyTo) {
+        this.isBusyTo = isBusyTo;
+    }
+
+    public boolean isBusy(LocalDateTime date) {
+        if (Objects.isNull(isBusyTo)) {
+            return false;
+        } else {
+            if (date.isBefore(isBusyTo)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override
