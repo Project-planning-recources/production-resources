@@ -33,19 +33,19 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
     protected static void updateClusters(ArrayList<Pair<HashMap<Long, Integer>, Double>> variation, ArrayList<Double> clusterCentres,
                                          ArrayList<Integer> clusterSizes, HashMap<HashMap<Long, Integer>, Integer> clusterBelong) {
         variation.forEach(variantPair -> {
-            if(variantPair.getValue() != -1) {
-                if(variantPair.getValue() < clusterCentres.get(0)) {
+            if (variantPair.getValue() != -1) {
+                if (variantPair.getValue() < clusterCentres.get(0)) {
                     clusterCentres.set(0, variantPair.getValue());
                 }
-                if(variantPair.getValue() > clusterCentres.get(2)) {
+                if (variantPair.getValue() > clusterCentres.get(2)) {
                     clusterCentres.set(2, variantPair.getValue());
                 }
             }
         });
         variation.forEach(variantPair -> {
-            if(variantPair.getValue() != -1) {
-                if(Math.abs((clusterCentres.get(2) - clusterCentres.get(1)) - (clusterCentres.get(1) - clusterCentres.get(0))) >
-                        Math.abs((clusterCentres.get(2) - variantPair.getValue()) - (variantPair.getValue() - clusterCentres.get(0))) ) {
+            if (variantPair.getValue() != -1) {
+                if (Math.abs((clusterCentres.get(2) - clusterCentres.get(1)) - (clusterCentres.get(1) - clusterCentres.get(0))) >
+                        Math.abs((clusterCentres.get(2) - variantPair.getValue()) - (variantPair.getValue() - clusterCentres.get(0)))) {
                     clusterCentres.set(1, variantPair.getValue());
                 }
             }
@@ -54,7 +54,7 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
             clusterSizes.set(i, 0);
         }
         for (Pair<HashMap<Long, Integer>, Double> variantPair : variation) {
-            if(variantPair.getValue() != -1) {
+            if (variantPair.getValue() != -1) {
                 double d0 = variantPair.getValue() - clusterCentres.get(0);
                 double d1 = Math.abs(variantPair.getValue() - clusterCentres.get(1));
                 double d2 = clusterCentres.get(2) - variantPair.getValue();
@@ -77,7 +77,7 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
 
     @Override
     protected void generateAlphaVariants() throws Exception {
-        for (int i = this.startVariatorCount; i <= this.variatorBudget;) {
+        for (int i = this.startVariatorCount; i <= this.variatorBudget; ) {
             loading();
             updateClusters(this.variation, this.clusterCentres, this.clusterSizes, this.clusterBelong);
             int addCount = generateAndAddNewVariants();
@@ -90,7 +90,7 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
         int index = Random.randomInt(clusterSizes.get(cluster));
         for (Pair<HashMap<Long, Integer>, Double> variantPair : variation) {
             if (clusterBelong.containsKey(variantPair.getKey()) && clusterBelong.get(variantPair.getKey()) == cluster) {
-                if(index == 0) {
+                if (index == 0) {
                     pair.setKey(variantPair.getKey());
                     pair.setValue(variantPair.getValue());
                     break;
@@ -99,7 +99,7 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
                 }
             }
         }
-        if(pair.getKey() == null) {
+        if (pair.getKey() == null) {
             throw new RuntimeException("Unreachable code");
         }
         return pair;
@@ -117,20 +117,34 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
 
         boolean pairsFlag = true;
         while (pairsFlag) {
-            Pair<HashMap<Long, Integer>, Double> pair = randomChooseVariantAndCriterionFromCluster(0, this.variation, this.clusterSizes, this.clusterBelong);
-            firstVariant = pair.getKey();
-            criterionForFirstVariant = pair.getValue();
-            do {
-                if(Random.randomInt(100) <= 66) {
-                    pair = randomChooseVariantAndCriterionFromCluster(1, this.variation, this.clusterSizes, this.clusterBelong);
+
+            Pair<HashMap<Long, Integer>, Double> pair = null;
+
+            if (clusterSizes.get(0) == 0 || clusterSizes.get(1) == 0 || clusterSizes.get(2) == 0) {
+                pair = this.variation.get(Random.randomInt(this.variation.size()));
+                firstVariant = pair.getKey();
+                criterionForFirstVariant = pair.getValue();
+                do {
+                    pair = this.variation.get(Random.randomInt(this.variation.size()));
                     secondVariant = pair.getKey();
                     criterionForSecondVariant = pair.getValue();
-                } else {
-                    pair = randomChooseVariantAndCriterionFromCluster(2, this.variation, this.clusterSizes, this.clusterBelong);
-                    secondVariant = pair.getKey();
-                    criterionForSecondVariant = pair.getValue();
-                }
-            } while (firstVariant == secondVariant);
+                } while (firstVariant == secondVariant);
+            } else {
+                pair = randomChooseVariantAndCriterionFromCluster(0, this.variation, this.clusterSizes, this.clusterBelong);
+                firstVariant = pair.getKey();
+                criterionForFirstVariant = pair.getValue();
+                do {
+                    if (Random.randomInt(100) <= 66) {
+                        pair = randomChooseVariantAndCriterionFromCluster(1, this.variation, this.clusterSizes, this.clusterBelong);
+                        secondVariant = pair.getKey();
+                        criterionForSecondVariant = pair.getValue();
+                    } else {
+                        pair = randomChooseVariantAndCriterionFromCluster(2, this.variation, this.clusterSizes, this.clusterBelong);
+                        secondVariant = pair.getKey();
+                        criterionForSecondVariant = pair.getValue();
+                    }
+                } while (firstVariant == secondVariant);
+            }
 
             pairsHash = Hash.hash((long) firstVariant.hashCode(), (long) secondVariant.hashCode());
             pairsFlag = !putPairIfAbsent(pairsHash);

@@ -145,10 +145,10 @@ public class ParallelTester {
 
     public static void frontParallelTests() {
         int startGen = 5;
-        int budgetGen = 15;
-        int startsAlg = 3;
-        int basisSize = 8;
-        int threadMax = 4;
+        int budgetGen = 100;
+        int startsAlg = 100;
+        int basisSize = 1;
+        int threadMax = 2;
 
         try (FileWriter writer = new FileWriter("frontParallel.csv", false)) {
             writer.write("№ задачи;Последовательный;2 потока;4 потока;8 потоков;16 потоков\n");
@@ -159,7 +159,7 @@ public class ParallelTester {
 
                 if (PossibilityTester.test(production, orders)) {
                     writer.write((i+1) + ";");
-                    for (int j = 1; j <= threadMax; j *= 2) {
+                    for (int j = 2; j <= 2; j *= 2) {
                         double time = 0;
                         for (int k = 0; k < startsAlg; k++) {
 
@@ -178,9 +178,10 @@ public class ParallelTester {
                             }
 
                             if (result != null && RealityTester.test(production, orders, result)) {
-                                System.out.println(i + ":" + j + "threads " + k + ": Завершён...");
+                                System.out.println(i + ":" + j + "threads:" + k + ": Завершён...");
                             } else {
-                                throw new Exception(i + ":" + j + "threads " + k +  ": Результат алгоритма не соответствует заказам");
+                                System.out.println(i + ":" + j + "threads:" + k +  ": Результат алгоритма не соответствует заказам");
+                                throw new Exception(i + ":" + j + "threads:" + k +  ": Результат алгоритма не соответствует заказам");
                             }
                         }
                         if(j == threadMax) {
