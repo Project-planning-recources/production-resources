@@ -38,19 +38,13 @@ public class EquipmentFinder {
     public OperationResult findAvailableEquipmentByTimeTick(AvlTree<OperationResult> operations, LocalDateTime timeTick) {
         LinkedAvlNode<OperationResult> operationNode = operations.getFirst();
         OperationResult operation = Objects.nonNull(operationNode) ? operationNode.getKey() : null;
-        int count = 0;
         while (Objects.nonNull(operationNode)){
-            count++;
             //System.out.println("Из EquipmentFinder.findAvailableEquipmentByTimeTick");
             if (findAvailableEquipmentByTimeTick(operation, timeTick)) {
                 break;
             } else {
                 operationNode = operations.findGreater(operation);
                 operation = Objects.nonNull(operationNode) ? operationNode.getKey() : null;
-            }
-
-            if (count > operations.getSize()) {
-                System.out.println("Сделано шагов больше, чем количество операций: " + count);
             }
         }
 

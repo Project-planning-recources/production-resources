@@ -127,7 +127,13 @@ public class AlphaSolverParallel extends AlphaVariatorAlgorithm implements Runna
             while(!main.isStartAlphaGeneration()) {
                 Thread.sleep(100);
             }
-            generateAlphaVariants();
+
+            try {
+                generateAlphaVariants();
+            } catch (InabilityGenerateException ignored) {
+                System.out.println("Закончились варианты перебираемых пар");
+            }
+
             this.budgetGenerationFinished = true;
         } catch (Exception e) {
             throw new RuntimeException(e);

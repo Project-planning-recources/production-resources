@@ -116,8 +116,12 @@ public class AlphaClusterVariatorAlgorithm extends AlphaVariatorAlgorithm {
         double criterionForSecondVariant = 0;
 
         boolean pairsFlag = true;
+        int counter = 0;
         while (pairsFlag) {
-
+            counter++;
+            if(counter > 50) {
+                return null;
+            }
             Pair<HashMap<Long, Integer>, Double> pair = null;
 
             if (clusterSizes.get(0) == 0 || clusterSizes.get(1) == 0 || clusterSizes.get(2) == 0) {

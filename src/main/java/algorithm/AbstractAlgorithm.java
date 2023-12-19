@@ -94,14 +94,9 @@ public abstract class AbstractAlgorithm implements Algorithm {
     @Override
     public OutputResult start() throws Exception {
         while(!this.timeline.isEmpty()) {
-            counter++;
             LocalDateTime timeTick = this.timeline.pop();
             tickOfTime(timeTick);
-
-            if (counter > 20000) {
-                System.out.println("Сделано шагов больше заданного: " + counter);
-            }
-
+            //НЕ ЭТОТ ВАЙЛ
         }
         setTimeForOrdersAndResult();
 
@@ -182,7 +177,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
      * @param time добавляемое время
      */
     public void addTimeToTimeline(LocalDateTime time) {
-
         if(this.timeline.isEmpty()) {
             this.timeline.add(time);
         } else {

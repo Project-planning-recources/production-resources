@@ -172,7 +172,7 @@ public class ParallelTester {
                                 time += (double)(System.currentTimeMillis() - startTime) / 1000;
                             } else {
                                 long startTime = System.currentTimeMillis();
-                                algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "record", j, startGen, budgetGen);
+                                algorithm = new AlphaClusterVariatorAlgorithmParallel(production, orders.getOrders(), null, "record", j, startGen, budgetGen, 2);
                                 result = algorithm.start();
                                 time += (double)(System.currentTimeMillis() - startTime) / 1000;
                             }

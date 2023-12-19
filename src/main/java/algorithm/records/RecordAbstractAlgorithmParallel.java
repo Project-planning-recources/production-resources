@@ -120,7 +120,6 @@ public abstract class RecordAbstractAlgorithmParallel extends AbstractAlgorithm 
     @Override
     protected void startOperations(LocalDateTime timeTick) {
         OperationResult choose;
-
         while (true) {
             //System.out.println("Из AbstractAlgorithm.startOperations");
             choose = record.getRecord(timeTick);

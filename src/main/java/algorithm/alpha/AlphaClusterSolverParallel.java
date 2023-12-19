@@ -56,30 +56,46 @@ public class AlphaClusterSolverParallel extends AlphaSolverParallel {
         double criterionForSecondVariant = 0;
 
         boolean pairsFlag = true;
+        int counter = 0;
         while (pairsFlag) {
-
-            try {
-                this.variationSemaphore.acquire();
-                this.clusterSemaphore.acquire();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            counter++;
+            if(counter > 50) {
+                return null;
             }
-            Pair<HashMap<Long, Integer>, Double> pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterionFromCluster(0, this.variation, this.clusterSizes, this.clusterBelong);
-            firstVariant = pair.getKey();
-            criterionForFirstVariant = pair.getValue();
-            do {
-                if(Random.randomInt(100) <= 66) {
-                    pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterionFromCluster(1, this.variation, this.clusterSizes, this.clusterBelong);
+            Pair<HashMap<Long, Integer>, Double> pair = null;
+            if (clusterSizes.get(0) == 0 || clusterSizes.get(1) == 0 || clusterSizes.get(2) == 0) {
+                pair = this.variation.get(Random.randomInt(this.variation.size()));
+                firstVariant = pair.getKey();
+                criterionForFirstVariant = pair.getValue();
+                do {
+                    pair = this.variation.get(Random.randomInt(this.variation.size()));
                     secondVariant = pair.getKey();
                     criterionForSecondVariant = pair.getValue();
-                } else {
-                    pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterionFromCluster(2, this.variation, this.clusterSizes, this.clusterBelong);
-                    secondVariant = pair.getKey();
-                    criterionForSecondVariant = pair.getValue();
+                } while (firstVariant == secondVariant);
+            } else {
+                try {
+                    this.variationSemaphore.acquire();
+                    this.clusterSemaphore.acquire();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-            } while (firstVariant == secondVariant);
-            this.variationSemaphore.release();
-            this.clusterSemaphore.release();
+                pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterionFromCluster(0, this.variation, this.clusterSizes, this.clusterBelong);
+                firstVariant = pair.getKey();
+                criterionForFirstVariant = pair.getValue();
+                do {
+                    if(Random.randomInt(100) <= 66) {
+                        pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterionFromCluster(1, this.variation, this.clusterSizes, this.clusterBelong);
+                        secondVariant = pair.getKey();
+                        criterionForSecondVariant = pair.getValue();
+                    } else {
+                        pair = AlphaClusterVariatorAlgorithm.randomChooseVariantAndCriterionFromCluster(2, this.variation, this.clusterSizes, this.clusterBelong);
+                        secondVariant = pair.getKey();
+                        criterionForSecondVariant = pair.getValue();
+                    }
+                } while (firstVariant == secondVariant);
+                this.variationSemaphore.release();
+                this.clusterSemaphore.release();
+            }
 
             pairsHash = Hash.hash((long) firstVariant.hashCode(), (long) secondVariant.hashCode());
             pairsFlag = !putPairIfAbsent(pairsHash);
