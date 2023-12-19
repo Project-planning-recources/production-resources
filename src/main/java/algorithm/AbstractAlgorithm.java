@@ -63,6 +63,8 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     protected long concreteProductId = 1;
 
+    private long counter = 0;
+
 
     public AbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime) {
         this.production = production;
@@ -92,8 +94,13 @@ public abstract class AbstractAlgorithm implements Algorithm {
     @Override
     public OutputResult start() throws Exception {
         while(!this.timeline.isEmpty()) {
+            counter++;
             LocalDateTime timeTick = this.timeline.pop();
             tickOfTime(timeTick);
+
+            if (counter > 20000) {
+                System.out.println("Сделано шагов больше заданного: " + counter);
+            }
 
         }
         setTimeForOrdersAndResult();
