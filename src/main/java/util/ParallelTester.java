@@ -39,7 +39,8 @@ public class ParallelTester {
         DataFromCalculation dataFromCalculation = new DataFromCalculation(0, 0, 0,0);
         for (int j = 0; j < startsAlg; j++) {
 
-            System.out.println("Consistent: " + i + ":" + j + ": Запущен...");
+
+            System.out.println(i + ":" + j + " " + frontAlgorithmType + "-" + frontThreadsCount + ": Запущен...");
 
             Algorithm algorithm = null;
             OutputResult result = null;
@@ -65,9 +66,9 @@ public class ParallelTester {
                 dataFromCalculation.averageCriterion += Criterion.getCriterion(orders, result);
                 dataFromCalculation.averageTime += time;
 
-                System.out.println(i + ":" + j + ": Завершён...");
+                System.out.println(i + ":" + j + " " + frontAlgorithmType + "-" + frontThreadsCount + ": Завершён...");
             } else {
-                throw new Exception(i + ":" + j + ": Результат алгоритма не соответствует заказам");
+                throw new Exception(i + ":" + j + " " + frontAlgorithmType + "-" + frontThreadsCount + ": Результат алгоритма не соответствует заказам");
             }
         }
         return dataFromCalculation;
@@ -82,7 +83,7 @@ public class ParallelTester {
     }
 
     public static void variationParallelTests() {
-        int startGen = 10;
+        int startGen = 5;
         int budgetGen = 50;
         int startsAlg = 3;
         int basisSize = 8;
@@ -106,14 +107,21 @@ public class ParallelTester {
                             if(j == 1) {
                                 long startTime = System.currentTimeMillis();
                                 algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "candidates", 1, startGen, budgetGen);
-                                algorithm.start();
+                                result = algorithm.start();
                                 time += (double)(System.currentTimeMillis() - startTime) / 1000;
                             } else {
                                 long startTime = System.currentTimeMillis();
                                 algorithm = new AlphaClusterVariatorAlgorithmParallel(production, orders.getOrders(), null, "candidates", 1, startGen, budgetGen, j);
-                                algorithm.start();
+                                result = algorithm.start();
                                 time += (double) (System.currentTimeMillis() - startTime) / 1000;
                             }
+
+                            if (result != null && RealityTester.test(production, orders, result)) {
+                                System.out.println(i + ":" + j + "threads " + k + ": Завершён...");
+                            } else {
+                                throw new Exception(i + ":" + j + "threads " + k +  ": Результат алгоритма не соответствует заказам");
+                            }
+
                         }
                         if(j == threadMax) {
                             writer.write((time/startsAlg) + "\n");
@@ -136,22 +144,22 @@ public class ParallelTester {
     }
 
     public static void frontParallelTests() {
-        int startGen = 3;
-        int budgetGen = 10;
+        int startGen = 5;
+        int budgetGen = 15;
         int startsAlg = 1;
-        int basisSize = 8;
-        int threadMax = 4;
+        int basisSize = 1;
+        int threadMax = 2;
 
         try (FileWriter writer = new FileWriter("frontParallel.csv", false)) {
             writer.write("№ задачи;Последовательный;2 потока;4 потока;8 потоков;16 потоков\n");
 
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < basisSize; i++) {
                 InputProduction production = READER.readProductionFile("Basis/" + (i + 1) + "_production.xml");
                 InputOrderInformation orders = READER.readOrderFile( "Basis/" + (i + 1) + "_orders.xml");
 
                 if (PossibilityTester.test(production, orders)) {
                     writer.write((i+1) + ";");
-                    for (int j = 1; j <= threadMax; j *= 2) {
+                    for (int j = 2; j <= 2; j *= 2) {
                         double time = 0;
                         for (int k = 0; k < startsAlg; k++) {
 
@@ -160,13 +168,19 @@ public class ParallelTester {
                             if(j == 1) {
                                 long startTime = System.currentTimeMillis();
                                 algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "record", 1, startGen, budgetGen);
-                                algorithm.start();
+                                result = algorithm.start();
                                 time += (double)(System.currentTimeMillis() - startTime) / 1000;
                             } else {
                                 long startTime = System.currentTimeMillis();
-                                algorithm = new AlphaClusterVariatorAlgorithmParallel(production, orders.getOrders(), null, "record", j, startGen, budgetGen, j);
-                                algorithm.start();
-                                time += (double) (System.currentTimeMillis() - startTime) / 1000;
+                                algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "record", j, startGen, budgetGen);
+                                result = algorithm.start();
+                                time += (double)(System.currentTimeMillis() - startTime) / 1000;
+                            }
+
+                            if (result != null && RealityTester.test(production, orders, result)) {
+                                System.out.println(i + ":" + j + "threads " + k + ": Завершён...");
+                            } else {
+                                throw new Exception(i + ":" + j + "threads " + k +  ": Результат алгоритма не соответствует заказам");
                             }
                         }
                         if(j == threadMax) {
@@ -192,7 +206,7 @@ public class ParallelTester {
     public static void unionTests() {
         int threadsCount = 4;
         int frontThreadsCount = 2;
-        int startGen = 4;
+        int startGen = 10;
         int budgetGen = 50;
         int startsAlg = 1;
         int basisSize = 3;
@@ -213,10 +227,10 @@ public class ParallelTester {
 
                     DataFromCalculation consistentVariatorConsistentCandidates = calculation(i, production, orders, "candidates", 1, startGen, budgetGen, 1, startsAlg);
                     DataFromCalculation parallelVariatorConsistentCandidates = calculation(i, production, orders, "candidates", 1, startGen, budgetGen, threadsCount, startsAlg);
-//                    DataFromCalculation consistentVariatorConsistentRecords = calculation(i, production, orders, "record", 1, startGen, budgetGen, 1, startsAlg);
-//                    DataFromCalculation consistentVariatorParallelRecords = calculation(i, production, orders, "record", frontThreadsCount, startGen, budgetGen, 1, startsAlg);
-//                    DataFromCalculation parallelVariatorConsistentRecord = calculation(i, production, orders, "record", 1, startGen, budgetGen, threadsCount, startsAlg);
-//                    DataFromCalculation parallelVariatorParallelRecord = calculation(i, production, orders, "record", frontThreadsCount, startGen, budgetGen, threadsCount, startsAlg);
+                    DataFromCalculation consistentVariatorConsistentRecords = calculation(i, production, orders, "record", 1, startGen, budgetGen, 1, startsAlg);
+                    DataFromCalculation consistentVariatorParallelRecords = calculation(i, production, orders, "record", frontThreadsCount, startGen, budgetGen, 1, startsAlg);
+                    DataFromCalculation parallelVariatorConsistentRecord = calculation(i, production, orders, "record", 1, startGen, budgetGen, threadsCount, startsAlg);
+                    DataFromCalculation parallelVariatorParallelRecord = calculation(i, production, orders, "record", frontThreadsCount, startGen, budgetGen, threadsCount, startsAlg);
 
 
                     writer.write((i + 1) + ";" +
@@ -227,11 +241,11 @@ public class ParallelTester {
                             equipmentCount + ";" +
                             alternativenessCount.average + ";" +
                             ((double) consistentVariatorConsistentCandidates.averageTime / startsAlg) + ";" +
-                            ((double) parallelVariatorConsistentCandidates.averageTime / startsAlg) + "\n");
-//                            ((double) consistentVariatorConsistentRecords.averageTime / startsAlg) + ";" +
-//                            ((double) consistentVariatorParallelRecords.averageTime / startsAlg) + ";" +
-//                            ((double) parallelVariatorConsistentRecord.averageTime / startsAlg) + ";" +
-//                            ((double) parallelVariatorParallelRecord.averageTime / startsAlg) + "\n");
+                            ((double) parallelVariatorConsistentCandidates.averageTime / startsAlg) + ";" +
+                            ((double) consistentVariatorConsistentRecords.averageTime / startsAlg) + ";" +
+                            ((double) consistentVariatorParallelRecords.averageTime / startsAlg) + ";" +
+                            ((double) parallelVariatorConsistentRecord.averageTime / startsAlg) + ";" +
+                            ((double) parallelVariatorParallelRecord.averageTime / startsAlg) + "\n");
                 } else {
                     throw new Exception(i + ": Заказы не соответствуют производству");
                 }
