@@ -138,7 +138,7 @@ public abstract class RecordAbstractAlgorithmParallel extends AbstractAlgorithm 
             }
 
             Equipment equipment = allEquipment.get(choose.getEquipmentId());
-            equipment.setIsBusyTo(timeTick);
+            equipment.setIsBusyTo(endTime);
 
             if(choose.getNextOperationId() == 0) {
                 choose.getProductResult().setEndTime(endTime);

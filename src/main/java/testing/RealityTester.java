@@ -85,7 +85,7 @@ public class RealityTester {
 
         List<String> errorsWithusingSameEquipment = usingSameEquipmentCheck(operationResults, performedOperationsOnEquipments);
         if(errorsWithusingSameEquipment.size() != 0) {
-            errorsWithusingSameEquipment.forEach(System.out::println);
+            //errorsWithusingSameEquipment.forEach(System.out::println);
             flag = false;
         }
 
@@ -195,9 +195,12 @@ public class RealityTester {
                 }
                 if ((operationLeft.getStartTime().isBefore(operationRight.getStartTime()) && operationLeft.getEndTime().isAfter(operationRight.getEndTime())) ||
                         (operationLeft.getStartTime().isAfter(operationRight.getStartTime()) && operationLeft.getEndTime().isBefore(operationRight.getEndTime())) ||
-                        (operationLeft.getStartTime().isBefore(operationRight.getStartTime()) && operationLeft.getEndTime().isAfter(operationRight.getStartTime()) && operationLeft.getEndTime().isBefore(operationRight.getEndTime())) ||
-                        (operationLeft.getStartTime().isAfter(operationRight.getStartTime()) && operationLeft.getStartTime().isBefore(operationRight.getEndTime()) && operationLeft.getEndTime().isAfter(operationRight.getEndTime()))) {
-                    errorMessage.add("Операции " + operationLeft.getOperationId() + " и " + operationRight.getOperationId() + " одновременно выполняются на одном и том же оборудовании");
+                        (operationLeft.getStartTime().isBefore(operationRight.getStartTime()) && !operationLeft.getEndTime().isBefore(operationRight.getStartTime()) && operationLeft.getEndTime().isBefore(operationRight.getEndTime())) ||
+                        (operationLeft.getStartTime().isAfter(operationRight.getStartTime()) && !operationLeft.getStartTime().isAfter(operationRight.getEndTime()) && operationLeft.getEndTime().isAfter(operationRight.getEndTime()))) {
+                    errorMessage.add("Операции " + operationLeft.getOperationId() + " и " + operationRight.getOperationId() +
+                            " одновременно выполняются на одном и том же оборудовании " + operationLeft.getEquipmentId() +
+                            ": операция " + operationLeft.getOperationId() + " выполняется c " + operationLeft.getStartTime() + " по " + operationLeft.getEndTime() +
+                            ", а операция " + operationLeft.getOperationId() + " выполняется c " + operationRight.getStartTime() + " по " + operationRight.getEndTime());
                 }
             }
         }
