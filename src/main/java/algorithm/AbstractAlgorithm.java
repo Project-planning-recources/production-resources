@@ -93,10 +93,12 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     @Override
     public OutputResult start() throws Exception {
+//        int c = 0;
         while(!this.timeline.isEmpty()) {
+//            c++;
+//            System.out.println("AbstractAlgorithm start " + c);
             LocalDateTime timeTick = this.timeline.pop();
             tickOfTime(timeTick);
-            //НЕ ЭТОТ ВАЙЛ
         }
         setTimeForOrdersAndResult();
 
@@ -220,7 +222,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
         LocalDateTime newTick = timeTick;
         WorkingDay day = production.getSchedule().getWorkDayByDayNumber((short) newTick.getDayOfWeek().getValue());
         if (isWeekend(timeTick)) {
+//            int c = 0;
             while(true) {
+//                c++;
+//                System.out.println("AbstractAlgorithm moveTimeTickFromWeekend " + c);
                 if (!day.getWeekday()) {
                     newTick = LocalDateTime.of(newTick.toLocalDate(), day.getStartWorkingTime());
                     if(isWeekend(newTick)) {
@@ -261,7 +266,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
         WorkingDay currentWorkingDay = production.getSchedule().getWorkDayByDayNumber((short)currentDate.getDayOfWeek().getValue());
         long diffInSeconds = duration;
 
+//        int c = 0;
         while(true) {
+//            c++;
+//            System.out.println("AbstractAlgorithm addOperationTimeToTimeline " + c);
             if(currentWorkingDay.getWeekday()) {
                 if(finalTime.toLocalDate().isAfter(currentDate.toLocalDate()) || finalTime.toLocalTime().isAfter(currentWorkingDay.getEndWorkingTime())) {
                     diffInSeconds -= Math.abs(ChronoUnit.SECONDS.between(currentDate, LocalDateTime.of(currentDate.toLocalDate(), currentWorkingDay.getEndWorkingTime())));

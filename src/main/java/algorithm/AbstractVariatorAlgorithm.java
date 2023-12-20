@@ -6,6 +6,7 @@ import algorithm.model.order.TechProcess;
 import algorithm.model.production.Production;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
+import util.Data;
 import util.Hash;
 import util.Pair;
 import util.Random;

@@ -1,5 +1,8 @@
 package util;
 
+import algorithm.model.order.Order;
+import algorithm.model.order.Product;
+import algorithm.model.order.TechProcess;
 import parse.input.order.InputOrder;
 import parse.input.order.InputProduct;
 import parse.input.order.InputTechProcess;
@@ -16,8 +19,24 @@ public class Data {
     private Data() {
     }
 
-    public static int getPerformOperationsCount(OutputResult result) {
-        int operationsCount = 0;
+    public static long getOperationsCount(ArrayList<Order> orders) {
+        long operationsCount = 0;
+
+        for (Order order : orders) {
+            for (Product product : order.getProducts()) {
+                long operationsOnProduct = 0;
+                for (TechProcess techProcess : product.getTechProcesses()) {
+                    operationsOnProduct += techProcess.getOperations().size();
+                }
+                operationsCount += operationsOnProduct * product.getCount();
+            }
+        }
+
+        return operationsCount;
+    }
+
+    public static long getPerformOperationsCount(OutputResult result) {
+        long operationsCount = 0;
 
         for (OutputOrderResult orderResult : result.getOrderResults()) {
             for (OutputProductResult outputProductResult : orderResult.getProductResults()) {

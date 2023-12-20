@@ -45,8 +45,10 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
             HashMap<Long, Integer> variant = generateRandomAlternativesDistribution();
             if (checkVariantAvailability(variant)) {
 
+//                System.out.println("stert" + i);
                 Algorithm algorithm = FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, variant, this.frontAlgorithmType, this.frontThreadsCount);
                 OutputResult result = algorithm.start();
+//                System.out.println("finish" + i);
 
                 this.variation.add(new Pair<>(variant, Criterion.getCriterion(this.orders, result)));
                 loading();
@@ -108,9 +110,11 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
         int counter = 0;
         while (pairsFlag) {
             counter++;
+//            System.out.println("getVariantPair " + counter);
             if(counter > 50) {
                 return null;
             }
+
             Pair<HashMap<Long, Integer>, Double> pair = this.variation.get(Random.randomInt(this.variation.size()));
             firstVariant = pair.getKey();
             criterionForFirstVariant = pair.getValue();
@@ -138,7 +142,8 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
         int counter = 0;
         while (generationFlag) {
             counter++;
-            if(counter > 100) {
+//            System.out.println("generateAndAddNewVariants " + counter);
+            if(counter > 50) {
                 throw new InabilityGenerateException();
             }
             ArrayList<Pair<HashMap<Long, Integer>, Double>> pair = getVariantPair();
@@ -176,8 +181,6 @@ public class AlphaVariatorAlgorithm extends AbstractVariatorAlgorithm {
                     }
                 }
             }
-
-
 
             if (addCount != 0) {
                 generationFlag = false;
