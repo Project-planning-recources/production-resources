@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class CompositeRecordParallel implements Record {
 
     private final List<AvlTree<OperationResult>> avlTrees;
-    private final AvlTree<OperationResult> records;
+    private AvlTree<OperationResult> records;
     private final EquipmentFinder equipmentFinder;
 
     public CompositeRecordParallel(List<EquipmentGroup> groups, List<AvlTree<OperationResult>> avlTrees) {
@@ -36,7 +36,13 @@ public class CompositeRecordParallel implements Record {
     public OperationResult getRecord(LocalDateTime timeTick) {
         OperationResult result = equipmentFinder.findAvailableEquipmentByTimeTick(records, timeTick);
         if (Objects.nonNull(result)) {
+            int size = records.getSize();
             records.remove(result);
+            if (size == records.getSize()) {
+                List<OperationResult> operationResults = records.getKeys();
+                operationResults.remove(result);
+                badFillRecordTree(operationResults);
+            }
         } else {
             fillRecords();
         }
@@ -73,7 +79,13 @@ public class CompositeRecordParallel implements Record {
             OperationResult prevRecord = thread.getPrevRecord();
             if (Objects.nonNull(newRecord)) {
                 if (Objects.nonNull(prevRecord)) {
+                    int size = records.getSize();
                     records.remove(prevRecord);
+                    if (size == records.getSize()) {
+                        List<OperationResult> operationResults = records.getKeys();
+                        operationResults.remove(prevRecord);
+                        badFillRecordTree(operationResults);
+                    }
                 }
                 records.insert(newRecord);
             }
@@ -99,8 +111,33 @@ public class CompositeRecordParallel implements Record {
             OperationResult newRecord = runnableThread.get(i).getNewRecord();
             OperationResult prevRecord = runnableThread.get(i).getPrevRecord();
             if (Objects.nonNull(newRecord) && !newRecord.equals(prevRecord)) {
-                records.insert(avlTrees.get(i).remove(newRecord));
+                int size = avlTrees.get(i).getSize();
+                avlTrees.get(i).remove(newRecord);
+                if (size == avlTrees.get(i).getSize()) {
+                    List<OperationResult> operationResults = avlTrees.get(i).getKeys();
+                    operationResults.remove(prevRecord);
+                    badFillTree(operationResults, i);
+                }
+                records.insert(newRecord);
             }
         }
+    }
+
+    /**
+     * Вынужденная операция из-за плохой реализации дерева
+     */
+    private void badFillTree(List<OperationResult> operations, int i) {
+        AvlTree<OperationResult> newTree = new AvlTreeImpl<>(OperationResult::compareTo);
+        operations.forEach(newTree::insert);
+        avlTrees.set(i, newTree);
+    }
+
+    /**
+     * Вынужденная операция из-за плохой реализации дерева
+     */
+    private void badFillRecordTree(List<OperationResult> operations) {
+        AvlTree<OperationResult> newTree = new AvlTreeImpl<>(OperationResult::compareTo);
+        operations.forEach(newTree::insert);
+        records = newTree;
     }
 }

@@ -7,6 +7,7 @@ import org.apache.directory.server.core.avltree.AvlTree;
 import org.apache.directory.server.core.avltree.LinkedAvlNode;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,25 +39,31 @@ public class EquipmentFinder {
     }
 
     public OperationResult findAvailableEquipmentByTimeTick(AvlTree<OperationResult> operations, LocalDateTime timeTick) {
-        LinkedAvlNode<OperationResult> operationNode = operations.getFirst();
-        OperationResult operation = Objects.nonNull(operationNode) ? operationNode.getKey() : null;
-        int c = 0;
-        while (Objects.nonNull(operationNode)){
-            c++;
-            //System.out.println("Из EquipmentFinder.findAvailableEquipmentByTimeTick");
+        List<OperationResult> operationsList = operations.getKeys();
+        //LinkedAvlNode<OperationResult> operationNode = operations.getFirst();
+        OperationResult result = null;
+        //int c = 0;
+        for (OperationResult operation : operationsList) {
+            //System.out.println("Из EquipmentFinder.findAvailableEquipmentByTimeTick: ");
+            if (findAvailableEquipmentByTimeTick(operation, timeTick)) {
+                result = operation;
+                break;
+            }
+        }
+        //while (Objects.nonNull(operationNode)){
+            //c++;
+            //System.out.println("Из EquipmentFinder.findAvailableEquipmentByTimeTick: " + c);
 
-            if(c > operationsCount) {
+            /*if(c > operationsCount) {
                 throw new RuntimeException("Выход по счётчику");
             }
-            if (findAvailableEquipmentByTimeTick(operation, timeTick)) {
-                break;
-            } else {
+             else {
                 operationNode = operations.findGreater(operation);
                 operation = Objects.nonNull(operationNode) ? operationNode.getKey() : null;
             }
 
-        }
+        }*/
 
-        return operation;
+        return result;
     }
 }

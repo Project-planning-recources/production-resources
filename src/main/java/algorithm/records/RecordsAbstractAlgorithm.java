@@ -113,10 +113,8 @@ public abstract class RecordsAbstractAlgorithm extends AbstractAlgorithm {
     @Override
     protected void startOperations(LocalDateTime timeTick) {
         OperationResult choose;
-//        int counter = 0;
+
         while (true) {
-//            counter++;
-//            System.out.println("record startOperations " + counter);
             //System.out.println("Из AbstractAlgorithm.startOperations");
             choose = record.getRecord(timeTick);
             if (Objects.isNull(choose)) {

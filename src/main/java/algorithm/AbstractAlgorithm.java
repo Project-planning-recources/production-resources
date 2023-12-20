@@ -93,14 +93,22 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     @Override
     public OutputResult start() throws Exception {
-//        int c = 0;
+        int c = 0;
         while(!this.timeline.isEmpty()) {
-//            c++;
-//            System.out.println("AbstractAlgorithm start " + c);
+            c++;
+            if (c > 3000) {
+                System.out.println("Туть");
+            }
+            //System.out.println("AbstractAlgorithm start ");
             LocalDateTime timeTick = this.timeline.pop();
             tickOfTime(timeTick);
         }
-        setTimeForOrdersAndResult();
+        try {
+            setTimeForOrdersAndResult();
+        } catch (NullPointerException e) {
+            System.out.println("Падаем");
+        }
+
 
         production.getEquipmentGroups().forEach(group -> {
             group.getEquipment().forEach(equipment -> equipment.setIsBusyTo(null));
@@ -225,7 +233,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
 //            int c = 0;
             while(true) {
 //                c++;
-//                System.out.println("AbstractAlgorithm moveTimeTickFromWeekend " + c);
+               //System.out.println("AbstractAlgorithm moveTimeTickFromWeekend ");
                 if (!day.getWeekday()) {
                     newTick = LocalDateTime.of(newTick.toLocalDate(), day.getStartWorkingTime());
                     if(isWeekend(newTick)) {
@@ -269,7 +277,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
 //        int c = 0;
         while(true) {
 //            c++;
-//            System.out.println("AbstractAlgorithm addOperationTimeToTimeline " + c);
+            //System.out.println("AbstractAlgorithm addOperationTimeToTimeline ");
             if(currentWorkingDay.getWeekday()) {
                 if(finalTime.toLocalDate().isAfter(currentDate.toLocalDate()) || finalTime.toLocalTime().isAfter(currentWorkingDay.getEndWorkingTime())) {
                     diffInSeconds -= Math.abs(ChronoUnit.SECONDS.between(currentDate, LocalDateTime.of(currentDate.toLocalDate(), currentWorkingDay.getEndWorkingTime())));

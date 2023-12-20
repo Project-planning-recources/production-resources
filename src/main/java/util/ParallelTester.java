@@ -77,10 +77,10 @@ public class ParallelTester {
     public static void main(String[] args) throws Exception {
 
 //        unionTests();
-        unionTestsDifferentFiles();
+//        unionTestsDifferentFiles();
 
 //        variationParallelTests();
-//        frontParallelTests();
+        frontParallelTests();
     }
 
     public static void variationParallelTests() {
@@ -100,7 +100,7 @@ public class ParallelTester {
 
                 if (PossibilityTester.test(production, orders)) {
                     writer.write((i + 1) + ";");
-                    for (int j = 1; j <= threadMax; j *= 2) {
+                    for (int j = 1; j <= 1; j *= 2) {
                         double time = 0;
                         for (int k = 0; k < startsAlg; k++) {
 
@@ -161,7 +161,7 @@ public class ParallelTester {
 
                 if (PossibilityTester.test(production, orders)) {
                     writer.write((i + 1) + ";");
-                    for (int j = 2; j <= 2; j *= 2) {
+                    for (int j = 1; j <= 2; j *= 2) {
                         double time = 0;
                         for (int k = 0; k < startsAlg; k++) {
 
@@ -174,7 +174,7 @@ public class ParallelTester {
                                 time += (double) (System.currentTimeMillis() - startTime) / 1000;
                             } else {
                                 long startTime = System.currentTimeMillis();
-                                algorithm = new AlphaClusterVariatorAlgorithmParallel(production, orders.getOrders(), null, "record", j, startGen, budgetGen, 2);
+                                algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "record", j, startGen, budgetGen);
                                 result = algorithm.start();
                                 time += (double) (System.currentTimeMillis() - startTime) / 1000;
                             }
