@@ -267,8 +267,8 @@ public class ParallelTester {
         int startGen = 10;
         int budgetGen = 50;
         int startsAlg = 3;
-        int basisStart = 0;
-        int basisSize = 1;
+        int basisStart = 1;
+        int basisSize = 2;
 
 
 
@@ -282,33 +282,33 @@ public class ParallelTester {
                 AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
                 long equipmentCount = Data.getEquipmentCount(production);
 
-//                DataFromCalculation consistentVariatorConsistentRecords = calculation(i, production, orders, "record", 1, startGen, budgetGen, 1, startsAlg);
-//                try (FileWriter writer = new FileWriter((i+1) + "consistentVariatorConsistentRecords.csv", false)) {
-//                    writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
-//                            "Время последовательного с рекордом\n");
-//                    writer.write((i + 1) + ";" +
-//                            orders.getOrders().size() + ";" +
-//                            Data.getDetailTypesCount(orders.getOrders()) + ";" +
-//                            Data.getAverageDetailsCount(orders.getOrders()) + ";" +
-//                            Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
-//                            equipmentCount + ";" +
-//                            alternativenessCount.average + ";" +
-//                            ((double) consistentVariatorConsistentRecords.averageTime / startsAlg) + "\n");
-//                }
-//
-//                DataFromCalculation consistentVariatorParallelRecords = calculation(i, production, orders, "record", 2, startGen, budgetGen, 1, startsAlg);
-//                try (FileWriter writer = new FileWriter((i+1) + "consistentVariatorParallelRecords.csv", false)) {
-//                    writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
-//                            "Время последовательного с параллельным рекордом\n");
-//                    writer.write((i + 1) + ";" +
-//                            orders.getOrders().size() + ";" +
-//                            Data.getDetailTypesCount(orders.getOrders()) + ";" +
-//                            Data.getAverageDetailsCount(orders.getOrders()) + ";" +
-//                            Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
-//                            equipmentCount + ";" +
-//                            alternativenessCount.average + ";" +
-//                            ((double) consistentVariatorParallelRecords.averageTime / startsAlg) + "\n");
-//                }
+                DataFromCalculation consistentVariatorConsistentRecords = calculation(i, production, orders, "record", 1, startGen, budgetGen, 1, startsAlg);
+                try (FileWriter writer = new FileWriter((i+1) + "consistentVariatorConsistentRecords.csv", false)) {
+                    writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
+                            "Время последовательного с рекордом\n");
+                    writer.write((i + 1) + ";" +
+                            orders.getOrders().size() + ";" +
+                            Data.getDetailTypesCount(orders.getOrders()) + ";" +
+                            Data.getAverageDetailsCount(orders.getOrders()) + ";" +
+                            Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
+                            equipmentCount + ";" +
+                            alternativenessCount.average + ";" +
+                            ((double) consistentVariatorConsistentRecords.averageTime / startsAlg) + "\n");
+                }
+
+                DataFromCalculation consistentVariatorParallelRecords = calculation(i, production, orders, "record", 2, startGen, budgetGen, 1, startsAlg);
+                try (FileWriter writer = new FileWriter((i+1) + "consistentVariatorParallelRecords.csv", false)) {
+                    writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
+                            "Время последовательного с параллельным рекордом\n");
+                    writer.write((i + 1) + ";" +
+                            orders.getOrders().size() + ";" +
+                            Data.getDetailTypesCount(orders.getOrders()) + ";" +
+                            Data.getAverageDetailsCount(orders.getOrders()) + ";" +
+                            Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
+                            equipmentCount + ";" +
+                            alternativenessCount.average + ";" +
+                            ((double) consistentVariatorParallelRecords.averageTime / startsAlg) + "\n");
+                }
 
                 DataFromCalculation parallelVariatorConsistentRecord = calculation(i, production, orders, "record", 1, startGen, budgetGen, 2, startsAlg);
                 try (FileWriter writer = new FileWriter((i+1) + "parallelVariatorConsistentRecords.csv", false)) {
@@ -325,7 +325,7 @@ public class ParallelTester {
                 }
 
                 DataFromCalculation parallelVariatorParallelRecord = calculation(i, production, orders, "record", 2, startGen, budgetGen, 2, startsAlg);
-                try (FileWriter writer = new FileWriter((i+1) + "parallelVariatorConsistentRecords.csv", false)) {
+                try (FileWriter writer = new FileWriter((i+1) + "parallelVariatorParallelRecords.csv", false)) {
                     writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
                             "Время параллельного с параллельным рекордом\n");
                     writer.write((i + 1) + ";" +

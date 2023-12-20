@@ -46,8 +46,7 @@ public class EquipmentFinder {
             //System.out.println("Из EquipmentFinder.findAvailableEquipmentByTimeTick");
 
             if(c > operationsCount) {
-                System.out.println("Выход по счётчику");
-                return operation;
+                throw new RuntimeException("Выход по счётчику");
             }
             if (findAvailableEquipmentByTimeTick(operation, timeTick)) {
                 break;
