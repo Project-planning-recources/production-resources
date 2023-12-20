@@ -9,10 +9,12 @@ import algorithm.model.production.Production;
 import algorithm.model.result.*;
 import algorithm.operationchooser.OperationChooser;
 import algorithm.records.record.CompositeRecord;
+import algorithm.records.util.EquipmentFinder;
 import org.apache.directory.server.core.avltree.AvlTree;
 import org.apache.directory.server.core.avltree.AvlTreeImpl;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
+import util.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ public abstract class RecordsAbstractAlgorithm extends AbstractAlgorithm {
 
     public RecordsAbstractAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector) {
         super(production, orders, startTime);
+        EquipmentFinder.operationsCount = Data.getOperationsCount(this.orders);
         this.operationChooser = operationChooser;
         this.alternativeElector = alternativeElector;
         initEquipmentHashMap();
@@ -38,6 +41,7 @@ public abstract class RecordsAbstractAlgorithm extends AbstractAlgorithm {
 
     public RecordsAbstractAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector) {
         super(inputProduction, inputOrders, startTime);
+        EquipmentFinder.operationsCount = Data.getOperationsCount(this.orders);
         this.operationChooser = operationChooser;
         this.alternativeElector = alternativeElector;
         initEquipmentHashMap();

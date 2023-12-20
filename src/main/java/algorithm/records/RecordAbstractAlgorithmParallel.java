@@ -9,10 +9,12 @@ import algorithm.model.production.Production;
 import algorithm.model.result.*;
 import algorithm.operationchooser.OperationChooser;
 import algorithm.records.record.CompositeRecordParallel;
+import algorithm.records.util.EquipmentFinder;
 import org.apache.directory.server.core.avltree.AvlTree;
 import org.apache.directory.server.core.avltree.AvlTreeImpl;
 import parse.input.order.InputOrder;
 import parse.input.production.InputProduction;
+import util.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public abstract class RecordAbstractAlgorithmParallel extends AbstractAlgorithm 
 
     public RecordAbstractAlgorithmParallel(Production production, ArrayList<Order> orders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector, int threadCount) {
         super(production, orders, startTime);
+        EquipmentFinder.operationsCount = Data.getOperationsCount(this.orders);
         this.threadCount = threadCount;
         this.operationChooser = operationChooser;
         this.alternativeElector = alternativeElector;
@@ -44,6 +47,7 @@ public abstract class RecordAbstractAlgorithmParallel extends AbstractAlgorithm 
 
     public RecordAbstractAlgorithmParallel(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime, OperationChooser operationChooser, AlternativeElector alternativeElector,  int threadCount) {
         super(inputProduction, inputOrders, startTime);
+        EquipmentFinder.operationsCount = Data.getOperationsCount(this.orders);
         this.threadCount = threadCount;
         this.operationChooser = operationChooser;
         this.alternativeElector = alternativeElector;

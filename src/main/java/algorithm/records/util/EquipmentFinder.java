@@ -14,6 +14,8 @@ public class EquipmentFinder {
 
     private final Map<Long, EquipmentGroup> equipmentGroups;
 
+    public static long operationsCount = 0;
+
     public EquipmentFinder(Map<Long, EquipmentGroup> equipmentGroups) {
         this.equipmentGroups = equipmentGroups;
     }
@@ -41,16 +43,19 @@ public class EquipmentFinder {
         int c = 0;
         while (Objects.nonNull(operationNode)){
             c++;
-            System.out.println("EquipmentFinder findAvailableEquipmentByTimeTick " + c);
-            System.out.println("         " + operationNode);
-            System.out.println("         " + operationNode.getKey());
             //System.out.println("Из EquipmentFinder.findAvailableEquipmentByTimeTick");
+
+            if(c > operationsCount) {
+                System.out.println("Выход по счётчику");
+                return operation;
+            }
             if (findAvailableEquipmentByTimeTick(operation, timeTick)) {
                 break;
             } else {
                 operationNode = operations.findGreater(operation);
                 operation = Objects.nonNull(operationNode) ? operationNode.getKey() : null;
             }
+
         }
 
         return operation;
