@@ -93,12 +93,12 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     @Override
     public OutputResult start() throws Exception {
-        int c = 0;
+//        int c = 0;
         while(!this.timeline.isEmpty()) {
-            c++;
-            if (c > 3000) {
-                System.out.println("Туть");
-            }
+//            c++;
+//            if (c > 3000) {
+//                System.out.println("Туть");
+//            }
             //System.out.println("AbstractAlgorithm start ");
             LocalDateTime timeTick = this.timeline.pop();
             tickOfTime(timeTick);

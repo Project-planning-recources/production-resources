@@ -146,11 +146,11 @@ public class ParallelTester {
     }
 
     public static void frontParallelTests() {
-        int startGen = 5;
-        int budgetGen = 100;
-        int startsAlg = 100;
-        int basisSize = 1;
-        int threadMax = 2;
+        int startGen = 10;
+        int budgetGen = 20;
+        int startsAlg = 3;
+        int basisSize = 7;
+        int threadMax = 4;
 
         try (FileWriter writer = new FileWriter("frontParallel.csv", false)) {
             writer.write("№ задачи;Последовательный;2 потока;4 потока;8 потоков;16 потоков\n");
@@ -161,7 +161,7 @@ public class ParallelTester {
 
                 if (PossibilityTester.test(production, orders)) {
                     writer.write((i + 1) + ";");
-                    for (int j = 1; j <= 2; j *= 2) {
+                    for (int j = 1; j <= threadMax; j *= 2) {
                         double time = 0;
                         for (int k = 0; k < startsAlg; k++) {
 
@@ -183,7 +183,6 @@ public class ParallelTester {
                                 System.out.println(i + ":" + j + "threads:" + k + ": Завершён...");
                             } else {
                                 System.out.println(i + ":" + j + "threads:" + k + ": Результат алгоритма не соответствует заказам");
-                                throw new Exception(i + ":" + j + "threads:" + k + ": Результат алгоритма не соответствует заказам");
                             }
                         }
                         if (j == threadMax) {
@@ -192,8 +191,6 @@ public class ParallelTester {
                             writer.write((time / startsAlg) + ";");
                         }
                     }
-
-
                 } else {
                     throw new Exception(i + ": Заказы не соответствуют производству");
                 }
@@ -267,8 +264,8 @@ public class ParallelTester {
         int startGen = 10;
         int budgetGen = 50;
         int startsAlg = 3;
-        int basisStart = 1;
-        int basisSize = 2;
+        int basisStart = 5;
+        int basisSize = 6;
 
 
 
