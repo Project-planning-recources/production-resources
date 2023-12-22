@@ -1,10 +1,13 @@
 package util;
 
 import algorithm.Algorithm;
+import algorithm.FrontAlgorithmFactory;
 import algorithm.alpha.AlphaClusterVariatorAlgorithm;
 import algorithm.alpha.AlphaClusterVariatorAlgorithmParallel;
 import algorithm.alpha.AlphaVariatorAlgorithm;
 import algorithm.alpha.AlphaVariatorAlgorithmParallel;
+import algorithm.model.order.Order;
+import algorithm.model.production.Production;
 import parse.input.XMLReader;
 import parse.input.order.InputOrderInformation;
 import parse.input.production.InputProduction;
@@ -15,6 +18,7 @@ import testing.RealityTester;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ParallelTester {
 
@@ -77,10 +81,10 @@ public class ParallelTester {
     public static void main(String[] args) throws Exception {
 
 //        unionTests();
-//        unionTestsDifferentFiles();
+        unionTestsDifferentFiles();
 
 //        variationParallelTests();
-        frontParallelTests();
+//        frontParallelTests();
     }
 
     public static void variationParallelTests() {
@@ -146,8 +150,8 @@ public class ParallelTester {
     }
 
     public static void frontParallelTests() {
-        int startGen = 10;
-        int budgetGen = 20;
+//        int startGen = 10;
+//        int budgetGen = 20;
         int startsAlg = 3;
         int basisSize = 7;
         int threadMax = 4;
@@ -157,29 +161,25 @@ public class ParallelTester {
 
             for (int i = 0; i < basisSize; i++) {
                 InputProduction production = READER.readProductionFile("Basis/" + (i + 1) + "_production.xml");
-                InputOrderInformation orders = READER.readOrderFile("Basis/" + (i + 1) + "_orders.xml");
+                InputOrderInformation inputOrderInformation = READER.readOrderFile("Basis/" + (i + 1) + "_orders.xml");
 
-                if (PossibilityTester.test(production, orders)) {
+
+                if (PossibilityTester.test(production, inputOrderInformation)) {
                     writer.write((i + 1) + ";");
                     for (int j = 1; j <= threadMax; j *= 2) {
                         double time = 0;
                         for (int k = 0; k < startsAlg; k++) {
 
-                            Algorithm algorithm = null;
-                            OutputResult result = null;
-                            if (j == 1) {
-                                long startTime = System.currentTimeMillis();
-                                algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "record", 1, startGen, budgetGen);
-                                result = algorithm.start();
-                                time += (double) (System.currentTimeMillis() - startTime) / 1000;
-                            } else {
-                                long startTime = System.currentTimeMillis();
-                                algorithm = new AlphaClusterVariatorAlgorithm(production, orders.getOrders(), null, "record", j, startGen, budgetGen);
-                                result = algorithm.start();
-                                time += (double) (System.currentTimeMillis() - startTime) / 1000;
-                            }
+                            ArrayList<Order> orders = new ArrayList<>();
+                            inputOrderInformation.getOrders().forEach(inputOrder -> {
+                                orders.add(new Order(inputOrder));
+                            });
+                            long startTime = System.currentTimeMillis();
+                            Algorithm algorithm = FrontAlgorithmFactory.getBaseFrontAlgorithm(new Production(production), orders, null, "record", j);;
+                            OutputResult result = algorithm.start();
+                            time += (double) (System.currentTimeMillis() - startTime) / 1000;
 
-                            if (result != null && RealityTester.test(production, orders, result)) {
+                            if (result != null && RealityTester.test(production, inputOrderInformation, result)) {
                                 System.out.println(i + ":" + j + "threads:" + k + ": Завершён...");
                             } else {
                                 System.out.println(i + ":" + j + "threads:" + k + ": Результат алгоритма не соответствует заказам");
@@ -265,7 +265,7 @@ public class ParallelTester {
         int budgetGen = 50;
         int startsAlg = 3;
         int basisStart = 5;
-        int basisSize = 6;
+        int basisSize = 7;
 
 
 
@@ -279,33 +279,36 @@ public class ParallelTester {
                 AlternativenessCount alternativenessCount = Data.getAlternativenessCount(orders.getOrders());
                 long equipmentCount = Data.getEquipmentCount(production);
 
-                DataFromCalculation consistentVariatorConsistentRecords = calculation(i, production, orders, "record", 1, startGen, budgetGen, 1, startsAlg);
-                try (FileWriter writer = new FileWriter((i+1) + "consistentVariatorConsistentRecords.csv", false)) {
-                    writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
-                            "Время последовательного с рекордом\n");
-                    writer.write((i + 1) + ";" +
-                            orders.getOrders().size() + ";" +
-                            Data.getDetailTypesCount(orders.getOrders()) + ";" +
-                            Data.getAverageDetailsCount(orders.getOrders()) + ";" +
-                            Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
-                            equipmentCount + ";" +
-                            alternativenessCount.average + ";" +
-                            ((double) consistentVariatorConsistentRecords.averageTime / startsAlg) + "\n");
+                if(i != 5) {
+                    DataFromCalculation consistentVariatorConsistentRecords = calculation(i, production, orders, "record", 1, startGen, budgetGen, 1, startsAlg);
+                    try (FileWriter writer = new FileWriter((i+1) + "consistentVariatorConsistentRecords.csv", false)) {
+                        writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
+                                "Время последовательного с рекордом\n");
+                        writer.write((i + 1) + ";" +
+                                orders.getOrders().size() + ";" +
+                                Data.getDetailTypesCount(orders.getOrders()) + ";" +
+                                Data.getAverageDetailsCount(orders.getOrders()) + ";" +
+                                Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
+                                equipmentCount + ";" +
+                                alternativenessCount.average + ";" +
+                                ((double) consistentVariatorConsistentRecords.averageTime / startsAlg) + "\n");
+                    }
+
+                    DataFromCalculation consistentVariatorParallelRecords = calculation(i, production, orders, "record", 2, startGen, budgetGen, 1, startsAlg);
+                    try (FileWriter writer = new FileWriter((i+1) + "consistentVariatorParallelRecords.csv", false)) {
+                        writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
+                                "Время последовательного с параллельным рекордом\n");
+                        writer.write((i + 1) + ";" +
+                                orders.getOrders().size() + ";" +
+                                Data.getDetailTypesCount(orders.getOrders()) + ";" +
+                                Data.getAverageDetailsCount(orders.getOrders()) + ";" +
+                                Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
+                                equipmentCount + ";" +
+                                alternativenessCount.average + ";" +
+                                ((double) consistentVariatorParallelRecords.averageTime / startsAlg) + "\n");
+                    }
                 }
 
-                DataFromCalculation consistentVariatorParallelRecords = calculation(i, production, orders, "record", 2, startGen, budgetGen, 1, startsAlg);
-                try (FileWriter writer = new FileWriter((i+1) + "consistentVariatorParallelRecords.csv", false)) {
-                    writer.write("№;Количество заказов;Количество типов деталей;Среднее количество деталей каждого типа;Среднее количество операций на деталь;Количество атомарных ресурсов;Среднее число альтернатив на деталь;" +
-                            "Время последовательного с параллельным рекордом\n");
-                    writer.write((i + 1) + ";" +
-                            orders.getOrders().size() + ";" +
-                            Data.getDetailTypesCount(orders.getOrders()) + ";" +
-                            Data.getAverageDetailsCount(orders.getOrders()) + ";" +
-                            Data.getAverageOperationsCountOnDetail(orders.getOrders()) + ";" +
-                            equipmentCount + ";" +
-                            alternativenessCount.average + ";" +
-                            ((double) consistentVariatorParallelRecords.averageTime / startsAlg) + "\n");
-                }
 
                 DataFromCalculation parallelVariatorConsistentRecord = calculation(i, production, orders, "record", 1, startGen, budgetGen, 2, startsAlg);
                 try (FileWriter writer = new FileWriter((i+1) + "parallelVariatorConsistentRecords.csv", false)) {
