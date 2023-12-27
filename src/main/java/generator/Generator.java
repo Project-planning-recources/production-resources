@@ -10,6 +10,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class Generator {
 
@@ -65,6 +66,12 @@ public class Generator {
                     LocalTime.of(endWorkingTime, 0), true);
             inputSchedule.getWeek().add(inputWorkingDay);
         }
+        for(short dayNumber = 1; dayNumber < 8; dayNumber++) {
+            if(Objects.isNull(inputSchedule.getWorkDayByDayNumber(dayNumber))) {
+                inputSchedule.getWeek().add(new InputWorkingDay(dayNumber, LocalTime.MIN, LocalTime.MIN, false));
+            }
+        }
+
         inputProduction.setSchedule(inputSchedule);
 
         long equipmentGroupCount = Random.randomInt(minEquipmentGroupCount, maxEquipmentGroupCount);
@@ -121,7 +128,12 @@ public class Generator {
 
             for (long j = 1; j <= detailsTypeCount; j++) {
                 int detailsCount = Random.randomInt(minDetailsCount, maxDetailsCount);
-                long techProcessCount = Random.randomInt(minTechProcessCount, maxTechProcessCount);
+                long techProcessCount;
+                if(j == 1) {
+                    techProcessCount = maxTechProcessCount;
+                } else {
+                    techProcessCount = Random.randomInt(minTechProcessCount, maxTechProcessCount);
+                }
                 int lengthTechProcessCount = (int)(Math.log10(techProcessCount) + 1);
 
                 ArrayList<InputTechProcess> techProcesses = new ArrayList<>();

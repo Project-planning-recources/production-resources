@@ -18,6 +18,7 @@ public class WorkingDayAdapter extends XmlAdapter<WorkingDayAdapter.AdaptedWorki
 
     private static final String DELIMITER = "-";
 
+
     /**
      *
      * @param adaptedWorkingDay Экземпляр промежуточного класса с данными о рабочем дне
@@ -70,6 +71,9 @@ public class WorkingDayAdapter extends XmlAdapter<WorkingDayAdapter.AdaptedWorki
          */
         @XmlAttribute(name = "time_period")
         private String timePeriod;
+
+        public AdaptedWorkingDay() {
+        }
 
         public AdaptedWorkingDay(String dayNumber, String timePeriod) {
             this.dayNumber = dayNumber;

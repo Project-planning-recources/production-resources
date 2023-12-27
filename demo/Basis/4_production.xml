@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SystemInformation>
+    <CalendarInformation>
+        <Timetable>
+            <Day day_of_week="1" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="2" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="3" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="4" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="5" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="6" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="7" time_period="09:00:00-17:00:00"/>
+        </Timetable>
+    </CalendarInformation>
+    <EquipmentInformation>
+        <EquipmentGroup id="1" name="Группа 1">
+            <Equipment id="11" name="Оборудование 1.11"/>
+            <Equipment id="12" name="Оборудование 1.12"/>
+            <Equipment id="13" name="Оборудование 1.13"/>
+            <Equipment id="14" name="Оборудование 1.14"/>
+        </EquipmentGroup>
+        <EquipmentGroup id="2" name="Группа 2">
+            <Equipment id="201" name="Оборудование 2.201"/>
+            <Equipment id="202" name="Оборудование 2.202"/>
+            <Equipment id="203" name="Оборудование 2.203"/>
+            <Equipment id="204" name="Оборудование 2.204"/>
+            <Equipment id="205" name="Оборудование 2.205"/>
+            <Equipment id="206" name="Оборудование 2.206"/>
+            <Equipment id="207" name="Оборудование 2.207"/>
+            <Equipment id="208" name="Оборудование 2.208"/>
+            <Equipment id="209" name="Оборудование 2.209"/>
+            <Equipment id="210" name="Оборудование 2.210"/>
+        </EquipmentGroup>
+        <EquipmentGroup id="3" name="Группа 3">
+            <Equipment id="31" name="Оборудование 3.31"/>
+            <Equipment id="32" name="Оборудование 3.32"/>
+            <Equipment id="33" name="Оборудование 3.33"/>
+        </EquipmentGroup>
+    </EquipmentInformation>
+</SystemInformation>

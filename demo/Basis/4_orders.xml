@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OrderInformation>
+    <Order id="1" date_begin="01.09.2023 00:00:00" date_end="01.10.2023 00:00:00">
+        <Detail id="11" name="Деталь 1.11" count="1000">
+            <TechProcess id="111">
+                <Operation id="1111" name="Операция 111.1111" duration="1961" equipment_group="2" prev_operation_id="0" next_operation_id="1112"/>
+                <Operation id="1112" name="Операция 111.1112" duration="1981" equipment_group="1" prev_operation_id="1111" next_operation_id="1113"/>
+                <Operation id="1113" name="Операция 111.1113" duration="2608" equipment_group="1" prev_operation_id="1112" next_operation_id="1114"/>
+                <Operation id="1114" name="Операция 111.1114" duration="2235" equipment_group="2" prev_operation_id="1113" next_operation_id="1115"/>
+                <Operation id="1115" name="Операция 111.1115" duration="2140" equipment_group="3" prev_operation_id="1114" next_operation_id="0"/>
+            </TechProcess>
+            <TechProcess id="112">
+                <Operation id="1121" name="Операция 112.1121" duration="1168" equipment_group="2" prev_operation_id="0" next_operation_id="1122"/>
+                <Operation id="1122" name="Операция 112.1122" duration="2006" equipment_group="1" prev_operation_id="1121" next_operation_id="1123"/>
+                <Operation id="1123" name="Операция 112.1123" duration="1948" equipment_group="3" prev_operation_id="1122" next_operation_id="0"/>
+            </TechProcess>
+            <TechProcess id="113">
+                <Operation id="1131" name="Операция 113.1131" duration="2987" equipment_group="1" prev_operation_id="0" next_operation_id="1132"/>
+                <Operation id="1132" name="Операция 113.1132" duration="2248" equipment_group="1" prev_operation_id="1131" next_operation_id="1133"/>
+                <Operation id="1133" name="Операция 113.1133" duration="1214" equipment_group="1" prev_operation_id="1132" next_operation_id="1134"/>
+                <Operation id="1134" name="Операция 113.1134" duration="1434" equipment_group="3" prev_operation_id="1133" next_operation_id="1135"/>
+                <Operation id="1135" name="Операция 113.1135" duration="1701" equipment_group="2" prev_operation_id="1134" next_operation_id="0"/>
+            </TechProcess>
+            <TechProcess id="114">
+                <Operation id="1141" name="Операция 114.1141" duration="2949" equipment_group="1" prev_operation_id="0" next_operation_id="1142"/>
+                <Operation id="1142" name="Операция 114.1142" duration="2975" equipment_group="3" prev_operation_id="1141" next_operation_id="1143"/>
+                <Operation id="1143" name="Операция 114.1143" duration="2215" equipment_group="2" prev_operation_id="1142" next_operation_id="1144"/>
+                <Operation id="1144" name="Операция 114.1144" duration="1363" equipment_group="3" prev_operation_id="1143" next_operation_id="1145"/>
+                <Operation id="1145" name="Операция 114.1145" duration="1492" equipment_group="2" prev_operation_id="1144" next_operation_id="0"/>
+            </TechProcess>
+        </Detail>
+        <Detail id="12" name="Деталь 1.12" count="1000">
+            <TechProcess id="121">
+                <Operation id="1211" name="Операция 121.1211" duration="1361" equipment_group="1" prev_operation_id="0" next_operation_id="1212"/>
+                <Operation id="1212" name="Операция 121.1212" duration="2418" equipment_group="3" prev_operation_id="1211" next_operation_id="1213"/>
+                <Operation id="1213" name="Операция 121.1213" duration="1106" equipment_group="1" prev_operation_id="1212" next_operation_id="1214"/>
+                <Operation id="1214" name="Операция 121.1214" duration="2582" equipment_group="2" prev_operation_id="1213" next_operation_id="1215"/>
+                <Operation id="1215" name="Операция 121.1215" duration="1918" equipment_group="2" prev_operation_id="1214" next_operation_id="0"/>
+            </TechProcess>
+            <TechProcess id="122">
+                <Operation id="1221" name="Операция 122.1221" duration="2643" equipment_group="2" prev_operation_id="0" next_operation_id="1222"/>
+                <Operation id="1222" name="Операция 122.1222" duration="2090" equipment_group="2" prev_operation_id="1221" next_operation_id="1223"/>
+                <Operation id="1223" name="Операция 122.1223" duration="2754" equipment_group="1" prev_operation_id="1222" next_operation_id="1224"/>
+                <Operation id="1224" name="Операция 122.1224" duration="1073" equipment_group="1" prev_operation_id="1223" next_operation_id="0"/>
+            </TechProcess>
+            <TechProcess id="123">
+                <Operation id="1231" name="Операция 123.1231" duration="2196" equipment_group="3" prev_operation_id="0" next_operation_id="1232"/>
+                <Operation id="1232" name="Операция 123.1232" duration="2871" equipment_group="3" prev_operation_id="1231" next_operation_id="1233"/>
+                <Operation id="1233" name="Операция 123.1233" duration="1346" equipment_group="1" prev_operation_id="1232" next_operation_id="1234"/>
+                <Operation id="1234" name="Операция 123.1234" duration="1698" equipment_group="3" prev_operation_id="1233" next_operation_id="1235"/>
+                <Operation id="1235" name="Операция 123.1235" duration="1555" equipment_group="3" prev_operation_id="1234" next_operation_id="0"/>
+            </TechProcess>
+            <TechProcess id="124">
+                <Operation id="1241" name="Операция 124.1241" duration="2900" equipment_group="1" prev_operation_id="0" next_operation_id="1242"/>
+                <Operation id="1242" name="Операция 124.1242" duration="1521" equipment_group="3" prev_operation_id="1241" next_operation_id="1243"/>
+                <Operation id="1243" name="Операция 124.1243" duration="1310" equipment_group="3" prev_operation_id="1242" next_operation_id="1244"/>
+                <Operation id="1244" name="Операция 124.1244" duration="2110" equipment_group="3" prev_operation_id="1243" next_operation_id="1245"/>
+                <Operation id="1245" name="Операция 124.1245" duration="1256" equipment_group="2" prev_operation_id="1244" next_operation_id="0"/>
+            </TechProcess>
+        </Detail>
+    </Order>
+</OrderInformation>

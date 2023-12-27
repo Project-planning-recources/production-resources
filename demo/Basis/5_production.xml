@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SystemInformation>
+    <CalendarInformation>
+        <Timetable>
+            <Day day_of_week="1" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="2" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="3" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="4" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="5" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="6" time_period="09:00:00-17:00:00"/>
+            <Day day_of_week="7" time_period="09:00:00-17:00:00"/>
+        </Timetable>
+    </CalendarInformation>
+    <EquipmentInformation>
+        <EquipmentGroup id="1" name="Группа 1">
+            <Equipment id="101" name="Оборудование 1.101"/>
+            <Equipment id="102" name="Оборудование 1.102"/>
+            <Equipment id="103" name="Оборудование 1.103"/>
+            <Equipment id="104" name="Оборудование 1.104"/>
+            <Equipment id="105" name="Оборудование 1.105"/>
+            <Equipment id="106" name="Оборудование 1.106"/>
+            <Equipment id="107" name="Оборудование 1.107"/>
+            <Equipment id="108" name="Оборудование 1.108"/>
+            <Equipment id="109" name="Оборудование 1.109"/>
+            <Equipment id="110" name="Оборудование 1.110"/>
+            <Equipment id="111" name="Оборудование 1.111"/>
+            <Equipment id="112" name="Оборудование 1.112"/>
+            <Equipment id="113" name="Оборудование 1.113"/>
+        </EquipmentGroup>
+        <EquipmentGroup id="2" name="Группа 2">
+            <Equipment id="201" name="Оборудование 2.201"/>
+            <Equipment id="202" name="Оборудование 2.202"/>
+            <Equipment id="203" name="Оборудование 2.203"/>
+            <Equipment id="204" name="Оборудование 2.204"/>
+            <Equipment id="205" name="Оборудование 2.205"/>
+            <Equipment id="206" name="Оборудование 2.206"/>
+            <Equipment id="207" name="Оборудование 2.207"/>
+            <Equipment id="208" name="Оборудование 2.208"/>
+            <Equipment id="209" name="Оборудование 2.209"/>
+            <Equipment id="210" name="Оборудование 2.210"/>
+            <Equipment id="211" name="Оборудование 2.211"/>
+            <Equipment id="212" name="Оборудование 2.212"/>
+            <Equipment id="213" name="Оборудование 2.213"/>
+        </EquipmentGroup>
+    </EquipmentInformation>
+</SystemInformation>

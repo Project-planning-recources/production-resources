@@ -1,9 +1,5 @@
 package algorithm.model.result;
 
-import parse.adapter.DateAdapter;
-
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -12,7 +8,7 @@ import java.util.Objects;
  * <b>Класс для Алгоритма</b>
  * <b>Результат работы для операции конкретной детали</b>
  */
-public class OperationResult {
+public class OperationResult implements Comparable<OperationResult>{
 
     /**
      * ID операции
@@ -32,9 +28,24 @@ public class OperationResult {
     private long nextOperationId;
 
     /**
+     * Длительность в секундах
+     */
+    private int duration;
+
+    /**
+     * ID необходимой группы оборудования
+     */
+    private long equipmentGroupId;
+
+    /**
      * ID выбранного для операции конкретного оборудования
      */
     private long equipmentId;
+
+    /**
+     * Время раннего начала выполнения заказа
+     */
+    private LocalDateTime earlyStartTime;
 
     /**
      * Время и дата начала выполнения операции
@@ -51,21 +62,62 @@ public class OperationResult {
      */
     private ProductResult productResult;
 
+    private boolean done;
+
+    private OperationResult prevOperation;
+
     private OperationResult nextOperation;
+
+    private OperationPriorities operationPriorities;
 
     public OperationResult() {
 
     }
 
-    public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentId,
-                           LocalDateTime startTime, LocalDateTime endTime, ProductResult productResult) {
+    public OperationResult(long operationId, long prevOperationId, long nextOperationId, int duration,
+                           long equipmentGroupId, long equipmentId, LocalDateTime startTime, LocalDateTime endTime,
+                           ProductResult productResult) {
         this.operationId = operationId;
         this.prevOperationId = prevOperationId;
         this.nextOperationId = nextOperationId;
+        this.duration = duration;
+        this.equipmentGroupId = equipmentGroupId;
         this.equipmentId = equipmentId;
         this.startTime = startTime;
         this.endTime = endTime;
         this.productResult = productResult;
+        this.done = false;
+    }
+
+    public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentGroupId,
+                           long equipmentId, LocalDateTime earlyStartTime, LocalDateTime startTime, LocalDateTime endTime,
+                           ProductResult productResult) {
+        this.operationId = operationId;
+        this.prevOperationId = prevOperationId;
+        this.nextOperationId = nextOperationId;
+        this.equipmentGroupId = equipmentGroupId;
+        this.equipmentId = equipmentId;
+        this.earlyStartTime = earlyStartTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.productResult = productResult;
+        this.done = false;
+    }
+
+    public OperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentGroupId,
+                           long equipmentId, LocalDateTime earlyStartTime, LocalDateTime startTime, LocalDateTime endTime,
+                           ProductResult productResult, OperationPriorities priorities) {
+        this.operationId = operationId;
+        this.prevOperationId = prevOperationId;
+        this.nextOperationId = nextOperationId;
+        this.equipmentGroupId = equipmentGroupId;
+        this.equipmentId = equipmentId;
+        this.earlyStartTime = earlyStartTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.productResult = productResult;
+        this.operationPriorities = priorities;
+        this.done = false;
     }
 
     public long getOperationId() {
@@ -80,8 +132,20 @@ public class OperationResult {
         return nextOperationId;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
+    public long getEquipmentGroupId() {
+        return equipmentGroupId;
+    }
+
     public long getEquipmentId() {
         return equipmentId;
+    }
+
+    public LocalDateTime getEarlyStartTime() {
+        return earlyStartTime;
     }
 
     public LocalDateTime getStartTime() {
@@ -116,6 +180,26 @@ public class OperationResult {
         return nextOperation;
     }
 
+    public OperationPriorities getOperationPriorities() {
+        return operationPriorities;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    public OperationResult getPrevOperation() {
+        return prevOperation;
+    }
+
+    public void setPrevOperation(OperationResult prevOperation) {
+        this.prevOperation = prevOperation;
+    }
+
     @Override
     public String toString() {
         return "OperationResult{" +
@@ -139,5 +223,37 @@ public class OperationResult {
     @Override
     public int hashCode() {
         return Objects.hash(operationId, productResult);
+    }
+
+    @Override
+    public int compareTo(OperationResult o) {
+        if (Objects.isNull(o)) {
+            return -1;
+        }
+        if (this.operationPriorities.getOrderInTechProcess() < o.getOperationPriorities().getOrderInTechProcess()) {
+            return -1;
+        } else if (this.operationPriorities.getOrderInTechProcess() > o.getOperationPriorities().getOrderInTechProcess()) {
+            return 1;
+        } else if (this.operationPriorities.getOrderInTechProcess() == o.getOperationPriorities().getOrderInTechProcess()) {
+            if (this.operationPriorities.getDuration() < o.getOperationPriorities().getDuration()) {
+                return -1;
+            } else if (this.operationPriorities.getDuration() > o.getOperationPriorities().getDuration()) {
+                return 1;
+            } else if (this.operationPriorities.getDuration() == o.getOperationPriorities().getDuration()) {
+                if (this.operationPriorities.getDeadline().isBefore(o.getOperationPriorities().getDeadline())) {
+                    return -1;
+                } else if (this.operationPriorities.getDeadline().isAfter(o.getOperationPriorities().getDeadline())) {
+                    return 1;
+                }
+                else if (this.operationPriorities.getDeadline().equals(o.getOperationPriorities().getDeadline())) {
+                    if (this.operationPriorities.getAddingOrder() < o.getOperationPriorities().getAddingOrder()) {
+                        return -1;
+                    } else if (this.operationPriorities.getAddingOrder() > o.getOperationPriorities().getAddingOrder()) {
+                        return 1;
+                    }
+                }
+            }
+        }
+        return 0;
     }
 }

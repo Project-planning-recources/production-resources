@@ -46,7 +46,7 @@ public class Order {
         this.deadline = inputOrder.getDeadline();
         ArrayList<Product> products = new ArrayList<>();
         inputOrder.getProducts().forEach(inputProduct -> {
-            products.add(new Product(inputProduct));
+            products.add(new Product(inputProduct, this.id));
         });
         this.products = products;
     }

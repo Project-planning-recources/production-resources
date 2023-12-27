@@ -7,9 +7,7 @@ import parse.output.result.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <b>Тест на соответствие результатов работы алгоритма реальности</b>
@@ -29,6 +27,9 @@ public class RealityTester {
      */
     public static boolean test(InputProduction production, InputOrderInformation orders, OutputResult result) {
         boolean flag = true;
+        HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments = result.getPerformedOperationsOnEquipments();
+        performedOperationsOnEquipments = Objects.isNull(performedOperationsOnEquipments) || performedOperationsOnEquipments.isEmpty() ?
+                result.fillPerformedOperationsOnEquipments() : performedOperationsOnEquipments;
         LinkedList<OutputOperationResult> operationResults = new LinkedList<>();
         for (OutputOrderResult order : result.getOrderResults()) {
             for (OutputProductResult product : order.getProductResults()) {
@@ -81,7 +82,8 @@ public class RealityTester {
             }
         }
 
-        List<String> errorsWithusingSameEquipment = usingSameEquipmentCheck(operationResults);
+
+        List<String> errorsWithusingSameEquipment = usingSameEquipmentCheck(operationResults, performedOperationsOnEquipments);
         if(errorsWithusingSameEquipment.size() != 0) {
             errorsWithusingSameEquipment.forEach(System.out::println);
             flag = false;
@@ -120,7 +122,7 @@ public class RealityTester {
                 startDttm = makeNextDay(startDttm, schedule);
             }
         }
-//        System.out.println("duration check: " + duration + "  " + operationFromInputData.getDuration());
+//        System.out.println(operation +  " duration check: " + duration + "  " + operationFromInputData.getDuration());
         return duration == operationFromInputData.getDuration();
     }
 
@@ -174,25 +176,31 @@ public class RealityTester {
         return true;
     }
 
-    //todo: оптимизировать
-    private static List<String> usingSameEquipmentCheck(LinkedList<OutputOperationResult> operationResults) {
+    private static List<String> usingSameEquipmentCheck(LinkedList<OutputOperationResult> operationResults,
+                                                        HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments) {
         List<String> errorMessage = new ArrayList<>();
 
-        for(int i = 0; i < operationResults.size() - 1; i++) {
-            OutputOperationResult operationLeft = operationResults.get(i);
+//        System.out.println(performedOperationsOnEquipments);
+        for(OutputOperationResult operationLeft : operationResults) {
             if(operationLeft.getStartTime() == null || operationLeft.getEndTime() == null) {
                 errorMessage.add("Операция " + operationLeft.getOperationId() + " не имеет время начала и/или конца выполнения");
             }
-            for (int j = i + 1; j < operationResults.size() - 1; j++) {
-                OutputOperationResult operationRight = operationResults.get(j);
+            ArrayList<OutputOperationResult> operationsOnEquipment = performedOperationsOnEquipments.get(operationLeft.getEquipmentId());
+            for (OutputOperationResult operationRight : operationsOnEquipment) {
+                if (operationLeft.getOperationId() == operationRight.getOperationId()) {
+                    continue;
+                }
                 if (operationLeft.getEquipmentId() != operationRight.getEquipmentId()) {
                     continue;
                 }
                 if ((operationLeft.getStartTime().isBefore(operationRight.getStartTime()) && operationLeft.getEndTime().isAfter(operationRight.getEndTime())) ||
                         (operationLeft.getStartTime().isAfter(operationRight.getStartTime()) && operationLeft.getEndTime().isBefore(operationRight.getEndTime())) ||
-                        (operationLeft.getStartTime().isBefore(operationRight.getStartTime()) && operationLeft.getEndTime().isAfter(operationRight.getStartTime()) && operationLeft.getEndTime().isBefore(operationRight.getEndTime())) ||
-                        (operationLeft.getStartTime().isAfter(operationRight.getStartTime()) && operationLeft.getStartTime().isBefore(operationRight.getEndTime()) && operationLeft.getEndTime().isAfter(operationRight.getEndTime()))) {
-                    errorMessage.add("Операции " + operationLeft.getOperationId() + " и " + operationRight.getOperationId() + " одновременно выполняются на одном и том же оборудовании");
+                        (operationLeft.getStartTime().isBefore(operationRight.getStartTime()) && (operationLeft.getEndTime().isAfter(operationRight.getStartTime()) && !operationLeft.getEndTime().equals(operationRight.getStartTime())) && operationLeft.getEndTime().isBefore(operationRight.getEndTime())) ||
+                        (operationLeft.getStartTime().isAfter(operationRight.getStartTime()) && (operationLeft.getStartTime().isBefore(operationRight.getEndTime()) && !operationRight.getEndTime().equals(operationLeft.getStartTime())) && operationLeft.getEndTime().isAfter(operationRight.getEndTime()))) {
+                    errorMessage.add("Операции " + operationLeft.getOperationId() + " и " + operationRight.getOperationId() +
+                            " одновременно выполняются на одном и том же оборудовании " + operationLeft.getEquipmentId() +
+                            ": операция " + operationLeft.getOperationId() + " выполняется c " + operationLeft.getStartTime() + " по " + operationLeft.getEndTime() +
+                            ", а операция " + operationLeft.getOperationId() + " выполняется c " + operationRight.getStartTime() + " по " + operationRight.getEndTime());
                 }
             }
         }

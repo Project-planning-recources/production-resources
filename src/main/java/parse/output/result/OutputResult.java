@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * <b>Класс для IO</b>
@@ -38,17 +39,21 @@ public class OutputResult {
     @XmlElement(name = "Order")
     private ArrayList<OutputOrderResult> outputOrderResults;
 
-    public OutputResult() {
+    @XmlTransient
+    private HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments;
 
+    public OutputResult() {
+        performedOperationsOnEquipments = new HashMap<>();
     }
 
     public OutputResult(Result result) {
         this.allStartTime = result.getAllStartTime();
         this.allEndTime = result.getAllEndTime();
+        performedOperationsOnEquipments = new HashMap<>();
 
         ArrayList<OutputOrderResult> outputOrderResults = new ArrayList<>();
         result.getOrderResults().forEach(orderResult -> {
-            outputOrderResults.add(new OutputOrderResult(orderResult));
+            outputOrderResults.add(new OutputOrderResult(orderResult, performedOperationsOnEquipments));
         });
         this.outputOrderResults = outputOrderResults;
     }
@@ -79,14 +84,30 @@ public class OutputResult {
         return outputOrderResults;
     }
 
-    public ArrayList<Integer> getAlternativeness() {
-        ArrayList<Integer> alternativeness = new ArrayList<>();
-        outputOrderResults.forEach(outputOrderResult -> {
-            outputOrderResult.getProductResults().forEach(outputProductResult -> {
-                alternativeness.add((int)outputProductResult.getTechProcessId());
-            });
-        });
-        return alternativeness;
+    public HashMap<Long, Integer> getAlternativeness() {
+
+        return null;
+    }
+
+    public HashMap<Long, ArrayList<OutputOperationResult>> getPerformedOperationsOnEquipments() {
+        return performedOperationsOnEquipments;
+    }
+
+    public HashMap<Long, ArrayList<OutputOperationResult>> fillPerformedOperationsOnEquipments() {
+        for (OutputOrderResult order : outputOrderResults) {
+            for (OutputProductResult product : order.getProductResults()) {
+                for (OutputOperationResult operation : product.getPerformedOperations()) {
+                    if (performedOperationsOnEquipments.containsKey(operation.getEquipmentId())) {
+                        performedOperationsOnEquipments.get(operation.getEquipmentId()).add(operation);
+                    } else {
+                        ArrayList<OutputOperationResult> operations = new ArrayList<>();
+                        operations.add(operation);
+                        performedOperationsOnEquipments.put(operation.getEquipmentId(), operations);
+                    }
+                }
+            }
+        }
+        return this.performedOperationsOnEquipments;
     }
 
     @Override

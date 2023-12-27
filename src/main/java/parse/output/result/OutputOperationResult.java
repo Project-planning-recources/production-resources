@@ -6,7 +6,8 @@ import parse.adapter.DateAdapter;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -61,13 +62,17 @@ public class OutputOperationResult {
 
     }
 
-    public OutputOperationResult(OperationResult operationResult) {
+    public OutputOperationResult(OperationResult operationResult, HashMap<Long, ArrayList<OutputOperationResult>> performedOperationsOnEquipments) {
         this.operationId = operationResult.getOperationId();
         this.prevOperationId = operationResult.getPrevOperationId();
         this.nextOperationId = operationResult.getNextOperationId();
         this.equipmentId = operationResult.getEquipmentId();
         this.startTime = operationResult.getStartTime();
         this.endTime = operationResult.getEndTime();
+        if (!performedOperationsOnEquipments.containsKey(equipmentId)) {
+            performedOperationsOnEquipments.put(equipmentId, new ArrayList<>());
+        }
+        performedOperationsOnEquipments.get(equipmentId).add(this);
     }
 
     public OutputOperationResult(long operationId, long prevOperationId, long nextOperationId, long equipmentId,

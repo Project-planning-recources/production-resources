@@ -38,21 +38,6 @@ public class InputProduction implements Serializable {
         this.inputEquipmentGroups = inputEquipmentGroups;
     }
 
-    /**
-     * Функция для проверки возможности осуществления операции на данном предприятии
-     * @param operation - операция
-     * @return true/false
-     */
-    public boolean isPossibleToMake(InputOperation operation) {
-        for (InputEquipmentGroup e :
-                inputEquipmentGroups) {
-            if (e.getId() == operation.getRequiredEquipment()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public InputSchedule getSchedule() {
         return inputSchedule;
     }

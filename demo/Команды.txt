@@ -1,0 +1,25 @@
+
+	Вызов тестирования базового алгоритма:
+		java -jar ProductionResources.jar TEST BASIS BASE Basis 7 resultsBase.csv 3 CANDIDATES 1
+		Проверку считаем успешной, если: в папке появился файл resultBase.csv, в котором содержится табличка с тестовой информацией о запусках базового алгоритма на файлах производства-заказов из базиса.
+		
+	Вызов тестирования собственного alpha-алгоритма:
+		java -jar ProductionResources.jar TEST BASIS OWN_ALPHA Basis 7 16 56 resultsAlpha.csv 3 8 candidates 1
+		Проверку считаем успешной, если: в папке появился файл resultAlpha.csv, в котором содержится табличка с тестовой информацией о запусках собственного альфа-алгоритма на файлах производства-заказов из базиса.
+		
+	Вызов тестирования собственного backpack-алгоритма:
+		java -jar ProductionResources.jar TEST BASIS OWN_BACKPACK Basis 7 100000 10 resultsBackpack.csv 3 candidates 1
+		Проверку считаем успешной, если: в папке появился файл resultBackpack.csv, в котором содержится табличка с тестовой информацией о запусках собственного ранцевого алгоритма на файлах производства-заказов из базиса.
+		
+	Сравнение Base и Alpha:
+		java -jar ProductionResources.jar COMP_RESULT_TABLES resultsBase.csv resultsAlpha.csv compBaseAlpha.csv
+		Проверку считаем успешной, если: в папке появился файл compBaseAlpha.csv, в котором содержится информация о сравнении базового и собственного alpha-алгоритма. Альфа-алгоритм должен выигрывать по критерию в большинстве или всех файлов производства-заказов.
+		
+	Сравнение Base и Backpack:
+		java -jar ProductionResources.jar COMP_RESULT_TABLES resultsBase.csv resultsBackpack.csv compBaseBackpack.csv
+		Проверку считаем успешной, если: в папке появился файл compBaseBackpack.csv, в котором содержится информация о сравнении базового и собственного ранцевого алгоритма. Ранцевый алгоритм должен выигрывать по критерию в большинстве или всех файлов производства-заказов.
+		
+	Сравнение Alpha и Backpack:
+		java -jar ProductionResources.jar COMP_RESULT_TABLES resultsBase.csv resultsAlpha.csv compAlphaBackpack.csv
+		Проверку считаем успешной, если: в папке появился файл compAlphaBackpack.csv, в котором содержится информация о сравнении собственных alpha-алгоритма и ранцевого. 
+		
