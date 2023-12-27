@@ -81,10 +81,10 @@ public class ParallelTester {
     public static void main(String[] args) throws Exception {
 
 //        unionTests();
-        unionTestsDifferentFiles();
+//        unionTestsDifferentFiles();
 
 //        variationParallelTests();
-//        frontParallelTests();
+        frontParallelTests();
     }
 
     public static void variationParallelTests() {
@@ -169,7 +169,7 @@ public class ParallelTester {
                     for (int j = 1; j <= threadMax; j *= 2) {
                         double time = 0;
                         for (int k = 0; k < startsAlg; k++) {
-
+                            System.out.println(i + ":" + j + "threads:" + k + ": Запущен...");
                             ArrayList<Order> orders = new ArrayList<>();
                             inputOrderInformation.getOrders().forEach(inputOrder -> {
                                 orders.add(new Order(inputOrder));
