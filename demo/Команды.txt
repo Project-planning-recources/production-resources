@@ -1,6 +1,6 @@
 
 	Вызов тестирования базового алгоритма:
-		java -jar ProductionResources.jar TEST BASIS BASE Basis 7 resultsBase.csv 3 CANDIDATES 1
+		java -jar ProductionResources.jar TEST BASIS BASE Basis 7 resultsBase.csv 56 CANDIDATES 1
 		Проверку считаем успешной, если: в папке появился файл resultBase.csv, в котором содержится табличка с тестовой информацией о запусках базового алгоритма на файлах производства-заказов из базиса.
 		
 	Вызов тестирования собственного alpha-алгоритма:
@@ -20,6 +20,6 @@
 		Проверку считаем успешной, если: в папке появился файл compBaseBackpack.csv, в котором содержится информация о сравнении базового и собственного ранцевого алгоритма. Ранцевый алгоритм должен выигрывать по критерию в большинстве или всех файлов производства-заказов.
 		
 	Сравнение Alpha и Backpack:
-		java -jar ProductionResources.jar COMP_RESULT_TABLES resultsBase.csv resultsAlpha.csv compAlphaBackpack.csv
+		java -jar ProductionResources.jar COMP_RESULT_TABLES resultsAlpha.csv resultsBackpack.csv compAlphaBackpack.csv
 		Проверку считаем успешной, если: в папке появился файл compAlphaBackpack.csv, в котором содержится информация о сравнении собственных alpha-алгоритма и ранцевого. 
 		
