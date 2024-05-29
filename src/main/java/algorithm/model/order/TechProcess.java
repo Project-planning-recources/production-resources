@@ -2,9 +2,7 @@ package algorithm.model.order;
 
 import parse.input.order.InputTechProcess;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Objects;

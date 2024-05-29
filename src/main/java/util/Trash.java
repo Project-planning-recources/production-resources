@@ -2,6 +2,7 @@ package util;
 
 
 import algorithm.Algorithm;
+import algorithm.NelderMeadAlgorithm.NelderMeadVariatorAlgorithm;
 import algorithm.alpha.AlphaClusterVariatorAlgorithm;
 import algorithm.alpha.AlphaClusterVariatorAlgorithmParallel;
 import algorithm.alpha.AlphaVariatorAlgorithm;
@@ -52,8 +53,10 @@ public class Trash {
 //        checkOwnAlgorithm();
 
 //        testBackpack();
+        //testOwnClusterAlgorithm();
+        checkOwnAlgorithm();
 
-        testOwnClusterAlgorithm();
+        //testNelderMead();
 
 //        testParallelAlgorithm();
         System.out.println("=====FINISH=====");
@@ -112,6 +115,45 @@ public class Trash {
         }
     }
 
+
+    public static void testNelderMead() {
+        InputProduction production = READER.readProductionFile("Basis/1_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/1_orders.xml");
+        double avCrit = 0;
+        double avOverdue = 0;
+        for(int i=0; i<3; i++) {
+
+            Algorithm algorithm = new NelderMeadVariatorAlgorithm(production, orderFile.getOrders(), null, "record", 2, 30);
+
+            OutputResult result = null;
+            try {
+                result = algorithm.start();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            System.out.println("Testing...");
+
+            if (RealityTester.test(production, orderFile, result)) {
+                WRITER.writeResultFile("Result.xml", result);
+                double crit = Criterion.getCriterion(orderFile, result);
+                double overdue = Data.getAverageOverdueDays(orderFile.getOrders(), result);
+                System.out.println("Criterion: " + crit);
+                System.out.println("Overdue: " + overdue);
+                System.out.println("Done!");
+                avCrit += crit;
+                avOverdue += overdue;
+            } else {
+                System.out.println("Bad2!");
+            }
+        }
+        avCrit /= 3;
+        avOverdue /= 3;
+        System.out.println("=======================");
+        System.out.println("Av.Criterion: " +avCrit);
+        System.out.println("Av.Overdue: " + avOverdue);
+    }
+
     private static void testBackpack() {
         InputProduction production = READER.readProductionFile("Basis/7_production.xml");
         InputOrderInformation orderFile = READER.readOrderFile("Basis/7_orders.xml");
@@ -153,32 +195,43 @@ public class Trash {
         return generatedData;
     }
 
-
-
     public static void checkOwnAlgorithm() throws Exception {
 
-        InputProduction production = READER.readProductionFile("Basis/7_production.xml");
-        InputOrderInformation orderFile = READER.readOrderFile("Basis/7_orders.xml");
+        double avCrit = 0;
+        double avOverdue = 0;
+        for(int i=0; i<3; i++) {
+            InputProduction production = READER.readProductionFile("Basis/6_production.xml");
+            InputOrderInformation orderFile = READER.readOrderFile("Basis/6_orders.xml");
 
-        Algorithm algorithm = new AlphaVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10, 50);
+            Algorithm algorithm = new AlphaVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10, 50);
 
-        OutputResult result = null;
-        try {
-            result = algorithm.start();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            OutputResult result = null;
+            try {
+                result = algorithm.start();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            System.out.println("Testing...");
+
+            if (RealityTester.test(production, orderFile, result)) {
+                WRITER.writeResultFile("alphaResult.xml", result);
+                double crit = Criterion.getCriterion(orderFile, result);
+                double overdue = Data.getAverageOverdueDays(orderFile.getOrders(), result);
+                System.out.println("Criterion: " + crit);
+                System.out.println("Overdue: " + overdue);
+                System.out.println("Done!");
+                avCrit += crit;
+                avOverdue += overdue;
+            } else {
+                System.out.println("Bad2!");
+            }
         }
-
-        System.out.println("Testing...");
-
-        if(RealityTester.test(production, orderFile, result)) {
-            WRITER.writeResultFile("alphaResult.xml", result);
-            System.out.println("Creterion: " + Criterion.getCriterion(orderFile, result));
-            System.out.println("Overdue: " + Data.getAverageOverdueDays(orderFile.getOrders(), result));
-            System.out.println("Done!");
-        } else {
-            System.out.println("Bad2!");
-        }
+        avCrit /= 3;
+        avOverdue /= 3;
+        System.out.println("=======================");
+        System.out.println("Av.Criterion: " +avCrit);
+        System.out.println("Av.Overdue: " + avOverdue);
     }
 
     public static void checkGenerator() throws Exception {
