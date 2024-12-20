@@ -14,25 +14,36 @@ import parse.output.result.OutputResult;
 import util.Criterion;
 import util.Hash;
 import util.Pair;
-import util.Random;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
+
+enum NMVAHyperParameter {
+    reflection,
+    contraction,
+    expansion
+}
 
 public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
     protected String frontAlgorithmType;
     protected int frontThreadsCount;
     long startVariationsCount;
-    //protected int startVariatorCount;
+
+    private HashMap<NMVAHyperParameter, Double> hyperParameters;
 
     public NelderMeadVariatorAlgorithm(InputProduction inputProduction, ArrayList<InputOrder> inputOrders, LocalDateTime startTime,
                                        String frontAlgorithmType, int frontThreadsCount, int variatorBudget) {
         super(inputProduction, inputOrders, startTime, variatorBudget);
         this.frontAlgorithmType = frontAlgorithmType;
         this.frontThreadsCount = frontThreadsCount;
+
+        hyperParameters = new HashMap<>();
+        hyperParameters.put(NMVAHyperParameter.reflection, 1.);
+        hyperParameters.put(NMVAHyperParameter.contraction, -0.5);
+        hyperParameters.put(NMVAHyperParameter.expansion, -2.);
     }
     public NelderMeadVariatorAlgorithm(Production production, ArrayList<Order> orders, LocalDateTime startTime,
                                        String frontAlgorithmType, int frontThreadsCount, int variatorBudget) {
@@ -49,37 +60,15 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
             HashMap<Long, Integer> randomVariant = generateRandomAlternativesDistribution();
             Algorithm algorithm;
             OutputResult result;
-            //this.variation.add(new Pair<>(randomVariant, Criterion.getCriterion(this.orders, result)));
             if (checkVariantAvailability(randomVariant)) {
 
-//                System.out.println("stert" + i);
                 algorithm = FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, randomVariant, this.frontAlgorithmType, this.frontThreadsCount);
                 result = algorithm.start();
-//                System.out.println("finish" + i);
 
                 this.variation.add(new Pair<>(randomVariant, Criterion.getCriterion(this.orders, result)));
                 System.out.println("Стартовая точка " + (i+1) + ":" + Criterion.getCriterion(this.orders, result));
                 i++;
-                //loading();
             }
-            /*HashMap<Long, Integer> randomReflectedVariant = reflectVariant(randomVariant, middleVariant);
-            if(i == startVariationsCount + 1) {
-                break;
-            }
-            //HashMap<Long, Integer> variant = generateRandomAlternativesDistribution();
-            if (checkVariantAvailability(randomReflectedVariant)) {
-
-//                System.out.println("stert" + i);
-                algorithm = FrontAlgorithmFactory.getOwnFrontAlgorithm(this.production, this.orders, this.startTime, randomReflectedVariant, this.frontAlgorithmType, this.frontThreadsCount);
-                result = algorithm.start();
-//                System.out.println("finish" + i);
-
-                this.variation.add(new Pair<>(randomReflectedVariant, Criterion.getCriterion(this.orders, result)));
-                System.out.println("Стартовая точка " + (i+1) + ":" + Criterion.getCriterion(this.orders, result));
-                i++;
-                //loading();
-            }
-             */
 
         }
         System.out.println();
@@ -122,12 +111,13 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
             Pair<HashMap<Long, Integer>, Double> variantL = this.variation.get(0);
             loading(i);
             HashMap<Long, Integer> centralvariant = findCenterVariation();
-            HashMap<Long, Integer> variantRWithoutCriterion = reflectVariant(variantH.getKey(), centralvariant);
+            HashMap<Long, Integer> variantRWithoutCriterion = getVariant(variantH.getKey(), centralvariant, hyperParameters.get(NMVAHyperParameter.reflection));
             double criterionForVariantR = getCriterionForVariant(variantRWithoutCriterion);
             System.out.println("Критерий R = " + criterionForVariantR);
             Pair<HashMap<Long, Integer>, Double> variantR = new Pair<>(variantRWithoutCriterion, criterionForVariantR);
             if(criterionForVariantR < variantL.getValue()) {
-                HashMap<Long, Integer> variantEWithoutCriterion = expandVariant(variantRWithoutCriterion, centralvariant);
+                HashMap<Long, Integer> variantEWithoutCriterion = getVariant(variantRWithoutCriterion, centralvariant, hyperParameters.get(NMVAHyperParameter.expansion));
+
                 double criterionForVariantE = getCriterionForVariant(variantEWithoutCriterion);
                 System.out.println("Критерий E = " + criterionForVariantE);
                 if(criterionForVariantE < criterionForVariantR) {
@@ -305,22 +295,8 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
         return readyAlphaVariant;
     }
 
-    private HashMap<Long, Integer> reflectVariant(HashMap<Long, Integer> variantToReflect, HashMap<Long, Integer> centralVariant) {
-        HashMap<Long, Integer> variant = getVariant(variantToReflect, centralVariant, 1);
-        return variant;
-    }
-    private HashMap<Long, Integer> expandVariant(HashMap<Long, Integer> variantToExpand, HashMap<Long, Integer> centralVariant) {
-        HashMap<Long, Integer> variant = getVariant(variantToExpand, centralVariant, -2);
-        return variant;
-    }
-
-    private HashMap<Long, Integer> contractVariant(HashMap<Long, Integer> variantToContract, HashMap<Long, Integer> centralVariant) {
-        HashMap<Long, Integer> variant = getVariant(variantToContract, centralVariant, -0.5);
-        return variant;
-    }
-
     private void contraction(Pair<HashMap<Long, Integer>, Double> variantH, HashMap<Long, Integer> centralVariant) throws Exception {
-        HashMap<Long, Integer> variantSWithoutCriterion = contractVariant(variantH.getKey(), centralVariant);
+        HashMap<Long, Integer> variantSWithoutCriterion = getVariant(variantH.getKey(), centralVariant, hyperParameters.get(NMVAHyperParameter.contraction));
         double criterionForVariantS = getCriterionForVariant(variantSWithoutCriterion);
         System.out.println("Критерий S = " + criterionForVariantS);
         if(criterionForVariantS < variantH.getValue()){
@@ -339,6 +315,12 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
         OutputResult result = algorithm.start();
 
         return Criterion.getCriterion(this.orders, result);
+    }
+
+    public void setHyperParameters(double reflection, double contraction, double expansion) {
+        hyperParameters.put(NMVAHyperParameter.reflection, reflection);
+        hyperParameters.put(NMVAHyperParameter.contraction, contraction);
+        hyperParameters.put(NMVAHyperParameter.expansion, expansion);
     }
 }
 

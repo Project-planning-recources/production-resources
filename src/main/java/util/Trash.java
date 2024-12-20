@@ -2,6 +2,7 @@ package util;
 
 
 import algorithm.Algorithm;
+import algorithm.NelderMeadAlgorithm.NMVAEndPoint;
 import algorithm.NelderMeadAlgorithm.NelderMeadVariatorAlgorithm;
 import algorithm.alpha.AlphaClusterVariatorAlgorithm;
 import algorithm.alpha.AlphaClusterVariatorAlgorithmParallel;
@@ -22,6 +23,7 @@ import testing.GeneratorTester;
 import testing.PossibilityTester;
 import testing.RealityTester;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -45,22 +47,29 @@ public class Trash {
 
         System.out.println("=====START=====");
 
-//        int dataCount = 1;
+//      int dataCount = 1;
 
-//        checkGenerator();
+//      checkGenerator();
 
-//        generate(1);
-//        checkOwnAlgorithm();
+//      generate(1);
+//      checkOwnAlgorithm();
 
-//        testBackpack();
-        //testOwnClusterAlgorithm();
-        checkOwnAlgorithm();
-
-        //testNelderMead();
+//      testBackpack();
+//      testOwnClusterAlgorithm();
+//      checkOwnAlgorithm();
+//      testNelderMead();
+        testOptuna();
 
 //        testParallelAlgorithm();
         System.out.println("=====FINISH=====");
 
+    }
+
+    public static void testOptuna() throws Exception {
+        NMVAEndPoint endPoint = new NMVAEndPoint("train_data/1_production.xml",
+                "train_data/1_orders.xml");
+
+        endPoint.AcceptAndResponse();
     }
 
     public static void testParallelAlgorithm() throws Exception {
@@ -197,13 +206,17 @@ public class Trash {
 
     public static void checkOwnAlgorithm() throws Exception {
 
+        InputProduction production = READER.readProductionFile("Basis/7_production.xml");
+        InputOrderInformation orderFile = READER.readOrderFile("Basis/7_orders.xml");
         double avCrit = 0;
         double avOverdue = 0;
-        for(int i=0; i<3; i++) {
-            InputProduction production = READER.readProductionFile("Basis/6_production.xml");
-            InputOrderInformation orderFile = READER.readOrderFile("Basis/6_orders.xml");
+        long averageTime = 0;
 
-            Algorithm algorithm = new AlphaVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 10, 50);
+        int iterCount = 3;
+        for(int i=0; i<iterCount; i++) {
+
+            long startTime = System.currentTimeMillis();
+            Algorithm algorithm = new AlphaVariatorAlgorithm(production, orderFile.getOrders(), null, "candidates", 1, 5, 13);
 
             OutputResult result = null;
             try {
@@ -215,7 +228,8 @@ public class Trash {
             System.out.println("Testing...");
 
             if (RealityTester.test(production, orderFile, result)) {
-                WRITER.writeResultFile("alphaResult.xml", result);
+                long endTime = System.currentTimeMillis();
+                //WRITER.writeResultFile("alphaResult.xml", result);
                 double crit = Criterion.getCriterion(orderFile, result);
                 double overdue = Data.getAverageOverdueDays(orderFile.getOrders(), result);
                 System.out.println("Criterion: " + crit);
@@ -223,15 +237,18 @@ public class Trash {
                 System.out.println("Done!");
                 avCrit += crit;
                 avOverdue += overdue;
+                averageTime += (endTime - startTime) / 1000;
             } else {
                 System.out.println("Bad2!");
             }
         }
-        avCrit /= 3;
-        avOverdue /= 3;
+        avCrit /= iterCount;
+        avOverdue /= iterCount;
+        averageTime /= iterCount;
         System.out.println("=======================");
         System.out.println("Av.Criterion: " +avCrit);
         System.out.println("Av.Overdue: " + avOverdue);
+        System.out.println("Av.Time: " + averageTime);
     }
 
     public static void checkGenerator() throws Exception {
