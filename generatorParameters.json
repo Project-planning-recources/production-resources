@@ -13,7 +13,7 @@
   "maxDurationTimeInDays": 3,
   "minDetailsTypeCount": 1,
   "maxDetailsTypeCount": 3,
-  "minDetailsCount": 100,
+  "minDetailsCount": 150,
   "maxDetailsCount": 300,
   "minTechProcessCount": 1,
   "maxTechProcessCount": 5,

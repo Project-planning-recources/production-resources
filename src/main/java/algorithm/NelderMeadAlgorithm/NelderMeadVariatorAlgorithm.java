@@ -66,7 +66,7 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
                 result = algorithm.start();
 
                 this.variation.add(new Pair<>(randomVariant, Criterion.getCriterion(this.orders, result)));
-                System.out.println("Стартовая точка " + (i+1) + ":" + Criterion.getCriterion(this.orders, result));
+                //System.out.println("Стартовая точка " + (i+1) + ":" + Criterion.getCriterion(this.orders, result));
                 i++;
             }
 
@@ -98,7 +98,7 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
     }
 
     protected void loading(int count) {
-        System.out.println("Вычисление " + (count+1) + "/" + this.variatorBudget);
+        //System.out.println("Вычисление " + (count+1) + "/" + this.variatorBudget);
     }
 
 
@@ -113,13 +113,13 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
             HashMap<Long, Integer> centralvariant = findCenterVariation();
             HashMap<Long, Integer> variantRWithoutCriterion = getVariant(variantH.getKey(), centralvariant, hyperParameters.get(NMVAHyperParameter.reflection));
             double criterionForVariantR = getCriterionForVariant(variantRWithoutCriterion);
-            System.out.println("Критерий R = " + criterionForVariantR);
+            //System.out.println("Критерий R = " + criterionForVariantR);
             Pair<HashMap<Long, Integer>, Double> variantR = new Pair<>(variantRWithoutCriterion, criterionForVariantR);
             if(criterionForVariantR < variantL.getValue()) {
                 HashMap<Long, Integer> variantEWithoutCriterion = getVariant(variantRWithoutCriterion, centralvariant, hyperParameters.get(NMVAHyperParameter.expansion));
 
                 double criterionForVariantE = getCriterionForVariant(variantEWithoutCriterion);
-                System.out.println("Критерий E = " + criterionForVariantE);
+                //System.out.println("Критерий E = " + criterionForVariantE);
                 if(criterionForVariantE < criterionForVariantR) {
                     if(checkNegativeAndDeal(variantEWithoutCriterion)) {
                         this.variation.remove(this.variation.size() - 1);
@@ -127,7 +127,7 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
                         //variantH = new Pair<>(variantEWithoutCriterion, criterionForVariantE);
                     }
                     else {
-                        System.out.println("Variant is not possible");
+                        //System.out.println("Variant is not possible");
                     }
                 }
                 else {
@@ -137,13 +137,12 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
                         //variantH = variantR;
                     }
                     else{
-                        System.out.println("Variant is not possible");
+                        //System.out.println("Variant is not possible");
                     }
                 }
             } else if (criterionForVariantR < variantG.getValue()) {
                 this.variation.remove(this.variation.size() - 1);
                 this.variation.add(variantR);
-                //variantH = variantR;
             } else if(criterionForVariantR < variantH.getValue()){
                 this.variation.remove(this.variation.size() - 1);
                 this.variation.add(variantR);
@@ -158,11 +157,11 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
                 if(checkNegativeAndDeal(newVariation)) {
                     this.variation.remove(this.variation.size() - 1);
                     double neWCriterion = getCriterionForVariant(newVariation);
-                    System.out.println("Критерий New = " + neWCriterion);
+                    //System.out.println("Критерий New = " + neWCriterion);
                     this.variation.add(new Pair<>(newVariation, neWCriterion));
                 }
                 else{
-                    System.out.println("Variant is not possible");
+                    //System.out.println("Variant is not possible");
                 }
 
             }
@@ -298,14 +297,14 @@ public class NelderMeadVariatorAlgorithm extends AbstractVariatorAlgorithm {
     private void contraction(Pair<HashMap<Long, Integer>, Double> variantH, HashMap<Long, Integer> centralVariant) throws Exception {
         HashMap<Long, Integer> variantSWithoutCriterion = getVariant(variantH.getKey(), centralVariant, hyperParameters.get(NMVAHyperParameter.contraction));
         double criterionForVariantS = getCriterionForVariant(variantSWithoutCriterion);
-        System.out.println("Критерий S = " + criterionForVariantS);
+        //System.out.println("Критерий S = " + criterionForVariantS);
         if(criterionForVariantS < variantH.getValue()){
             if(checkNegativeAndDeal(variantSWithoutCriterion)) {
                 this.variation.remove(this.variation.size() - 1);
                 this.variation.add(new Pair<>(variantSWithoutCriterion, criterionForVariantS));
             }
             else{
-                System.out.println("Variant is not possible");
+                //System.out.println("Variant is not possible");
             }
         }
     }
